@@ -128,6 +128,7 @@ class Client:
                     ra = resp.headers.get("Retry-After", "")
                     wait = (float(ra) if ra.replace(".", "", 1).isdigit()
                             else config.RATE_LIMIT_BASE * (attempt + 1)) + random.uniform(0, 3)
+                    wait = min(wait, config.MAX_RATE_LIMIT_WAIT)  # 과도한 대기 상한
                     log.warning("429 rate limited (%s/%s) %s — %.0fs 대기 후 재시도",
                                 attempt + 1, config.MAX_RETRIES, url, wait)
                     last_exc = FetchError("HTTP 429")

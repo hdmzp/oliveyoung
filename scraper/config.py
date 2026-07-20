@@ -47,7 +47,7 @@ REQUEST_TIMEOUT = (10, 30)  # (connect, read)
 # 호스트별 최소 간격(초). 랭킹(www)은 rate limit 이 엄격, 리뷰 API(m)는 관대.
 HOST_INTERVALS = {
     "www.oliveyoung.co.kr": 8.0,   # 랭킹 getBestList — 버스트 제한 회피(넉넉히)
-    "m.oliveyoung.co.kr": 0.5,     # 리뷰 stats/cursor — 비교적 여유
+    "m.oliveyoung.co.kr": 1.3,     # 리뷰 stats/cursor — 429 빈도 완화
 }
 # 랭킹 카테고리가 연속으로 이만큼 실패하면 rate limit 으로 보고 중단(재실행 시 이어서)
 RANKING_ABORT_AFTER_FAILS = 2
@@ -59,6 +59,7 @@ MAX_RETRIES = 3          # 너무 많이 재시도하면 오히려 rate limit �
 BACKOFF_BASE = 2.0
 # 429(rate limit) 전용 대기: attempt 마다 이 값 × (n+1) 초 (Retry-After 헤더 우선)
 RATE_LIMIT_BASE = 15.0
+MAX_RATE_LIMIT_WAIT = 120.0     # Retry-After 가 너무 길어도 이 이상은 안 기다림
 CONSECUTIVE_FAIL_LIMIT = 10     # 연속 실패 시 장시간 휴식 진입
 COOLDOWN_SECONDS = 180          # 휴식 시간
 MAX_COOLDOWN_ROUNDS = 3         # 휴식 후에도 계속 실패하면 해당 단계 포기
