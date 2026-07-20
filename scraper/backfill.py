@@ -28,16 +28,22 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--deadline-minutes", type=float, default=320)
     ap.add_argument("--max-products", type=int, default=100)
+    ap.add_argument("--fresh", action="store_true",
+                    help="이전 진행기록을 무시하고 처음부터 새로 (완료 기록 초기화)")
     args = ap.parse_args()
 
     CONTINUATION_MARKER.unlink(missing_ok=True)
     deadline = Deadline(args.deadline_minutes)
     client = Client()
     cursor_path = Path(config.STATE_DIR) / "backfill_cursor.json"
-    state = load_json(cursor_path, {})
+    state = {} if args.fresh else load_json(cursor_path, {})
+    if args.fresh:
+        cursor_path.unlink(missing_ok=True)
+        log.info("--fresh: 이전 백필 진행기록을 초기화합니다 (CSV는 append 되므로 필요시 직접 삭제)")
 
     if state.get("completed"):
-        log.info("backfill already completed — nothing to do")
+        log.info("backfill already completed — nothing to do "
+                 "(다시 하려면 --fresh, 그리고 data/backfill/top100_reviews.csv 삭제)")
         return
 
     if not state.get("order"):
