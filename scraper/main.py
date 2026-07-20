@@ -41,11 +41,13 @@ SAVE_EVERY = 20
 
 class DailyRun:
     def __init__(self, date: str, deadline: Deadline, max_products: int | None,
-                 collect_review_text: bool = True):
+                 collect_review_text: bool = True, overall_only: bool = False):
         self.date = date
         self.deadline = deadline
         self.max_products = max_products
         self.collect_review_text = collect_review_text
+        # overall_only: 전체 랭킹(TOP100)만 수집 → www 요청 1건, 429 회피 + 가벼움
+        self.categories = {"": "전체"} if overall_only else dict(config.CATEGORIES)
         self.client = Client()
 
         self.progress_path = Path(config.STATE_DIR) / "run_progress.json"
@@ -84,9 +86,9 @@ class DailyRun:
         반환: True=전체 완료, False=중단(데드라인/rate limit — 재실행 시 이어서).
         """
         done = self.progress["ranking_cats"]  # cat_id -> items (수집완료)
-        total = len(config.CATEGORIES)
+        total = len(self.categories)
         consecutive_fail = 0
-        for cat_id, cat_name in config.CATEGORIES.items():
+        for cat_id, cat_name in self.categories.items():
             if cat_id in done:
                 continue
             if self.deadline.reached:
@@ -233,7 +235,7 @@ class DailyRun:
         lines = [
             f"## 올리브영 수집 결과 ({self.date})",
             f"- 상태: {status}",
-            f"- 랭킹 카테고리: {cats_done}/{len(config.CATEGORIES)} 완료",
+            f"- 랭킹 카테고리: {cats_done}/{len(self.categories)} 완료",
             f"- 랭킹 행: {n_rank}",
             f"- 처리 상품: {n_done} (리뷰요약 성공 {summary_ok}, 실패 {self.stats['summary_fail']})",
             f"- 신규 리뷰: {self.stats['new_reviews']} (수집 실패 상품 {self.stats['review_fail']})",
@@ -259,11 +261,14 @@ def main():
                     help="상품 수 제한 (스모크 테스트용)")
     ap.add_argument("--no-review-text", action="store_true",
                     help="리뷰 본문 수집 생략 (리뷰수/별점만)")
+    ap.add_argument("--overall-only", action="store_true",
+                    help="전체 랭킹(TOP100)만 수집 — 카테고리별 랭킹 생략 (빠르고 가벼움)")
     args = ap.parse_args()
 
     CONTINUATION_MARKER.unlink(missing_ok=True)
     run = DailyRun(args.date or kst_today(), Deadline(args.deadline_minutes),
-                   args.max_products, collect_review_text=not args.no_review_text)
+                   args.max_products, collect_review_text=not args.no_review_text,
+                   overall_only=args.overall_only)
     try:
         finished = run.run()
     except Exception:
