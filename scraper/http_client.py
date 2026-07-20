@@ -18,6 +18,27 @@ from . import config
 
 log = logging.getLogger(__name__)
 
+# curl_cffi: 진짜 크롬 TLS 지문으로 위장 → Cloudflare 봇 감지(TLS fingerprint) 회피.
+# 없으면 표준 requests 로 동작(일부 환경에서 403 가능).
+_CFFI_ERRORS: tuple = ()
+try:
+    from curl_cffi import requests as cffi_requests
+    _HAVE_CFFI = True
+    # curl_cffi 버전별 예외 위치가 달라 방어적으로 수집
+    for _mod, _name in (("curl_cffi.requests.exceptions", "RequestException"),
+                        ("curl_cffi.requests.errors", "RequestsError"),
+                        ("curl_cffi", "CurlError")):
+        try:
+            _m = __import__(_mod, fromlist=[_name])
+            _CFFI_ERRORS = _CFFI_ERRORS + (getattr(_m, _name),)
+        except Exception:
+            pass
+except ImportError:
+    cffi_requests = None
+    _HAVE_CFFI = False
+
+IMPERSONATE = "chrome"   # curl_cffi 위장 대상
+
 
 class FetchError(Exception):
     """재시도를 모두 소진한 요청 실패."""
@@ -25,24 +46,21 @@ class FetchError(Exception):
 
 class Client:
     def __init__(self):
-        self.session = requests.Session()
-        # 실제 크롬 브라우저처럼 보이는 헤더 (Cloudflare 봇 감지 완화)
-        self.session.headers.update({
-            "User-Agent": config.USER_AGENT,
-            "Accept": ("text/html,application/xhtml+xml,application/xml;q=0.9,"
-                       "image/avif,image/webp,image/apng,*/*;q=0.8"),
-            "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Sec-Ch-Ua": '"Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"',
-            "Sec-Ch-Ua-Mobile": "?0",
-            "Sec-Ch-Ua-Platform": '"Windows"',
-            "Sec-Fetch-Dest": "document",
-            "Sec-Fetch-Mode": "navigate",
-            "Sec-Fetch-Site": "none",
-            "Sec-Fetch-User": "?1",
-            "Upgrade-Insecure-Requests": "1",
-            "Connection": "keep-alive",
-        })
+        self.use_cffi = _HAVE_CFFI
+        if self.use_cffi:
+            # curl_cffi 가 크롬 헤더/지문을 자동 세팅. 추가 헤더는 최소로.
+            self.session = cffi_requests.Session()
+            self.session.headers.update({"Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8"})
+        else:
+            self.session = requests.Session()
+            self.session.headers.update({
+                "User-Agent": config.USER_AGENT,
+                "Accept": ("text/html,application/xhtml+xml,application/xml;q=0.9,"
+                           "image/avif,image/webp,image/apng,*/*;q=0.8"),
+                "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+                "Accept-Encoding": "gzip, deflate, br",
+                "Connection": "keep-alive",
+            })
         self._last_request_at: dict[str, float] = {}  # host -> monotonic
         self._consecutive_failures = 0
         self._cooldown_rounds = 0
@@ -101,8 +119,10 @@ class Client:
             self._throttle(url)
             self.request_count += 1
             try:
-                resp = self.session.request(method, url, params=params, json=json,
-                                            headers=hdr, timeout=config.REQUEST_TIMEOUT)
+                kwargs = dict(params=params, json=json, headers=hdr, timeout=40)
+                if self.use_cffi:
+                    kwargs["impersonate"] = IMPERSONATE  # 크롬 TLS 지문 위장
+                resp = self.session.request(method, url, **kwargs)
                 if resp.status_code == 429:
                     # rate limit: Retry-After 헤더가 있으면 그만큼, 없으면 길게 대기
                     ra = resp.headers.get("Retry-After", "")
@@ -124,7 +144,7 @@ class Client:
                 resp.raise_for_status()
                 self._on_success()
                 return resp
-            except (requests.RequestException, FetchError) as exc:
+            except (requests.RequestException, FetchError, OSError) + _CFFI_ERRORS as exc:
                 last_exc = exc
                 delay = config.BACKOFF_BASE ** attempt + random.uniform(0, 1)
                 log.warning("request failed (%s/%s) %s %s params=%s: %s — retry in %.1fs",

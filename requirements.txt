@@ -3,3 +3,4 @@ beautifulsoup4>=4.12
 lxml>=5.0
 truststore>=0.9  # 백신/프록시의 HTTPS 검사(SSL 인터셉션) 환경에서 인증서 검증 통과
 playwright>=1.40  # Cloudflare 403 회피용 브라우저 쿠키 확보 (Edge/Chrome 사용)
+curl_cffi>=0.7  # 크롬 TLS 지문 위장으로 Cloudflare 봇감지 회피
