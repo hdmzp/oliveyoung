@@ -28,13 +28,11 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--deadline-minutes", type=float, default=320)
     ap.add_argument("--max-products", type=int, default=100)
-    ap.add_argument("--cf-bootstrap", action="store_true",
-                    help="시작 시 브라우저로 Cloudflare 검증 쿠키 확보 (로컬 실행 권장)")
     args = ap.parse_args()
 
     CONTINUATION_MARKER.unlink(missing_ok=True)
     deadline = Deadline(args.deadline_minutes)
-    client = Client(cf_bootstrap=args.cf_bootstrap)
+    client = Client()
     cursor_path = Path(config.STATE_DIR) / "backfill_cursor.json"
     state = load_json(cursor_path, {})
 
@@ -58,22 +56,25 @@ def main():
     total_new = 0
 
     for goods_no in state["order"]:
-        pstate = state["products"].setdefault(goods_no, {"next_page": 1, "done": False})
+        pstate = state["products"].setdefault(
+            goods_no, {"cursor_id": None, "cursor_score": None, "pages": 0, "done": False})
         if pstate["done"]:
             continue
-        page = pstate["next_page"]
-        while page <= MAX_PAGES_PER_PRODUCT:
+        cid, cscore = pstate["cursor_id"], pstate["cursor_score"]
+        pages = pstate["pages"]
+        while pages < MAX_PAGES_PER_PRODUCT:
             if deadline.reached:
-                pstate["next_page"] = page
+                pstate.update(cursor_id=cid, cursor_score=cscore, pages=pages)
                 atomic_write_json(cursor_path, state)
                 CONTINUATION_MARKER.write_text("continue")
                 log.warning("deadline reached at %s page %d — checkpoint saved",
-                            goods_no, page)
+                            goods_no, pages)
                 sys.exit(0)
             try:
-                page_reviews, has_more = reviews.fetch_review_page(client, goods_no, page)
+                page_reviews, cid, cscore, has_next = reviews.fetch_review_page(
+                    client, goods_no, cid, cscore)
             except FetchError as exc:
-                log.error("%s page %d failed: %s — skip product", goods_no, page, exc)
+                log.error("%s page %d failed: %s — skip product", goods_no, pages, exc)
                 break
             if not page_reviews:
                 break
@@ -82,17 +83,17 @@ def main():
                 r["상품번호"] = goods_no
             out_csv.append_rows(page_reviews)
             total_new += len(page_reviews)
-            page += 1
-            if page % SAVE_EVERY_PAGES == 0:
-                pstate["next_page"] = page
+            pages += 1
+            if pages % SAVE_EVERY_PAGES == 0:
+                pstate.update(cursor_id=cid, cursor_score=cscore, pages=pages)
                 atomic_write_json(cursor_path, state)
-            if not has_more:
+            if not has_next:
                 break
         pstate["done"] = True
         atomic_write_json(cursor_path, state)
         done_count = sum(1 for p in state["products"].values() if p["done"])
-        log.info("product %s done (last page %d) — %d/%d products, %d reviews so far",
-                 goods_no, page - 1, done_count, len(state["order"]), total_new)
+        log.info("product %s done (%d pages) — %d/%d products, %d reviews so far",
+                 goods_no, pages, done_count, len(state["order"]), total_new)
 
     state["completed"] = True
     atomic_write_json(cursor_path, state)

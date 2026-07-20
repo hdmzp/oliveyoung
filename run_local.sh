@@ -15,8 +15,8 @@ if [ -d .venv ]; then
   source .venv/bin/activate
 fi
 
-# 수집 (Cloudflare 쿠키 부트스트랩 포함, 데드라인 320분)
-python -m scraper.main --deadline-minutes 320 --cf-bootstrap >>"$LOG" 2>&1
+# 수집 (데드라인 320분)
+python -m scraper.main --deadline-minutes 320 >>"$LOG" 2>&1
 STATUS=$?
 echo "collect exit status: $STATUS" >>"$LOG"
 
@@ -37,7 +37,7 @@ fi
 # 데드라인으로 중단됐으면 남은 분량을 이어서 실행 (완료까지 반복)
 while [ -f .continuation_needed ]; do
   echo "===== $(date '+%Y-%m-%d %H:%M:%S') continuation run =====" >>"$LOG"
-  python -m scraper.main --deadline-minutes 320 --cf-bootstrap >>"$LOG" 2>&1
+  python -m scraper.main --deadline-minutes 320 >>"$LOG" 2>&1
   git add data state 2>>"$LOG"
   git diff --cached --quiet || {
     git commit -m "data: $(date '+%Y-%m-%d %H:%M') collect (cont)" >>"$LOG" 2>&1

@@ -54,7 +54,22 @@ MAX_COOLDOWN_ROUNDS = 3         # 휴식 후에도 계속 실패하면 해당 �
 MAX_REVIEW_PAGES_PER_DAY = 30
 SEEN_IDS_KEEP = 120             # 상품당 중복 판정용으로 기억할 리뷰 ID 수
 
-# 체험단 판별 키워드 (뱃지/문구에 포함 시 True)
+# ---- 리뷰 API (신 리뷰 마이크로서비스, m.oliveyoung.co.kr) ----
+REVIEW_API_HOST = "https://m.oliveyoung.co.kr"
+REVIEW_STATS_PATH = "/review/api/v2/reviews/{goods_no}/stats"       # 리뷰수·평균별점·분포
+REVIEW_CURSOR_PATH = "/review/api/v2/reviews/cursor"               # 리뷰 목록(POST)
+REVIEW_HEADERS = {
+    "Accept": "application/json, text/plain, */*",
+    "Origin": "https://www.oliveyoung.co.kr",
+    "Referer": "https://www.oliveyoung.co.kr/",
+    "Content-Type": "application/json",
+}
+REVIEW_PAGE_SIZE = 20             # cursor 한 페이지 리뷰 수
+FIRST_RUN_MAX_PAGES = 3           # 최초 실행 시 상품당 최대 페이지(초기 부하 억제)
+
+# 체험단 판별: 리뷰 reviewType 이 "NORMAL" 이 아니면 체험단/기획 리뷰로 본다.
+# (원문 reviewType 값도 항상 저장하므로 추후 정밀 분류 가능)
+NORMAL_REVIEW_TYPE = "NORMAL"
 TRIAL_KEYWORDS = ("체험단", "무상", "제공받아", "제공 받아", "협찬")
 
 STATE_DIR = "state"

@@ -10,8 +10,8 @@ $log = "cron.log"
 # 가상환경이 있으면 사용
 if (Test-Path ".venv\Scripts\Activate.ps1") { . .\.venv\Scripts\Activate.ps1 }
 
-# 수집 (Cloudflare 쿠키 부트스트랩 포함)
-python -m scraper.main --deadline-minutes 320 --cf-bootstrap *>> $log
+# 수집
+python -m scraper.main --deadline-minutes 320 *>> $log
 "collect exit status: $LASTEXITCODE" | Out-File -Append $log
 
 # 데이터 커밋 & 푸시
@@ -31,7 +31,7 @@ if ($LASTEXITCODE -ne 0) {
 # 데드라인 중단 시 이어서 실행
 while (Test-Path ".continuation_needed") {
     "===== $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') continuation run =====" | Out-File -Append $log
-    python -m scraper.main --deadline-minutes 320 --cf-bootstrap *>> $log
+    python -m scraper.main --deadline-minutes 320 *>> $log
     git add data state
     git diff --cached --quiet
     if ($LASTEXITCODE -ne 0) {

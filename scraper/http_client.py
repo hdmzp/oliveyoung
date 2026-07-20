@@ -23,7 +23,7 @@ class FetchError(Exception):
 
 
 class Client:
-    def __init__(self, cf_bootstrap: bool = False):
+    def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({
             "User-Agent": config.USER_AGENT,
@@ -34,37 +34,6 @@ class Client:
         self._consecutive_failures = 0
         self._cooldown_rounds = 0
         self.request_count = 0
-        # Cloudflare 브라우저 검증 쿠키 부트스트랩 (로컬 실행용)
-        self._cf_bootstrap = cf_bootstrap
-        self._cf_bootstrapped = False
-        if cf_bootstrap:
-            self._try_cf_bootstrap()
-
-    def _try_cf_bootstrap(self) -> bool:
-        from . import cf_bootstrap
-        if not cf_bootstrap.playwright_available():
-            log.warning("cf bootstrap requested but Playwright not installed — "
-                        "run: pip install playwright && python -m playwright install chromium")
-            return False
-        try:
-            result = cf_bootstrap.fetch_cf_cookies()
-        except Exception as exc:
-            msg = str(exc)
-            if "Executable doesn't exist" in msg or "playwright install" in msg:
-                log.warning("Chromium 미설치 — 실행: python -m playwright install chromium")
-            else:
-                log.warning("cf bootstrap failed: %s", exc)
-            return False
-        if not result:
-            log.warning("cf bootstrap returned no cookies")
-            return False
-        cookies, ua = result
-        for name, value in cookies.items():
-            self.session.cookies.set(name, value, domain=".oliveyoung.co.kr")
-        if ua:
-            self.session.headers["User-Agent"] = ua
-        self._cf_bootstrapped = True
-        return True
 
     def _throttle(self):
         wait = (self._last_request_at + config.MIN_REQUEST_INTERVAL
@@ -74,32 +43,34 @@ class Client:
         self._last_request_at = time.monotonic()
 
     def get(self, url: str, params: dict | None = None, referer: str | None = None) -> requests.Response:
-        headers = {"Referer": referer} if referer else {}
+        return self.request("GET", url, params=params, referer=referer)
+
+    def request(self, method: str, url: str, params: dict | None = None,
+                json: dict | None = None, headers: dict | None = None,
+                referer: str | None = None) -> requests.Response:
+        hdr = dict(headers or {})
+        if referer:
+            hdr["Referer"] = referer
         last_exc: Exception | None = None
         for attempt in range(config.MAX_RETRIES):
             self._throttle()
             self.request_count += 1
             try:
-                resp = self.session.get(url, params=params, headers=headers,
-                                        timeout=config.REQUEST_TIMEOUT)
+                resp = self.session.request(method, url, params=params, json=json,
+                                            headers=hdr, timeout=config.REQUEST_TIMEOUT)
                 if resp.status_code in (429, 500, 502, 503, 504):
                     raise FetchError(f"HTTP {resp.status_code}")
-                if resp.status_code == 403 and self._cf_bootstrap:
-                    # Cloudflare 검증 쿠키 만료 추정 → 브라우저로 재확보 후 재시도
-                    log.warning("403 with cf bootstrap enabled — refreshing cf cookies")
-                    self._try_cf_bootstrap()
-                    raise FetchError("HTTP 403 (cf challenge)")
                 resp.raise_for_status()
                 self._on_success()
                 return resp
             except (requests.RequestException, FetchError) as exc:
                 last_exc = exc
                 delay = config.BACKOFF_BASE ** attempt + random.uniform(0, 1)
-                log.warning("request failed (%s/%s) %s params=%s: %s — retry in %.1fs",
-                            attempt + 1, config.MAX_RETRIES, url, params, exc, delay)
+                log.warning("request failed (%s/%s) %s %s params=%s: %s — retry in %.1fs",
+                            attempt + 1, config.MAX_RETRIES, method, url, params, exc, delay)
                 time.sleep(delay)
         self._on_failure()
-        raise FetchError(f"GET {url} failed after {config.MAX_RETRIES} retries: {last_exc}")
+        raise FetchError(f"{method} {url} failed after {config.MAX_RETRIES} retries: {last_exc}")
 
     def _on_success(self):
         self._consecutive_failures = 0

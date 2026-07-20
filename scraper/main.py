@@ -28,9 +28,11 @@ log = logging.getLogger(__name__)
 
 RANKING_FIELDS = ["수집일자", "카테고리", "순위", "브랜드", "상품명", "상품페이지링크",
                   "정가", "혜택가", "할인율", "리뷰수", "리뷰별점",
+                  "별점5비율", "별점4비율", "별점3비율", "별점2비율", "별점1비율",
                   "세일", "쿠폰", "증정", "오늘드림", "상품번호", "카테고리ID"]
 REVIEW_FIELDS = ["수집일자", "상품번호", "리뷰ID", "작성일", "별점", "체험단여부",
-                 "뱃지", "피부타입", "옵션", "리뷰본문", "도움수"]
+                 "리뷰타입", "옵션", "피부타입", "피부톤", "피부고민",
+                 "도움수", "유용점수", "포토여부", "재구매", "닉네임", "리뷰본문"]
 ERROR_FIELDS = ["수집일자", "상품번호", "단계", "오류"]
 
 CONTINUATION_MARKER = Path(".continuation_needed")
@@ -39,12 +41,12 @@ SAVE_EVERY = 20
 
 class DailyRun:
     def __init__(self, date: str, deadline: Deadline, max_products: int | None,
-                 collect_review_text: bool = True, cf_bootstrap: bool = False):
+                 collect_review_text: bool = True):
         self.date = date
         self.deadline = deadline
         self.max_products = max_products
         self.collect_review_text = collect_review_text
-        self.client = Client(cf_bootstrap=cf_bootstrap)
+        self.client = Client()
 
         self.progress_path = Path(config.STATE_DIR) / "run_progress.json"
         self.cursor_path = Path(config.STATE_DIR) / "review_cursor.json"
@@ -99,10 +101,10 @@ class DailyRun:
 
     def process_product(self, goods_no: str):
         try:
-            summary = reviews.fetch_review_summary(self.client, goods_no)
-        except FetchError as exc:
+            summary = reviews.fetch_product_stats(self.client, goods_no)
+        except (FetchError, ValueError) as exc:
             self.stats["summary_fail"] += 1
-            self.record_error(goods_no, "summary", exc)
+            self.record_error(goods_no, "stats", exc)
             summary = {"리뷰수": None, "리뷰별점": None}
         self.progress["summaries"][goods_no] = summary
 
@@ -152,8 +154,7 @@ class DailyRun:
         for r in self.progress["ranking_rows"]:
             summary = self.progress["summaries"].get(r["상품번호"], {})
             row = dict(r)
-            row["리뷰수"] = summary.get("리뷰수")
-            row["리뷰별점"] = summary.get("리뷰별점")
+            row.update(summary)  # 리뷰수·리뷰별점·별점분포 병합
             rows.append(row)
         write_csv_atomic(self.out_dir / "ranking.csv", RANKING_FIELDS, rows)
         log.info("wrote %s (%d rows)", self.out_dir / "ranking.csv", len(rows))
@@ -209,14 +210,11 @@ def main():
                     help="상품 수 제한 (스모크 테스트용)")
     ap.add_argument("--no-review-text", action="store_true",
                     help="리뷰 본문 수집 생략 (리뷰수/별점만)")
-    ap.add_argument("--cf-bootstrap", action="store_true",
-                    help="시작 시 브라우저로 Cloudflare 검증 쿠키 확보 (로컬 실행 권장)")
     args = ap.parse_args()
 
     CONTINUATION_MARKER.unlink(missing_ok=True)
     run = DailyRun(args.date or kst_today(), Deadline(args.deadline_minutes),
-                   args.max_products, collect_review_text=not args.no_review_text,
-                   cf_bootstrap=args.cf_bootstrap)
+                   args.max_products, collect_review_text=not args.no_review_text)
     try:
         finished = run.run()
     except Exception:
