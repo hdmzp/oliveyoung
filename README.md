@@ -1,91 +1,152 @@
 # 올리브영 데이터 수집
 
-올리브영 랭킹(전체 + 20개 카테고리)과 상품별 리뷰 데이터를 **매일 KST 오전 10시**에
-로컬 PC 에서 자동 수집해 CSV 로 저장하고, GitHub 리포에 push 하는 파이프라인.
+올리브영 랭킹(전체 TOP100)과 상품별 리뷰 데이터를 **매일 로컬 PC에서 자동 수집**해
+CSV로 저장하는 파이프라인. 리뷰수·평균별점은 물론 리뷰 본문·**체험단 여부**까지 모읍니다.
 
-> ⚠️ **왜 로컬 실행인가**: 올리브영은 Cloudflare 봇 차단을 사용해 GitHub Actions 등
-> 데이터센터 IP 를 차단한다. 가정용 IP 를 쓰는 로컬 PC 에서는 일반 요청으로 정상 수집된다.
+> ⚠️ **왜 로컬 PC인가**: 올리브영은 Cloudflare 봇 차단을 사용해 GitHub Actions 등
+> 데이터센터 IP를 막습니다. 가정용 IP를 쓰는 로컬 PC에서 `curl_cffi`(크롬 TLS 위장)로
+> 접속합니다. **GitHub Actions로는 동작하지 않습니다.**
 
-## 빠른 시작 (로컬 PC)
+---
 
-```bash
-git clone <repo-url> && cd oliveyoung
-python -m venv .venv && source .venv/bin/activate    # Windows: .venv\Scripts\activate
+## 1. 설치 (처음 한 번)
+
+```powershell
+# 폴더는 OneDrive 밖에 두세요 (예: C:\oliveyoung) — OneDrive는 파일 잠금·동기화 충돌 유발
+cd C:\oliveyoung
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1        # (macOS/Linux: source .venv/bin/activate)
 pip install -r requirements.txt
-
-python -m scraper.probe_json                          # 접속·API 동작 확인(선택)
-python -m scraper.main --max-products 10              # 소규모 테스트
-python -m scraper.main --deadline-minutes 320         # 전체 수집 1회
 ```
 
-> `truststore` 가 Windows 인증서 저장소를 사용하므로, 백신/프록시의 HTTPS 검사가 있는
-> 환경에서도 `CERTIFICATE_VERIFY_FAILED` 없이 동작한다.
+`requirements.txt` 핵심 패키지:
+- `curl_cffi` — 크롬 TLS 지문 위장 (Cloudflare 우회, **필수**)
+- `truststore` — 백신/프록시 HTTPS 검사 환경에서 인증서 문제 해결
+- `playwright` — 403 시 Edge로 검증 쿠키 확보(폴백). 브라우저 다운로드 불필요(설치된 Edge 사용)
 
-## 매일 자동 실행 등록
+---
 
-### Windows (작업 스케줄러)
-1. 작업 스케줄러 → 작업 만들기 → "가장 높은 권한으로 실행" 체크
-2. 트리거: 매일 오전 10:00
-3. 동작: 프로그램 시작
+## 2. 실행 방법 (명령어 3가지)
+
+| 명령 | 하는 일 | 언제 |
+|---|---|---|
+| `python -m scraper.main --overall-only` | **매일 수집**: 전체 TOP100 랭킹 + 리뷰수·별점 + 신규 리뷰 | 매일 (자동) |
+| `python -m scraper.backfill` | **백필**: TOP100 상품의 과거 리뷰 전체 | 1회 (수동, 밤에) |
+| `python -m scraper.probe_json` | **진단**: 접속·API 정상 여부 확인 | 문제 있을 때 |
+
+먼저 소규모로 테스트해보길 권장:
+```powershell
+python -m scraper.main --overall-only --max-products 5
+```
+
+---
+
+## 3. 매일 자동 실행 (Windows 작업 스케줄러)
+
+1. 시작 메뉴 → **작업 스케줄러** → **작업 만들기**
+2. **일반**: 이름 `올리브영수집`
+3. **트리거**: 매일 오전 10:00
+4. **동작**: 프로그램 시작
    - 프로그램: `powershell.exe`
-   - 인수: `-ExecutionPolicy Bypass -File C:\path\to\oliveyoung\run_local.ps1`
+   - 인수: `-ExecutionPolicy Bypass -File "C:\oliveyoung\run_local.ps1"`
+   - 시작 위치: `C:\oliveyoung`
+5. **조건**: (노트북) "AC 전원일 때만" 체크 해제
 
-### macOS / Linux (cron)
-`crontab -e` (PC 시간대가 KST 가정, 절대경로):
+`run_local.ps1`이 수집 → (git 저장소면) 커밋·푸시까지 하고, 데드라인으로 중단되면
+완료까지 이어서 실행합니다. 로그는 `cron.log`. **PC가 켜져 있어야** 실행됩니다.
+
+> macOS/Linux는 `run_local.sh` + crontab: `0 10 * * * /path/oliveyoung/run_local.sh`
+
+---
+
+## 4. 코드 구조 — 어떤 파일이 언제 도는가
+
 ```
-0 10 * * * /path/to/oliveyoung/run_local.sh
+C:\oliveyoung\
+├── run_local.ps1            PowerShell 실행 스크립트 (작업 스케줄러가 이걸 실행)
+├── run_local.sh             (macOS/Linux용)
+├── requirements.txt
+├── scraper\                 ← 파이썬 코드 (핵심)
+│   ├── main.py              매일 수집 지휘자 (시작점)
+│   ├── backfill.py          과거 리뷰 백필 (별도 실행)
+│   ├── config.py            설정값 (카테고리·엔드포인트·속도)
+│   ├── http_client.py       요청 전송 (curl_cffi TLS 위장·재시도·속도제한)
+│   ├── ranking.py           랭킹 페이지 수집·파싱
+│   ├── reviews.py           리뷰수/별점(stats) + 리뷰목록(cursor) 수집
+│   ├── cf_bootstrap.py      403 시 Edge로 검증 쿠키 확보(폴백)
+│   ├── util.py              CSV 저장·시간·데드라인·파일잠금 재시도
+│   ├── probe_json.py        진단용
+│   └── __init__.py          임포트 시 truststore 자동 적용
+└── data\                    수집 결과 CSV
 ```
 
-`run_local.*` 은 수집 → 데이터 커밋 → push 까지 하고, 데드라인으로 중단되면 완료까지
-이어서 실행한다. 로그는 `cron.log`. **PC 가 켜져 있어야** 실행된다.
+**핵심: `scraper` 폴더가 한 세트로 함께 작동합니다.** 시작 파일 하나만 실행하면
+나머지 필요한 파일을 자동으로 불러옵니다.
 
-## 수집 데이터
+- **매일 수집(`scraper.main`)** 이 실제로 사용하는 파일:
+  `main → config, http_client, ranking, reviews, util (+ 403 시 cf_bootstrap)`
+- **백필(`scraper.backfill`)** 이 사용하는 파일:
+  `backfill → config, http_client, reviews, util`
+- `backfill.py`·`probe_json.py`는 매일 수집(#1)에선 **실행되지 않습니다** (각자 따로 실행).
 
-### `data/YYYY-MM-DD/ranking.csv`
+즉 작업 스케줄러에는 `scraper.main`(= run_local.ps1) 하나만 걸면 되고,
+그게 나머지를 다 불러와 돌립니다.
+
+---
+
+## 5. 수집 데이터 (CSV, `utf-8-sig` → 엑셀에서 바로 열림)
+
+### `data/YYYY-MM-DD/ranking.csv` — 매일 랭킹 스냅샷
 수집일자, 카테고리, 순위, 브랜드, 상품명, 상품페이지링크, 정가, 혜택가, 할인율,
 **리뷰수, 리뷰별점**, 별점5~1비율, 세일/쿠폰/증정/오늘드림, 상품번호, 카테고리ID
 
-### `data/YYYY-MM-DD/reviews.csv` — 그날 새로 수집된 리뷰(증분)
+### `data/YYYY-MM-DD/reviews.csv` — 그날 새로 수집된 리뷰
 수집일자, 상품번호, 리뷰ID, 작성일, 별점, **체험단여부**, 리뷰타입, 옵션,
 피부타입, 피부톤, 피부고민, 도움수, 유용점수, 포토여부, 재구매, 닉네임, 리뷰본문
 
-- **체험단여부**: 리뷰 `reviewType` 이 `NORMAL` 이 아니면 1 (원문 리뷰타입도 함께 저장)
-- 랭킹에 오른 모든 상품(중복 제거, ~1,500개)이 대상
+- **체험단여부(0/1)**: 리뷰 `reviewType`이 `NORMAL`이 아니거나, 본문에 "체험단·무상·
+  제공받아·협찬" 등 문구가 있으면 1. (원본 `리뷰타입`도 함께 저장해 추후 재분류 가능)
 
-### `data/backfill/top100_reviews.csv` — 전체 랭킹 TOP100 과거 리뷰 백필(1회성)
-```bash
-python -m scraper.backfill        # 재개 가능, 중단해도 이어서 실행
-```
+### `data/backfill/top100_reviews.csv` — TOP100 과거 리뷰 전체(백필, 1회성)
 
 ### `data/YYYY-MM-DD/errors.csv` — 해당 일자 수집 실패 기록
 
-CSV 는 `utf-8-sig` (엑셀에서 바로 열림, pandas: `pd.read_csv(path)`).
+분석 예시(pandas):
+```python
+import pandas as pd, glob
+rank = pd.concat([pd.read_csv(f) for f in glob.glob("data/*/ranking.csv")])
+rev = pd.concat([pd.read_csv("data/backfill/top100_reviews.csv"),
+                 *[pd.read_csv(f) for f in glob.glob("data/*/reviews.csv")]]).drop_duplicates("리뷰ID")
+```
 
-## 수집 API (참고)
-- 랭킹: `GET store/main/getBestList.do` (서버 렌더링 HTML 파싱)
+---
+
+## 6. 수집 API (참고)
+
+- 랭킹: `GET www.oliveyoung.co.kr/store/main/getBestList.do` (서버렌더링 HTML)
 - 리뷰수·별점: `GET m.oliveyoung.co.kr/review/api/v2/reviews/{goodsNo}/stats`
 - 리뷰 목록: `POST m.oliveyoung.co.kr/review/api/v2/reviews/cursor` (커서 페이지네이션)
 
-## 장기 실행 내구성
-- 상품 단위 체크포인트(`state/run_progress.json`) — 중단 후 재실행 시 이어서 진행
-- 리뷰 커서(`state/review_cursor.json`) — reviewId 로 이미 수집한 리뷰 재수집 안 함
-- 수집 즉시 CSV append + atomic 저장 — 중단돼도 데이터·파일 무결성 보존
-- 데드라인(기본 320분) 도달 시 체크포인트 저장 후 종료 → `run_local` 이 이어서 실행
-- 요청 간격 제한(~3req/s)·지수 백오프·연속 실패 시 쿨다운
+---
 
-## 코드 구조
-```
-scraper/
-  config.py        카테고리 ID, 엔드포인트, 속도/재시도 상수
-  http_client.py   세션·재시도·쿨다운 (GET/POST)
-  ranking.py       랭킹 21개 리스트 수집·파싱
-  reviews.py       리뷰수/별점(stats) + 리뷰 목록(cursor) 증분 수집
-  backfill.py      TOP100 과거 리뷰 백필 (재개 가능)
-  main.py          일일 수집 오케스트레이터
-  probe_json.py    API 동작 진단(선택)
-run_local.sh / run_local.ps1   cron/작업스케줄러용 실행 스크립트
-```
+## 7. 장기 실행 내구성 & 매너
 
-## 주의
-- 과도한 요청은 차단·법적 위험이 있으므로 하루 1회, 정중한 속도(~3req/s)를 유지한다.
-- 사이트 구조가 바뀌면 파서 조정이 필요할 수 있다.
+- **체크포인트/재개**: 상품·카테고리·리뷰 단위로 진행상황을 저장 → 중단(Ctrl+C·데드라인)
+  후 다시 실행하면 **이어서** 진행 (백필도 동일)
+- **즉시 저장**: 수집 즉시 CSV에 기록(fsync) → 중단돼도 데이터 보존
+- **속도 제한 준수**: 랭킹(www)은 넉넉히, 리뷰 API(m)는 완화된 간격. 429(Too Many
+  Requests) 시 지정된 시간만큼 쉬었다 재시도. 하루 1회, 정중한 속도 유지.
+- **파일 잠금 대응**: OneDrive/백신이 파일을 잠깐 잠가도 재시도로 견딤(그래도 OneDrive
+  밖 폴더 권장).
+
+---
+
+## 8. 문제 해결
+
+| 증상 | 원인 / 해결 |
+|---|---|
+| `403 Forbidden` (계속) | `pip install curl_cffi` 확인. 그래도면 Edge 쿠키 폴백이 시도됨 |
+| `429 rate limited` | 정상 — 지정 시간 쉬었다 재시도. 반복되면 잠시 후 재실행 |
+| `CERTIFICATE_VERIFY_FAILED` | 백신 HTTPS 검사. `pip install -r requirements.txt`(truststore) 재실행 |
+| `PermissionError [WinError 5]` | OneDrive 폴더 잠금 → 폴더를 OneDrive 밖으로 이동 |
+| `backfill already completed` | `--fresh` 옵션 + `data/backfill/top100_reviews.csv` 삭제 후 재실행 |
