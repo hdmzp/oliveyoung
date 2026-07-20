@@ -51,6 +51,8 @@ HOST_INTERVALS = {
 }
 # 랭킹 카테고리가 연속으로 이만큼 실패하면 rate limit 으로 보고 중단(재실행 시 이어서)
 RANKING_ABORT_AFTER_FAILS = 2
+# Cloudflare 403 시 브라우저로 쿠키를 확보하는 최대 횟수(한 실행당)
+MAX_CF_BOOTSTRAP = 3
 
 # 재시도/차단 완화
 MAX_RETRIES = 3          # 너무 많이 재시도하면 오히려 rate limit 을 연장시킴

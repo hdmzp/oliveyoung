@@ -47,6 +47,36 @@ class Client:
         self._consecutive_failures = 0
         self._cooldown_rounds = 0
         self.request_count = 0
+        self._cf_bootstrap_count = 0   # 브라우저 쿠키 확보 횟수(과다 방지)
+
+    def _maybe_cf_bootstrap(self) -> bool:
+        """403(Cloudflare) 시 브라우저로 검증 쿠키를 확보해 세션에 주입. 성공 시 True."""
+        from . import cf_bootstrap
+        if self._cf_bootstrap_count >= config.MAX_CF_BOOTSTRAP:
+            return False
+        if not cf_bootstrap.playwright_available():
+            log.warning("Cloudflare 403 — 브라우저 쿠키가 필요합니다. "
+                        "실행: pip install playwright  (Edge/Chrome 설치돼 있으면 다운로드 불필요)")
+            self._cf_bootstrap_count = config.MAX_CF_BOOTSTRAP  # 반복 경고 방지
+            return False
+        self._cf_bootstrap_count += 1
+        try:
+            result = cf_bootstrap.fetch_cf_cookies()
+        except Exception as exc:
+            log.warning("cf bootstrap 실패: %s", str(exc)[:100])
+            return False
+        if not result:
+            return False
+        cookies, ua = result
+        for c in cookies:
+            try:
+                self.session.cookies.set(c["name"], c["value"],
+                                         domain=c.get("domain", "").lstrip("."))
+            except Exception:
+                self.session.cookies.set(c["name"], c["value"])
+        if ua:
+            self.session.headers["User-Agent"] = ua  # cf_clearance 는 UA 에 묶임
+        return True
 
     def _throttle(self, url: str):
         host = urlparse(url).netloc
@@ -83,6 +113,12 @@ class Client:
                     last_exc = FetchError("HTTP 429")
                     time.sleep(wait)
                     continue
+                if resp.status_code == 403:
+                    # Cloudflare 차단 → 브라우저로 검증 쿠키 확보 후 재시도
+                    if self._maybe_cf_bootstrap():
+                        last_exc = FetchError("HTTP 403 (cf) — 쿠키 확보 후 재시도")
+                        continue
+                    raise FetchError("HTTP 403 (Cloudflare)")
                 if resp.status_code in (500, 502, 503, 504):
                     raise FetchError(f"HTTP {resp.status_code}")
                 resp.raise_for_status()
