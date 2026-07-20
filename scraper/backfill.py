@@ -18,8 +18,8 @@ from .util import CsvAppender, Deadline, atomic_write_json, kst_today, load_json
 
 log = logging.getLogger(__name__)
 
-MAX_PAGES_PER_PRODUCT = 5000   # 안전 상한 (페이지당 ~10건 기준 5만 리뷰)
-SAVE_EVERY_PAGES = 10
+MAX_PAGES_PER_PRODUCT = 5000   # 안전 상한 (페이지당 ~20건 기준 10만 리뷰)
+SAVE_EVERY_PAGES = 5           # 진행위치를 디스크에 저장하는 주기(페이지)
 
 
 def main():
@@ -55,45 +55,52 @@ def main():
                           REVIEW_FIELDS)
     total_new = 0
 
-    for goods_no in state["order"]:
-        pstate = state["products"].setdefault(
-            goods_no, {"cursor_id": None, "cursor_score": None, "pages": 0, "done": False})
-        if pstate["done"]:
-            continue
-        cid, cscore = pstate["cursor_id"], pstate["cursor_score"]
-        pages = pstate["pages"]
-        while pages < MAX_PAGES_PER_PRODUCT:
-            if deadline.reached:
+    try:
+        for goods_no in state["order"]:
+            pstate = state["products"].setdefault(
+                goods_no, {"cursor_id": None, "cursor_score": None, "pages": 0, "done": False})
+            if pstate["done"]:
+                continue
+            cid, cscore = pstate["cursor_id"], pstate["cursor_score"]
+            pages = pstate["pages"]
+            while pages < MAX_PAGES_PER_PRODUCT:
+                if deadline.reached:
+                    atomic_write_json(cursor_path, state)
+                    CONTINUATION_MARKER.write_text("continue")
+                    log.warning("deadline reached at %s page %d — checkpoint saved",
+                                goods_no, pages)
+                    sys.exit(0)
+                try:
+                    page_reviews, cid, cscore, has_next = reviews.fetch_review_page(
+                        client, goods_no, cid, cscore)
+                except FetchError as exc:
+                    log.error("%s page %d failed: %s — skip product", goods_no, pages, exc)
+                    break
+                if not page_reviews:
+                    break
+                for r in page_reviews:
+                    r["수집일자"] = kst_today()
+                    r["상품번호"] = goods_no
+                out_csv.append_rows(page_reviews)   # 리뷰는 즉시 디스크 기록(fsync)
+                total_new += len(page_reviews)
+                pages += 1
+                # 진행위치를 메모리에 항상 반영, 디스크엔 주기적으로 저장
                 pstate.update(cursor_id=cid, cursor_score=cscore, pages=pages)
-                atomic_write_json(cursor_path, state)
-                CONTINUATION_MARKER.write_text("continue")
-                log.warning("deadline reached at %s page %d — checkpoint saved",
-                            goods_no, pages)
-                sys.exit(0)
-            try:
-                page_reviews, cid, cscore, has_next = reviews.fetch_review_page(
-                    client, goods_no, cid, cscore)
-            except FetchError as exc:
-                log.error("%s page %d failed: %s — skip product", goods_no, pages, exc)
-                break
-            if not page_reviews:
-                break
-            for r in page_reviews:
-                r["수집일자"] = kst_today()
-                r["상품번호"] = goods_no
-            out_csv.append_rows(page_reviews)
-            total_new += len(page_reviews)
-            pages += 1
-            if pages % SAVE_EVERY_PAGES == 0:
-                pstate.update(cursor_id=cid, cursor_score=cscore, pages=pages)
-                atomic_write_json(cursor_path, state)
-            if not has_next:
-                break
-        pstate["done"] = True
+                if pages % SAVE_EVERY_PAGES == 0:
+                    atomic_write_json(cursor_path, state)
+                if not has_next:
+                    break
+            pstate["done"] = True
+            atomic_write_json(cursor_path, state)
+            done_count = sum(1 for p in state["products"].values() if p["done"])
+            log.info("product %s done (%d pages) — %d/%d products, %d reviews so far",
+                     goods_no, pages, done_count, len(state["order"]), total_new)
+    except KeyboardInterrupt:
+        # Ctrl+C: 지금까지의 진행위치를 저장하고 깔끔히 종료 (재실행 시 이어서)
         atomic_write_json(cursor_path, state)
-        done_count = sum(1 for p in state["products"].values() if p["done"])
-        log.info("product %s done (%d pages) — %d/%d products, %d reviews so far",
-                 goods_no, pages, done_count, len(state["order"]), total_new)
+        log.warning("사용자 중단(Ctrl+C) — 진행상황 저장됨. 다시 실행하면 이어서 진행합니다. "
+                    "(리뷰 %d건 저장됨)", total_new)
+        sys.exit(0)
 
     state["completed"] = True
     atomic_write_json(cursor_path, state)
