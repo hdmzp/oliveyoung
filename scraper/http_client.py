@@ -10,6 +10,7 @@ from __future__ import annotations
 import logging
 import random
 import time
+from urllib.parse import urlparse
 
 import requests
 
@@ -30,17 +31,19 @@ class Client:
             "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8",
             "Accept": "text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8",
         })
-        self._last_request_at = 0.0
+        self._last_request_at: dict[str, float] = {}  # host -> monotonic
         self._consecutive_failures = 0
         self._cooldown_rounds = 0
         self.request_count = 0
 
-    def _throttle(self):
-        wait = (self._last_request_at + config.MIN_REQUEST_INTERVAL
-                + random.uniform(0, config.REQUEST_JITTER)) - time.monotonic()
+    def _throttle(self, url: str):
+        host = urlparse(url).netloc
+        interval = config.HOST_INTERVALS.get(host, config.MIN_REQUEST_INTERVAL)
+        last = self._last_request_at.get(host, 0.0)
+        wait = (last + interval + random.uniform(0, config.REQUEST_JITTER)) - time.monotonic()
         if wait > 0:
             time.sleep(wait)
-        self._last_request_at = time.monotonic()
+        self._last_request_at[host] = time.monotonic()
 
     def get(self, url: str, params: dict | None = None, referer: str | None = None) -> requests.Response:
         return self.request("GET", url, params=params, referer=referer)
@@ -53,7 +56,7 @@ class Client:
             hdr["Referer"] = referer
         last_exc: Exception | None = None
         for attempt in range(config.MAX_RETRIES):
-            self._throttle()
+            self._throttle(url)
             self.request_count += 1
             try:
                 resp = self.session.request(method, url, params=params, json=json,

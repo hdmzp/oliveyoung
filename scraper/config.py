@@ -41,8 +41,14 @@ USER_AGENT = (
 # 정중한 수집 속도: 요청 간 최소 간격(초) + 지터
 # 올리브영은 짧은 시간 많은 요청 시 429(Too Many Requests)를 준다 → 여유있게.
 MIN_REQUEST_INTERVAL = 1.1
-REQUEST_JITTER = 0.7
+REQUEST_JITTER = 0.5
 REQUEST_TIMEOUT = (10, 30)  # (connect, read)
+
+# 호스트별 최소 간격(초). 랭킹(www)은 rate limit 이 엄격, 리뷰 API(m)는 관대.
+HOST_INTERVALS = {
+    "www.oliveyoung.co.kr": 2.5,   # 랭킹 getBestList — 6~7건 버스트 후 429
+    "m.oliveyoung.co.kr": 0.5,     # 리뷰 stats/cursor — 비교적 여유
+}
 
 # 재시도/차단 완화
 MAX_RETRIES = 5
