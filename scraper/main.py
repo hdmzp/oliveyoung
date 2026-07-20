@@ -54,13 +54,15 @@ class DailyRun:
 
         self.progress = load_json(self.progress_path, {})
         if self.progress.get("date") != date:
-            self.progress = {"date": date, "ranking_rows": None,
+            self.progress = {"date": date, "ranking_cats": {}, "ranking_rows": None,
                              "summaries": {}, "products_done": [], "completed": False}
+        self.progress.setdefault("ranking_cats", {})
         self.cursors = load_json(self.cursor_path, {})
 
         self.reviews_csv = CsvAppender(self.out_dir / "reviews.csv", REVIEW_FIELDS)
         self.errors_csv = CsvAppender(self.out_dir / "errors.csv", ERROR_FIELDS)
         self.stats = {"new_reviews": 0, "summary_fail": 0, "review_fail": 0}
+        self.rate_limited = False  # 랭킹 단계에서 rate limit 으로 중단됐는지
 
     # ------------------------------------------------------------ state
 
@@ -76,17 +78,49 @@ class DailyRun:
 
     # ------------------------------------------------------------ phases
 
-    def phase_ranking(self):
-        if self.progress["ranking_rows"] is not None:
-            log.info("ranking: cached from state (%d rows)", len(self.progress["ranking_rows"]))
-            return
-        rows = ranking.collect_all_rankings(self.client)
-        for r in rows:
-            r["수집일자"] = self.date
-        self.progress["ranking_rows"] = rows
+    def phase_ranking(self) -> bool:
+        """카테고리별로 즉시 저장하며 수집. 이미 받은 카테고리는 건너뜀(재개).
+
+        반환: True=전체 완료, False=중단(데드라인/rate limit — 재실행 시 이어서).
+        """
+        done = self.progress["ranking_cats"]  # cat_id -> items (수집완료)
+        total = len(config.CATEGORIES)
+        consecutive_fail = 0
+        for cat_id, cat_name in config.CATEGORIES.items():
+            if cat_id in done:
+                continue
+            if self.deadline.reached:
+                log.warning("deadline reached in ranking — checkpoint")
+                self.save_state()
+                return False
+            try:
+                items = ranking.fetch_ranking(self.client, cat_id)
+                if not items:
+                    raise ValueError("0 items parsed")
+                for r in items:
+                    r["수집일자"] = self.date
+                done[cat_id] = items
+                self.save_state()  # 카테고리 하나 성공할 때마다 즉시 저장
+                consecutive_fail = 0
+                log.info("ranking [%s] %d items (%d/%d 카테고리 완료)",
+                         cat_name, len(items), len(done), total)
+            except Exception as exc:
+                consecutive_fail += 1
+                self.record_error(cat_id, "ranking", exc)
+                log.error("ranking [%s] 실패: %s", cat_name, exc)
+                if consecutive_fail >= config.RANKING_ABORT_AFTER_FAILS:
+                    log.error("연속 %d개 카테고리 실패 (rate limit 추정) — 랭킹 중단. "
+                              "%d/%d 완료. 10~30분 후 다시 실행하면 이어서 진행합니다.",
+                              consecutive_fail, len(done), total)
+                    self.rate_limited = True
+                    self.save_state()
+                    return False
+        # 전체 카테고리 완료 → ranking_rows 구성
+        self.progress["ranking_rows"] = [r for items in done.values() for r in items]
         self.save_state()
-        log.info("ranking: %d rows across %d categories", len(rows),
-                 len({r["카테고리ID"] for r in rows}))
+        log.info("ranking 완료: %d rows / %d 카테고리",
+                 len(self.progress["ranking_rows"]), total)
+        return True
 
     def unique_products(self) -> list[str]:
         seen, ordered = set(), []
@@ -165,7 +199,11 @@ class DailyRun:
         if self.progress.get("completed"):
             log.info("today's run already completed — nothing to do")
             return True
-        self.phase_ranking()
+        ranking_ok = self.phase_ranking()
+        if not ranking_ok:
+            # 랭킹이 미완료(데드라인/rate limit)면 상품 단계로 넘어가지 않는다.
+            self.write_summary(False)
+            return False
         finished = self.phase_products()
         self.write_ranking_csv()  # 데드라인 중단 시에도 부분 데이터 기록
         if finished:
@@ -173,18 +211,29 @@ class DailyRun:
             # CSV에 이미 기록된 데이터를 state에 중복 보관하지 않는다 (커밋 크기 절감)
             self.progress["ranking_rows"] = None
             self.progress["summaries"] = {}
+            self.progress["ranking_cats"] = {}
             self.save_state()
         self.write_summary(finished)
         return finished
 
     def write_summary(self, finished: bool):
-        n_rank = len(self.progress["ranking_rows"] or [])
+        cats_done = len(self.progress.get("ranking_cats") or {})
+        n_rank = len(self.progress["ranking_rows"] or
+                     [r for items in (self.progress.get("ranking_cats") or {}).values()
+                      for r in items])
         n_done = len(self.progress["products_done"])
         summary_ok = sum(1 for s in self.progress["summaries"].values()
                          if s.get("리뷰수") is not None)
+        if finished:
+            status = "완료"
+        elif self.rate_limited:
+            status = "rate limit 중단 → 10~30분 후 다시 실행 (이어서 진행)"
+        else:
+            status = "데드라인 중단 → 이어서 실행 예정"
         lines = [
             f"## 올리브영 수집 결과 ({self.date})",
-            f"- 상태: {'완료' if finished else '데드라인 중단 → 이어서 실행 예정'}",
+            f"- 상태: {status}",
+            f"- 랭킹 카테고리: {cats_done}/{len(config.CATEGORIES)} 완료",
             f"- 랭킹 행: {n_rank}",
             f"- 처리 상품: {n_done} (리뷰요약 성공 {summary_ok}, 실패 {self.stats['summary_fail']})",
             f"- 신규 리뷰: {self.stats['new_reviews']} (수집 실패 상품 {self.stats['review_fail']})",
@@ -221,7 +270,8 @@ def main():
         # 예기치 못한 오류도 지금까지의 진행을 남긴다
         run.save_state()
         raise
-    if not finished:
+    if not finished and not run.rate_limited:
+        # 데드라인 중단만 즉시 이어서 실행 (rate limit 은 즉시 재실행하면 더 막히므로 제외)
         CONTINUATION_MARKER.write_text("continue")
         log.info("continuation marker written")
     sys.exit(0)
