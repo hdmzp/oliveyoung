@@ -13,7 +13,6 @@ import argparse
 import json
 import logging
 import re
-import sys
 from pathlib import Path
 
 from . import config, ranking, reviews
@@ -26,6 +25,62 @@ OUT = Path("probe_out")
 def _save(name: str, content: str):
     OUT.mkdir(exist_ok=True)
     (OUT / name).write_text(content, encoding="utf-8")
+
+
+def probe_block_signature():
+    """403 응답의 헤더/본문을 그대로 덤프해 차단 주체(WAF)를 식별한다."""
+    print("\n===== [0] block signature (raw request) =====")
+    import requests
+    try:
+        r = requests.get(config.BEST_LIST_URL,
+                         params={"dispCatNo": config.BEST_DISP_CAT_NO},
+                         headers={"User-Agent": config.USER_AGENT,
+                                  "Accept-Language": "ko-KR,ko;q=0.9"},
+                         timeout=(10, 30))
+        print(f"status={r.status_code}")
+        for k in ("Server", "Via", "X-Cache", "X-Amz-Cf-Id", "CF-RAY", "Akamai-GRN",
+                  "X-Akamai-Request-ID", "Content-Type", "Set-Cookie"):
+            if k in r.headers:
+                print(f"  {k}: {r.headers[k][:200]}")
+        print("  all headers:", dict(list(r.headers.items())[:20]))
+        body = r.text[:800]
+        print("  body head:", re.sub(r"\s+", " ", body))
+        _save("block_signature.txt", f"{r.status_code}\n{dict(r.headers)}\n\n{r.text[:20000]}")
+    except Exception as exc:
+        print(f"FAIL: {exc}")
+
+
+def probe_curl_cffi(goods_no: str):
+    """TLS 핑거프린트 기반 차단인지 확인 — 크롬 TLS 로 위장한 요청."""
+    print("\n===== [0.5] curl_cffi chrome-impersonated request =====")
+    try:
+        from curl_cffi import requests as cf_requests
+    except ImportError:
+        print("curl_cffi not installed — skipping")
+        return
+    for label, url, params in [
+        ("bestlist", config.BEST_LIST_URL,
+         {"dispCatNo": config.BEST_DISP_CAT_NO, "fltDispCatNo": "",
+          "pageIdx": "1", "rowsPerPage": "8"}),
+        ("detail", config.GOODS_DETAIL_URL, {"goodsNo": goods_no}),
+    ]:
+        try:
+            r = cf_requests.get(url, params=params, impersonate="chrome",
+                                headers={"Accept-Language": "ko-KR,ko;q=0.9"},
+                                timeout=40)
+            print(f"{label}: status={r.status_code}, {len(r.text)} bytes")
+            _save(f"cffi_{label}.html", r.text)
+            if label == "bestlist" and r.status_code == 200:
+                from . import ranking as rk
+                try:
+                    items = rk.parse_ranking_html(r.text, "")
+                    print(f"  parsed {len(items)} ranking items ✔")
+                except Exception as exc:
+                    print(f"  parse failed: {exc}")
+            if label == "detail" and r.status_code == 200:
+                print(f"  SSR summary: {reviews.parse_detail_ssr_summary(r.text)}")
+        except Exception as exc:
+            print(f"{label}: FAIL {exc}")
 
 
 def probe_ranking(client: Client):
@@ -79,8 +134,11 @@ def probe_playwright(goods_no: str):
     captured = []
     interesting = re.compile(r"review|gdas|artc|rating|star", re.I)
     with sync_playwright() as pw:
-        browser = pw.chromium.launch()
-        page = browser.new_page(user_agent=config.USER_AGENT)
+        browser = pw.chromium.launch(
+            channel="chromium",  # headless shell 대신 정식 크로미움 (UA에 Headless 미표기)
+            args=["--disable-blink-features=AutomationControlled"])
+        page = browser.new_page(user_agent=config.USER_AGENT, locale="ko-KR",
+                                viewport={"width": 1440, "height": 900})
 
         def on_response(response):
             url = response.url
@@ -96,13 +154,16 @@ def probe_playwright(goods_no: str):
                 _save(f"pw_capture_{idx:02d}.txt", f"{url}\n\n{body[:200000]}")
 
         page.on("response", on_response)
-        page.goto(f"{config.GOODS_DETAIL_URL}?goodsNo={goods_no}",
-                  wait_until="networkidle", timeout=60000)
+        nav = page.goto(f"{config.GOODS_DETAIL_URL}?goodsNo={goods_no}",
+                        wait_until="domcontentloaded", timeout=90000)
+        print(f"navigation status: {nav.status if nav else None}, title: {page.title()!r}")
+        page.wait_for_timeout(5000)
         # 리뷰 영역까지 스크롤해 리뷰 API 호출 유도
         for _ in range(12):
             page.mouse.wheel(0, 1500)
             page.wait_for_timeout(700)
         page.wait_for_timeout(3000)
+        page.screenshot(path=str(OUT / "pw_screenshot.png"), full_page=False)
         html = page.content()
         _save(f"pw_rendered_{goods_no}.html", html)
         print(f"rendered DOM: {len(html)} bytes; SSR summary on rendered DOM: "
@@ -121,15 +182,21 @@ def main():
     ap.add_argument("--playwright", action="store_true")
     args = ap.parse_args()
 
-    client = Client()
-    top = probe_ranking(client)
-    goods_no = args.goods_no or (top[0] if top else None)
-    if not goods_no:
-        sys.exit(1)
-    probe_detail(client, goods_no)
-    probe_gdas(client, goods_no)
+    goods_no = args.goods_no
+    steps = [
+        ("block_signature", lambda: probe_block_signature()),
+        ("curl_cffi", lambda: probe_curl_cffi(goods_no)),
+        ("ranking", lambda: probe_ranking(Client())),
+        ("detail", lambda: probe_detail(Client(), goods_no)),
+        ("gdas", lambda: probe_gdas(Client(), goods_no)),
+    ]
     if args.playwright:
-        probe_playwright(goods_no)
+        steps.append(("playwright", lambda: probe_playwright(goods_no)))
+    for name, fn in steps:
+        try:
+            fn()
+        except Exception as exc:
+            print(f"[{name}] UNCAUGHT FAIL: {exc}")
     print("\nprobe done.")
 
 
