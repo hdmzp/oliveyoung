@@ -49,7 +49,11 @@ class Client:
         try:
             result = cf_bootstrap.fetch_cf_cookies()
         except Exception as exc:
-            log.warning("cf bootstrap failed: %s", exc)
+            msg = str(exc)
+            if "Executable doesn't exist" in msg or "playwright install" in msg:
+                log.warning("Chromium 미설치 — 실행: python -m playwright install chromium")
+            else:
+                log.warning("cf bootstrap failed: %s", exc)
             return False
         if not result:
             log.warning("cf bootstrap returned no cookies")

@@ -32,9 +32,8 @@ def fetch_cf_cookies(warm_url: str | None = None, timeout_s: int = 45) -> tuple[
     warm_url = warm_url or f"{config.BASE}/store/main/getBestList.do?dispCatNo={config.BEST_DISP_CAT_NO}"
     with sync_playwright() as pw:
         browser = pw.chromium.launch(
-            channel="chromium", headless=True,
-            args=["--disable-blink-features=AutomationControlled",
-                  "--no-sandbox", "--disable-dev-shm-usage"])
+            headless=True,
+            args=["--disable-blink-features=AutomationControlled"])
         ctx = browser.new_context(
             user_agent=config.USER_AGENT, locale="ko-KR",
             timezone_id="Asia/Seoul", viewport={"width": 1440, "height": 900})

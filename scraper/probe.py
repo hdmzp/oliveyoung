@@ -135,7 +135,6 @@ def probe_playwright(goods_no: str):
     interesting = re.compile(r"review|gdas|artc|rating|star", re.I)
     with sync_playwright() as pw:
         browser = pw.chromium.launch(
-            channel="chromium",  # headless shell 대신 정식 크로미움 (UA에 Headless 미표기)
             args=["--disable-blink-features=AutomationControlled"])
         page = browser.new_page(user_agent=config.USER_AGENT, locale="ko-KR",
                                 viewport={"width": 1440, "height": 900})

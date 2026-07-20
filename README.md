@@ -95,6 +95,13 @@ scraper/
 run_local.sh / run_local.ps1   cron/작업스케줄러용 실행 스크립트
 ```
 
+## 문제 해결
+- **`CERTIFICATE_VERIFY_FAILED` / self-signed certificate**: 백신·프록시의 HTTPS 검사
+  때문. `truststore`(requirements 에 포함)가 자동으로 Windows 인증서 저장소를 사용해
+  해결한다. `pip install -r requirements.txt` 를 다시 실행하면 적용된다.
+- **`Executable doesn't exist ... chrome.exe`**: 브라우저 미설치.
+  가상환경을 켠 상태에서 `python -m playwright install chromium` 실행.
+
 ## 주의
 - 과도한 요청은 차단·법적 위험이 있으므로 하루 1회, 정중한 속도(~3req/s)를 유지한다.
 - 사이트 마크업이 바뀌면 파서 조정이 필요할 수 있다(파싱 0건이면 오류로 종료됨).
