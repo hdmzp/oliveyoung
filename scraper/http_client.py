@@ -26,10 +26,22 @@ class FetchError(Exception):
 class Client:
     def __init__(self):
         self.session = requests.Session()
+        # 실제 크롬 브라우저처럼 보이는 헤더 (Cloudflare 봇 감지 완화)
         self.session.headers.update({
             "User-Agent": config.USER_AGENT,
-            "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8",
-            "Accept": "text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8",
+            "Accept": ("text/html,application/xhtml+xml,application/xml;q=0.9,"
+                       "image/avif,image/webp,image/apng,*/*;q=0.8"),
+            "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Sec-Ch-Ua": '"Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"',
+            "Sec-Ch-Ua-Mobile": "?0",
+            "Sec-Ch-Ua-Platform": '"Windows"',
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "none",
+            "Sec-Fetch-User": "?1",
+            "Upgrade-Insecure-Requests": "1",
+            "Connection": "keep-alive",
         })
         self._last_request_at: dict[str, float] = {}  # host -> monotonic
         self._consecutive_failures = 0
