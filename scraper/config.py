@@ -81,10 +81,16 @@ REVIEW_HEADERS = {
 REVIEW_PAGE_SIZE = 20             # cursor 한 페이지 리뷰 수
 FIRST_RUN_MAX_PAGES = 3           # 최초 실행 시 상품당 최대 페이지(초기 부하 억제)
 
-# 체험단 판별: 리뷰 reviewType 이 "NORMAL" 이 아니면 체험단/기획 리뷰로 본다.
-# (원문 reviewType 값도 항상 저장하므로 추후 정밀 분류 가능)
+# 체험단 판별 (원문 reviewType 은 항상 별도 컬럼에 저장 → 추후 재분류 가능)
+#  - 실제 reviewType 값: NORMAL(일반), OFFLINE(오프라인 매장구매), GIFT(증정) 등
+#  - OFFLINE 은 체험단이 아니므로 제외. 아래 집합에 든 타입 + 본문 키워드로 판정.
 NORMAL_REVIEW_TYPE = "NORMAL"
-TRIAL_KEYWORDS = ("체험단", "무상", "제공받아", "제공 받아", "협찬")
+# 체험단으로 볼 reviewType (기본: 없음 — reviewType 은 구매채널이라 체험단과 무관).
+# GIFT 등을 체험단으로 보고 싶으면 여기에 추가.
+TRIAL_REVIEW_TYPES = frozenset()
+# 체험단은 법적으로 본문에 공시 → 아래 문구로 판정 (가장 정확)
+TRIAL_KEYWORDS = ("체험단", "무상으로 제공", "무상 제공", "제공받아", "제공 받아",
+                  "협찬", "서포터즈", "무료로 제공")
 
 STATE_DIR = "state"
 DATA_DIR = "data"

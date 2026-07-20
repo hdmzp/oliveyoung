@@ -114,4 +114,9 @@ class CsvAppender:
                 f.flush()
                 os.fsync(f.fileno())
 
-        _retry_io(_write)
+        try:
+            _retry_io(_write)
+        except PermissionError as exc:
+            raise RuntimeError(
+                f"'{self.path}' 파일에 쓸 수 없습니다. 엑셀 등에서 열려있으면 "
+                f"닫고 다시 실행하세요.") from exc

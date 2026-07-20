@@ -17,11 +17,12 @@ log = logging.getLogger(__name__)
 
 
 def is_trial(review_type: str | None, content: str | None = None) -> int:
-    """체험단 리뷰 추정: reviewType 이 NORMAL 이 아니거나, 본문에 체험단 문구가 있으면 1.
+    """체험단 리뷰 추정: reviewType 이 체험단 타입이거나 본문에 체험단 문구가 있으면 1.
 
+    OFFLINE(오프라인 구매) 등 구매채널 타입은 체험단이 아니므로 제외한다.
     (원본 reviewType 은 별도 컬럼으로 항상 저장하므로 추후 재분류 가능)
     """
-    if review_type and review_type != config.NORMAL_REVIEW_TYPE:
+    if review_type and review_type in config.TRIAL_REVIEW_TYPES:
         return 1
     if content and any(k in content for k in config.TRIAL_KEYWORDS):
         return 1

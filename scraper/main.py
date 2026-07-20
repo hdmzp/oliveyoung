@@ -206,8 +206,14 @@ class DailyRun:
             # 랭킹이 미완료(데드라인/rate limit)면 상품 단계로 넘어가지 않는다.
             self.write_summary(False)
             return False
-        finished = self.phase_products()
-        self.write_ranking_csv()  # 데드라인 중단 시에도 부분 데이터 기록
+        try:
+            finished = self.phase_products()
+        finally:
+            # 상품 단계가 중간에 죽어도(파일잠금 등) 지금까지의 랭킹은 저장
+            try:
+                self.write_ranking_csv()
+            except Exception as exc:
+                log.error("ranking.csv 저장 실패: %s", exc)
         if finished:
             self.progress["completed"] = True
             # CSV에 이미 기록된 데이터를 state에 중복 보관하지 않는다 (커밋 크기 절감)
