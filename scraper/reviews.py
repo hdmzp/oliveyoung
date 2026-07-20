@@ -16,9 +16,16 @@ from .http_client import Client, FetchError
 log = logging.getLogger(__name__)
 
 
-def is_trial(review_type: str | None) -> int:
-    """reviewType 이 NORMAL 이 아니면 체험단/기획 리뷰로 간주."""
-    return int(bool(review_type) and review_type != config.NORMAL_REVIEW_TYPE)
+def is_trial(review_type: str | None, content: str | None = None) -> int:
+    """체험단 리뷰 추정: reviewType 이 NORMAL 이 아니거나, 본문에 체험단 문구가 있으면 1.
+
+    (원본 reviewType 은 별도 컬럼으로 항상 저장하므로 추후 재분류 가능)
+    """
+    if review_type and review_type != config.NORMAL_REVIEW_TYPE:
+        return 1
+    if content and any(k in content for k in config.TRIAL_KEYWORDS):
+        return 1
+    return 0
 
 
 # ----------------------------------------------------------- 리뷰수/별점
@@ -50,11 +57,12 @@ def _parse_review(r: dict) -> dict:
     prof = r.get("profileDto") or {}
     goods = r.get("goodsDto") or {}
     rtype = r.get("reviewType", "")
+    content = r.get("content", "") or ""
     return {
         "리뷰ID": r.get("reviewId"),
         "작성일": r.get("createdDateTime", ""),
         "별점": r.get("reviewScore"),
-        "체험단여부": is_trial(rtype),
+        "체험단여부": is_trial(rtype, content),
         "리뷰타입": rtype,
         "옵션": goods.get("optionName", ""),
         "피부타입": prof.get("skinType", "") or "",
