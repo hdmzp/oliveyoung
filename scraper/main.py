@@ -169,6 +169,9 @@ class DailyRun:
         self.write_ranking_csv()  # 데드라인 중단 시에도 부분 데이터 기록
         if finished:
             self.progress["completed"] = True
+            # CSV에 이미 기록된 데이터를 state에 중복 보관하지 않는다 (커밋 크기 절감)
+            self.progress["ranking_rows"] = None
+            self.progress["summaries"] = {}
             self.save_state()
         self.write_summary(finished)
         return finished

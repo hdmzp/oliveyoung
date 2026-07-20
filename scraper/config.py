@@ -52,7 +52,7 @@ MAX_COOLDOWN_ROUNDS = 3         # 휴식 후에도 계속 실패하면 해당 �
 
 # 증분 리뷰 수집 한도 (하루 상품당 페이지 상한 — 폭주 방지)
 MAX_REVIEW_PAGES_PER_DAY = 30
-SEEN_IDS_KEEP = 300             # 상품당 중복 판정용으로 기억할 리뷰 ID 수
+SEEN_IDS_KEEP = 120             # 상품당 중복 판정용으로 기억할 리뷰 ID 수
 
 # 체험단 판별 키워드 (뱃지/문구에 포함 시 True)
 TRIAL_KEYWORDS = ("체험단", "무상", "제공받아", "제공 받아", "협찬")
