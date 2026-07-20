@@ -39,14 +39,17 @@ USER_AGENT = (
 )
 
 # 정중한 수집 속도: 요청 간 최소 간격(초) + 지터
-MIN_REQUEST_INTERVAL = 0.35
-REQUEST_JITTER = 0.25
+# 올리브영은 짧은 시간 많은 요청 시 429(Too Many Requests)를 준다 → 여유있게.
+MIN_REQUEST_INTERVAL = 1.1
+REQUEST_JITTER = 0.7
 REQUEST_TIMEOUT = (10, 30)  # (connect, read)
 
 # 재시도/차단 완화
-MAX_RETRIES = 4
+MAX_RETRIES = 5
 BACKOFF_BASE = 2.0
-CONSECUTIVE_FAIL_LIMIT = 8      # 연속 실패 시 장시간 휴식 진입
+# 429(rate limit) 전용 대기: attempt 마다 이 값 × (n+1) 초 (Retry-After 헤더 우선)
+RATE_LIMIT_BASE = 20.0
+CONSECUTIVE_FAIL_LIMIT = 10     # 연속 실패 시 장시간 휴식 진입
 COOLDOWN_SECONDS = 180          # 휴식 시간
 MAX_COOLDOWN_ROUNDS = 3         # 휴식 후에도 계속 실패하면 해당 단계 포기
 

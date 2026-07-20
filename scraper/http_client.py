@@ -58,7 +58,17 @@ class Client:
             try:
                 resp = self.session.request(method, url, params=params, json=json,
                                             headers=hdr, timeout=config.REQUEST_TIMEOUT)
-                if resp.status_code in (429, 500, 502, 503, 504):
+                if resp.status_code == 429:
+                    # rate limit: Retry-After 헤더가 있으면 그만큼, 없으면 길게 대기
+                    ra = resp.headers.get("Retry-After", "")
+                    wait = (float(ra) if ra.replace(".", "", 1).isdigit()
+                            else config.RATE_LIMIT_BASE * (attempt + 1)) + random.uniform(0, 3)
+                    log.warning("429 rate limited (%s/%s) %s — %.0fs 대기 후 재시도",
+                                attempt + 1, config.MAX_RETRIES, url, wait)
+                    last_exc = FetchError("HTTP 429")
+                    time.sleep(wait)
+                    continue
+                if resp.status_code in (500, 502, 503, 504):
                     raise FetchError(f"HTTP {resp.status_code}")
                 resp.raise_for_status()
                 self._on_success()
