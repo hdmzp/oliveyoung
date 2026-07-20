@@ -39,12 +39,12 @@ SAVE_EVERY = 20
 
 class DailyRun:
     def __init__(self, date: str, deadline: Deadline, max_products: int | None,
-                 collect_review_text: bool = True):
+                 collect_review_text: bool = True, cf_bootstrap: bool = False):
         self.date = date
         self.deadline = deadline
         self.max_products = max_products
         self.collect_review_text = collect_review_text
-        self.client = Client()
+        self.client = Client(cf_bootstrap=cf_bootstrap)
 
         self.progress_path = Path(config.STATE_DIR) / "run_progress.json"
         self.cursor_path = Path(config.STATE_DIR) / "review_cursor.json"
@@ -209,11 +209,14 @@ def main():
                     help="상품 수 제한 (스모크 테스트용)")
     ap.add_argument("--no-review-text", action="store_true",
                     help="리뷰 본문 수집 생략 (리뷰수/별점만)")
+    ap.add_argument("--cf-bootstrap", action="store_true",
+                    help="시작 시 브라우저로 Cloudflare 검증 쿠키 확보 (로컬 실행 권장)")
     args = ap.parse_args()
 
     CONTINUATION_MARKER.unlink(missing_ok=True)
     run = DailyRun(args.date or kst_today(), Deadline(args.deadline_minutes),
-                   args.max_products, collect_review_text=not args.no_review_text)
+                   args.max_products, collect_review_text=not args.no_review_text,
+                   cf_bootstrap=args.cf_bootstrap)
     try:
         finished = run.run()
     except Exception:

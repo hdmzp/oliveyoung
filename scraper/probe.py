@@ -180,15 +180,18 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--goods-no", default="A000000247086")
     ap.add_argument("--playwright", action="store_true")
+    ap.add_argument("--cf-bootstrap", action="store_true",
+                    help="브라우저로 Cloudflare 쿠키를 확보한 세션으로 진단 (로컬 권장)")
     args = ap.parse_args()
 
     goods_no = args.goods_no
+    cf = args.cf_bootstrap
     steps = [
         ("block_signature", lambda: probe_block_signature()),
         ("curl_cffi", lambda: probe_curl_cffi(goods_no)),
-        ("ranking", lambda: probe_ranking(Client())),
-        ("detail", lambda: probe_detail(Client(), goods_no)),
-        ("gdas", lambda: probe_gdas(Client(), goods_no)),
+        ("ranking", lambda: probe_ranking(Client(cf_bootstrap=cf))),
+        ("detail", lambda: probe_detail(Client(cf_bootstrap=cf), goods_no)),
+        ("gdas", lambda: probe_gdas(Client(cf_bootstrap=cf), goods_no)),
     ]
     if args.playwright:
         steps.append(("playwright", lambda: probe_playwright(goods_no)))

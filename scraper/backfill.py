@@ -28,11 +28,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--deadline-minutes", type=float, default=320)
     ap.add_argument("--max-products", type=int, default=100)
+    ap.add_argument("--cf-bootstrap", action="store_true",
+                    help="시작 시 브라우저로 Cloudflare 검증 쿠키 확보 (로컬 실행 권장)")
     args = ap.parse_args()
 
     CONTINUATION_MARKER.unlink(missing_ok=True)
     deadline = Deadline(args.deadline_minutes)
-    client = Client()
+    client = Client(cf_bootstrap=args.cf_bootstrap)
     cursor_path = Path(config.STATE_DIR) / "backfill_cursor.json"
     state = load_json(cursor_path, {})
 
