@@ -177,11 +177,10 @@ class DailyRun:
             self.process_product(goods_no)
             if i % SAVE_EVERY == 0:
                 self.save_state()
-            if i % 100 == 0:
-                log.info("progress %d/%d (requests=%d, new_reviews=%d, "
-                         "deadline remaining=%.0fmin)",
+            if i % 20 == 0 or i == len(todo):
+                log.info("진행 %d/%d (요청 %d회, 신규리뷰 %d개)",
                          i, len(todo), self.client.request_count,
-                         self.stats["new_reviews"], self.deadline.remaining_minutes)
+                         self.stats["new_reviews"])
         self.save_state()
         return True
 
