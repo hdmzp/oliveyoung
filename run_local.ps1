@@ -21,6 +21,9 @@ while (Test-Path ".continuation_needed") {
     python -m scraper.main --overall-only --deadline-minutes 320 *>> $log
 }
 
+# 뷰어(index.html)용 JSON 생성
+python -m scraper.build_site *>> $log
+
 # (선택) git 저장소면 데이터 커밋 & 푸시 — 아니면 로컬에만 저장
 if ($isGit) {
     git add data state

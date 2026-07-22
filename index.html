@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>올리브영 랭킹 조회</title>
+<meta name="theme-color" content="#2f7d32">
+<style>
+  :root{
+    --paper:#fff; --dim:#f5f6f8; --dim2:#eef0f3; --ink:#1a1d24; --soft:#6b7280;
+    --faint:#9ca3af; --rule:#e5e7eb; --brand:#2f7d32; --brand-soft:#eaf4ea;
+    --gold:#f5a623; --trial:#e8590c; --trial-soft:#fdefe6;
+    --shadow:0 1px 2px rgba(16,24,40,.05); --shadow-md:0 6px 20px rgba(16,24,40,.12);
+    --radius:10px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--dim);color:var(--ink);
+    font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI','Malgun Gothic',sans-serif;
+    -webkit-font-smoothing:antialiased}
+  .masthead{background:var(--paper);border-bottom:1px solid var(--rule);
+    padding:14px 18px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:6}
+  .masthead .kicker{font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--faint);margin:0}
+  .masthead h1{font-size:18px;font-weight:800;margin:0;letter-spacing:-.01em}
+  .masthead .sub{font-size:11.5px;color:var(--soft);margin:0}
+  .toolbar{background:var(--paper);border-bottom:1px solid var(--rule);padding:10px 18px;
+    display:flex;gap:10px;align-items:center;flex-wrap:wrap;position:sticky;top:52px;z-index:5}
+  .date-nav{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--rule);
+    border-radius:8px;padding:5px 7px;box-shadow:var(--shadow)}
+  .date-nav button.arrow{background:none;border:none;font-size:17px;color:var(--soft);cursor:pointer;
+    width:28px;height:28px;border-radius:6px}
+  .date-nav button.arrow:hover{background:var(--dim);color:var(--ink)}
+  .date-nav button.arrow:disabled{opacity:.35;cursor:not-allowed}
+  .date-display{position:relative;display:flex;align-items:center;gap:6px;cursor:pointer;padding:3px 6px}
+  .date-display .date-text{font-size:14px;font-weight:700;white-space:nowrap}
+  .date-display .cal-icon{font-size:13px;opacity:.6}
+  .date-display input[type=date]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:none}
+  .today-btn{font-size:12px;border:1px solid var(--rule);background:#fff;border-radius:7px;padding:6px 10px;
+    cursor:pointer;color:var(--soft)}
+  .today-btn:hover{background:var(--dim)}
+  .meta{font-size:11.5px;color:var(--faint);margin-left:auto}
+  .wrap{max-width:920px;margin:0 auto;padding:14px}
+  table.rank{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--rule);
+    border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+  table.rank th{font-size:10.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.05em;
+    text-align:left;padding:9px 10px;border-bottom:1px solid var(--rule);background:var(--dim)}
+  table.rank td{padding:10px;border-bottom:1px solid var(--rule);font-size:13px;vertical-align:middle}
+  table.rank tr{cursor:pointer;transition:background .12s}
+  table.rank tbody tr:hover{background:var(--brand-soft)}
+  .rk{width:34px;height:26px;display:inline-flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:13px;border-radius:6px;background:var(--dim2);color:var(--soft)}
+  .rk.t1{background:#fff4d6;color:#b8860b}
+  .rk.t2{background:#eef1f4;color:#6b7280}
+  .rk.t3{background:#fae7d4;color:#b45309}
+  .brand{font-size:11px;color:var(--soft);font-weight:600}
+  .pname{font-weight:600;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .price .cur{font-weight:800;color:var(--ink)}
+  .price .org{font-size:11px;color:var(--faint);text-decoration:line-through;margin-left:4px}
+  .price .dc{font-size:11px;color:var(--trial);font-weight:700;margin-left:4px}
+  .star{color:var(--gold);font-weight:700}
+  .rvcnt{color:var(--soft);font-size:12px}
+  .col-r{text-align:right;white-space:nowrap}
+  .empty{padding:60px 20px;text-align:center;color:var(--faint)}
+  /* drawer */
+  .backdrop{position:fixed;inset:0;background:rgba(16,24,40,.4);opacity:0;pointer-events:none;
+    transition:opacity .2s;z-index:20}
+  .backdrop.on{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;height:100%;width:min(560px,100%);background:#fff;z-index:21;
+    transform:translateX(100%);transition:transform .24s ease;display:flex;flex-direction:column;box-shadow:var(--shadow-md)}
+  .drawer.on{transform:none}
+  .dhead{padding:14px 16px;border-bottom:1px solid var(--rule);position:sticky;top:0;background:#fff}
+  .dhead .close{float:right;border:none;background:var(--dim);border-radius:7px;width:30px;height:30px;
+    font-size:16px;cursor:pointer;color:var(--soft)}
+  .dhead .db{font-size:11px;color:var(--soft);font-weight:600}
+  .dhead .dn{font-weight:800;font-size:15px;line-height:1.35;margin:3px 0 8px}
+  .dstat{display:flex;gap:14px;font-size:12.5px;color:var(--soft);flex-wrap:wrap}
+  .dstat b{color:var(--ink)}
+  .chips{display:flex;gap:6px;padding:10px 16px;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+  .chip{font-size:12px;border:1px solid var(--rule);background:#fff;border-radius:20px;padding:5px 12px;cursor:pointer;color:var(--soft)}
+  .chip.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .dlist{overflow-y:auto;padding:6px 16px 30px;flex:1}
+  .rev{padding:13px 0;border-bottom:1px solid var(--rule)}
+  .rev .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+  .rev .rstar{color:var(--gold);font-size:13px;font-weight:700}
+  .rev .date{font-size:11.5px;color:var(--faint)}
+  .rev .nick{font-size:11.5px;color:var(--soft);font-weight:600}
+  .badge{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:5px}
+  .badge.trial{background:var(--trial-soft);color:var(--trial)}
+  .badge.photo{background:#eef4ff;color:#2563eb}
+  .badge.type{background:var(--dim2);color:var(--soft)}
+  .rev .body{font-size:13px;line-height:1.55;white-space:pre-wrap;color:#2b2f36}
+  .rev .sub{font-size:11px;color:var(--faint);margin-top:5px;display:flex;gap:10px;flex-wrap:wrap}
+  .loading{padding:40px;text-align:center;color:var(--faint)}
+  @media(max-width:600px){ .wrap{padding:8px} table.rank td,table.rank th{padding:8px 7px} .pcol{max-width:0} }
+</style>
+</head>
+<body>
+  <div class="masthead">
+    <div>
+      <p class="kicker">CJ OliveYoung</p>
+      <h1>올리브영 랭킹 조회</h1>
+    </div>
+    <p class="sub">일자별 판매 TOP100 · 상품 클릭 시 누적 리뷰</p>
+  </div>
+
+  <div class="toolbar">
+    <div class="date-nav">
+      <button class="arrow" id="prevDay" aria-label="이전">‹</button>
+      <label class="date-display">
+        <span class="date-text" id="dateText">–</span>
+        <span class="cal-icon">📅</span>
+        <input type="date" id="datePicker">
+      </label>
+      <button class="arrow" id="nextDay" aria-label="다음">›</button>
+    </div>
+    <button class="today-btn" id="todayBtn">최신</button>
+    <span class="meta" id="meta"></span>
+  </div>
+
+  <div class="wrap">
+    <table class="rank">
+      <thead><tr>
+        <th style="width:44px">순위</th><th>상품</th>
+        <th class="col-r">가격</th><th class="col-r">리뷰</th><th class="col-r">별점</th>
+      </tr></thead>
+      <tbody id="rankBody"><tr><td colspan="5" class="empty">불러오는 중…</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="backdrop" id="backdrop"></div>
+  <aside class="drawer" id="drawer">
+    <div class="dhead">
+      <button class="close" id="drawerClose">×</button>
+      <div class="db" id="dBrand"></div>
+      <div class="dn" id="dName"></div>
+      <div class="dstat" id="dStat"></div>
+    </div>
+    <div class="chips" id="dChips"></div>
+    <div class="dlist" id="dList"></div>
+  </aside>
+
+<script>
+const DATA = './data';
+let MANIFEST = {dates:[], goodsWithReviews:[]};
+let curDate = null, curRows = [], curReviews = [], curFilter = 'all';
+
+const $ = id => document.getElementById(id);
+const nf = n => (n==null||n==='')?'':Number(String(n).replace(/,/g,'')).toLocaleString();
+const esc = s => (s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+async function getJSON(path){ try{const r=await fetch(path,{cache:'no-cache'}); return r.ok?await r.json():null;}catch(e){return null;} }
+
+async function init(){
+  MANIFEST = await getJSON(`${DATA}/manifest.json`) || {dates:[],goodsWithReviews:[]};
+  const dates = MANIFEST.dates||[];
+  if(!dates.length){ $('rankBody').innerHTML='<tr><td colspan="5" class="empty">아직 수집된 데이터가 없습니다.</td></tr>'; return; }
+  const picker=$('datePicker');
+  picker.min=dates[0]; picker.max=dates[dates.length-1];
+  picker.addEventListener('change',()=>{ if(picker.value) loadDate(nearestDate(picker.value)); });
+  $('prevDay').addEventListener('click',()=>stepDate(-1));
+  $('nextDay').addEventListener('click',()=>stepDate(1));
+  $('todayBtn').addEventListener('click',()=>loadDate(dates[dates.length-1]));
+  $('drawerClose').addEventListener('click',closeDrawer);
+  $('backdrop').addEventListener('click',closeDrawer);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
+  loadDate(dates[dates.length-1]);
+}
+function nearestDate(v){ const d=MANIFEST.dates; if(d.includes(v))return v;
+  let best=d[0]; for(const x of d){ if(x<=v)best=x; } return best; }
+function stepDate(dir){ const d=MANIFEST.dates; const i=d.indexOf(curDate);
+  const j=i+dir; if(j>=0&&j<d.length) loadDate(d[j]); }
+
+async function loadDate(date){
+  curDate=date;
+  const d=MANIFEST.dates, i=d.indexOf(date);
+  $('dateText').textContent=fmtDate(date);
+  $('datePicker').value=date;
+  $('prevDay').disabled=(i<=0); $('nextDay').disabled=(i>=d.length-1);
+  $('rankBody').innerHTML='<tr><td colspan="5" class="empty">불러오는 중…</td></tr>';
+  const rows = await getJSON(`${DATA}/ranking/${date}.json`) || [];
+  // '전체' 카테고리만, 순위순
+  curRows = rows.filter(r=>!r.카테고리||r.카테고리==='전체').sort((a,b)=>(+a.순위)-(+b.순위));
+  if(!curRows.length) curRows = rows.sort((a,b)=>(+a.순위)-(+b.순위));
+  renderRank();
+  $('meta').textContent=`${curRows.length}개 상품 · 최신 ${fmtDate(d[d.length-1])}`;
+}
+
+function renderRank(){
+  const rev=new Set(MANIFEST.goodsWithReviews||[]);
+  $('rankBody').innerHTML = curRows.map(r=>{
+    const rank=+r.순위, tcls=rank<=3?`t${rank}`:'';
+    const org=nf(r.정가), cur=nf(r.혜택가), dc=(+r.할인율)>0?`${r.할인율}%`:'';
+    const price=`<span class="cur">${cur?cur+'원':''}</span>`+
+      ((org&&org!==cur)?`<span class="org">${org}</span>`:'')+(dc?`<span class="dc">${dc}</span>`:'');
+    const hasRev=rev.has(r.상품번호);
+    return `<tr data-goods="${r.상품번호}">
+      <td><span class="rk ${tcls}">${rank}</span></td>
+      <td class="pcol"><div class="brand">${esc(r.브랜드)}</div><div class="pname">${esc(r.상품명)}</div></td>
+      <td class="col-r price">${price}</td>
+      <td class="col-r rvcnt">${r.리뷰수?nf(r.리뷰수):'–'}</td>
+      <td class="col-r"><span class="star">★${r.리뷰별점||'–'}</span></td>
+    </tr>`;
+  }).join('');
+  document.querySelectorAll('#rankBody tr').forEach(tr=>{
+    tr.addEventListener('click',()=>openDrawer(tr.dataset.goods));
+  });
+}
+
+async function openDrawer(goods){
+  const row=curRows.find(r=>r.상품번호===goods)||{};
+  $('dBrand').textContent=row.브랜드||'';
+  $('dName').textContent=row.상품명||goods;
+  $('dStat').innerHTML=`<span>리뷰 <b>${row.리뷰수?nf(row.리뷰수):'–'}</b></span>
+     <span>별점 <b>★${row.리뷰별점||'–'}</b></span>
+     <span id="accInfo">누적수집 <b>…</b></span>`;
+  $('dList').innerHTML='<div class="loading">리뷰 불러오는 중…</div>';
+  $('drawer').classList.add('on'); $('backdrop').classList.add('on');
+  curReviews = await getJSON(`${DATA}/reviews/${goods}.json`) || [];
+  curFilter='all';
+  const trial=curReviews.filter(r=>r.체험단여부==='1'||r.체험단여부===1).length;
+  const photo=curReviews.filter(r=>r.포토여부==='1'||r.포토여부===1).length;
+  $('accInfo').innerHTML=`누적수집 <b>${nf(curReviews.length)}</b>`;
+  $('dChips').innerHTML=[
+    ['all',`전체 ${curReviews.length}`],['trial',`체험단 ${trial}`],['photo',`포토 ${photo}`]
+  ].map(([k,l])=>`<button class="chip ${k==='all'?'on':''}" data-f="${k}">${l}</button>`).join('');
+  document.querySelectorAll('#dChips .chip').forEach(c=>c.addEventListener('click',()=>{
+    curFilter=c.dataset.f; document.querySelectorAll('#dChips .chip').forEach(x=>x.classList.toggle('on',x===c)); renderReviews();
+  }));
+  renderReviews();
+}
+function renderReviews(){
+  let list=curReviews;
+  if(curFilter==='trial') list=list.filter(r=>r.체험단여부==='1'||r.체험단여부===1);
+  if(curFilter==='photo') list=list.filter(r=>r.포토여부==='1'||r.포토여부===1);
+  if(!list.length){ $('dList').innerHTML='<div class="loading">해당 리뷰가 없습니다.</div>'; return; }
+  $('dList').innerHTML=list.map(r=>{
+    const sc=Math.round(+r.별점||0);
+    const stars='★'.repeat(sc)+'☆'.repeat(5-sc);
+    const trial=(r.체험단여부==='1'||r.체험단여부===1)?'<span class="badge trial">체험단</span>':'';
+    const photo=(r.포토여부==='1'||r.포토여부===1)?'<span class="badge photo">포토</span>':'';
+    const type=(r.리뷰타입&&r.리뷰타입!=='NORMAL')?`<span class="badge type">${esc(r.리뷰타입)}</span>`:'';
+    const sub=[r.옵션&&`옵션: ${esc(r.옵션)}`, r.피부타입&&`피부: ${esc(r.피부타입)}`,
+      (r.도움수&&+r.도움수>0)&&`도움 ${nf(r.도움수)}`].filter(Boolean).map(x=>`<span>${x}</span>`).join('');
+    return `<div class="rev">
+      <div class="top"><span class="rstar">${stars}</span><span class="date">${esc(r.작성일)}</span>
+        <span class="nick">${esc(r.닉네임)}</span>${trial}${photo}${type}</div>
+      <div class="body">${esc(r.리뷰본문)}</div>
+      ${sub?`<div class="sub">${sub}</div>`:''}</div>`;
+  }).join('');
+  $('dList').scrollTop=0;
+}
+function closeDrawer(){ $('drawer').classList.remove('on'); $('backdrop').classList.remove('on'); }
+function fmtDate(s){ if(!s)return'–'; const[y,m,d]=s.split('-'); const w=['일','월','화','수','목','금','토'];
+  const wd=new Date(+y,+m-1,+d).getDay(); return `${y}.${m}.${d} (${w[wd]})`; }
+
+init();
+</script>
+</body>
+</html>

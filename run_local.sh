@@ -34,6 +34,9 @@ else
   done
 fi
 
+# 뷰어(index.html)용 JSON 생성
+python -m scraper.build_site >>"$LOG" 2>&1
+
 # 데드라인으로 중단됐으면 남은 분량을 이어서 실행 (완료까지 반복)
 while [ -f .continuation_needed ]; do
   echo "===== $(date '+%Y-%m-%d %H:%M:%S') continuation run =====" >>"$LOG"
