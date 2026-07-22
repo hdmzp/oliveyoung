@@ -96,27 +96,29 @@ C:\oliveyoung\
 
 ## 5. 수집 데이터 (CSV, `utf-8-sig` → 엑셀에서 바로 열림)
 
-### `data/YYYY-MM-DD/ranking.csv` — 매일 랭킹 스냅샷
+### `data/YYYY-MM-DD_ranking.csv` — 매일 랭킹 스냅샷
 수집일자, 카테고리, 순위, 브랜드, 상품명, 상품페이지링크, 정가, 혜택가, 할인율,
 **리뷰수, 리뷰별점**, 별점5~1비율, 세일/쿠폰/증정/오늘드림, 상품번호, 카테고리ID
 
-### `data/YYYY-MM-DD/reviews.csv` — 그날 새로 수집된 리뷰
+### `data/YYYY-MM-DD_reviews.csv` — 그날 새로 수집된 리뷰
 수집일자, 상품번호, 리뷰ID, 작성일, 별점, **체험단여부**, 리뷰타입, 옵션,
 피부타입, 피부톤, 피부고민, 도움수, 유용점수, 포토여부, 재구매, 닉네임, 리뷰본문
 
-- **체험단여부(0/1)**: 리뷰 `reviewType`이 `NORMAL`이 아니거나, 본문에 "체험단·무상·
-  제공받아·협찬" 등 문구가 있으면 1. (원본 `리뷰타입`도 함께 저장해 추후 재분류 가능)
+- **체험단여부(0/1)**: 본문에 "체험단·무상 제공·제공받아·협찬·서포터즈" 등 **법적 공시
+  문구**가 있으면 1. (원본 `리뷰타입`(NORMAL/OFFLINE/GIFT 등)도 함께 저장 — 이는 구매채널
+  구분이라 체험단과 무관. 추후 재분류 시 사용)
+- 이미 수집한 CSV의 체험단여부를 최신 규칙으로 다시 계산: `python -m scraper.fix_trial`
 
 ### `data/backfill/top100_reviews.csv` — TOP100 과거 리뷰 전체(백필, 1회성)
 
-### `data/YYYY-MM-DD/errors.csv` — 해당 일자 수집 실패 기록
+### `data/YYYY-MM-DD_errors.csv` — 해당 일자 수집 실패 기록
 
 분석 예시(pandas):
 ```python
 import pandas as pd, glob
-rank = pd.concat([pd.read_csv(f) for f in glob.glob("data/*/ranking.csv")])
+rank = pd.concat([pd.read_csv(f) for f in glob.glob("data/*_ranking.csv")])
 rev = pd.concat([pd.read_csv("data/backfill/top100_reviews.csv"),
-                 *[pd.read_csv(f) for f in glob.glob("data/*/reviews.csv")]]).drop_duplicates("리뷰ID")
+                 *[pd.read_csv(f) for f in glob.glob("data/*_reviews.csv")]]).drop_duplicates("리뷰ID")
 ```
 
 ---

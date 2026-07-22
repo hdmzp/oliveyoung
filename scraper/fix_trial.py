@@ -61,7 +61,8 @@ def main():
     ap.add_argument("paths", nargs="*", help="대상 CSV (없으면 data 폴더 전체)")
     args = ap.parse_args()
     paths = args.paths or sorted(set(
-        glob.glob("data/**/reviews.csv", recursive=True)
+        glob.glob("data/*_reviews.csv")                    # 신규: data/2026-07-21_reviews.csv
+        + glob.glob("data/**/reviews.csv", recursive=True)  # 구: data/2026-07-21/reviews.csv
         + glob.glob("data/backfill/*.csv")))
     if not paths:
         print("대상 CSV 를 찾지 못했습니다.")

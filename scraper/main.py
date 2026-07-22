@@ -52,7 +52,8 @@ class DailyRun:
 
         self.progress_path = Path(config.STATE_DIR) / "run_progress.json"
         self.cursor_path = Path(config.STATE_DIR) / "review_cursor.json"
-        self.out_dir = Path(config.DATA_DIR) / date
+        # data/2026-07-21_ranking.csv 형태 (한 폴더에 날짜 접두사 → 병합 용이)
+        self.data_dir = Path(config.DATA_DIR)
 
         self.progress = load_json(self.progress_path, {})
         if self.progress.get("date") != date:
@@ -61,8 +62,8 @@ class DailyRun:
         self.progress.setdefault("ranking_cats", {})
         self.cursors = load_json(self.cursor_path, {})
 
-        self.reviews_csv = CsvAppender(self.out_dir / "reviews.csv", REVIEW_FIELDS)
-        self.errors_csv = CsvAppender(self.out_dir / "errors.csv", ERROR_FIELDS)
+        self.reviews_csv = CsvAppender(self.data_dir / f"{date}_reviews.csv", REVIEW_FIELDS)
+        self.errors_csv = CsvAppender(self.data_dir / f"{date}_errors.csv", ERROR_FIELDS)
         self.stats = {"new_reviews": 0, "summary_fail": 0, "review_fail": 0}
         self.rate_limited = False  # 랭킹 단계에서 rate limit 으로 중단됐는지
 
@@ -191,8 +192,9 @@ class DailyRun:
             row = dict(r)
             row.update(summary)  # 리뷰수·리뷰별점·별점분포 병합
             rows.append(row)
-        write_csv_atomic(self.out_dir / "ranking.csv", RANKING_FIELDS, rows)
-        log.info("wrote %s (%d rows)", self.out_dir / "ranking.csv", len(rows))
+        path = self.data_dir / f"{self.date}_ranking.csv"
+        write_csv_atomic(path, RANKING_FIELDS, rows)
+        log.info("wrote %s (%d rows)", path, len(rows))
 
     # ------------------------------------------------------------ run
 
