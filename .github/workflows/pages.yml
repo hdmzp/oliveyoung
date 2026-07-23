@@ -1,0 +1,33 @@
+# GitHub Pages 배포 (정적 사이트: index.html + data/).
+# 올리브영에 접속하지 않음 — 이미 리포에 올라온 파일만 게시하므로 Actions 로도 동작.
+name: Deploy Pages
+
+on:
+  push:
+    branches: ["claude/oliveyoung-data-collection-w9odk3"]
+    paths: ["index.html", "data/**", ".github/workflows/pages.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: "."
+      - id: deployment
+        uses: actions/deploy-pages@v4
