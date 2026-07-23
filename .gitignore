@@ -3,3 +3,8 @@ __pycache__/
 .venv/
 probe_out/
 .continuation_needed
+
+# 뷰어용 생성물(JSON) — CI(GitHub Actions)가 생성하므로 커밋 안 함
+data/manifest.json
+data/ranking/
+data/reviews/

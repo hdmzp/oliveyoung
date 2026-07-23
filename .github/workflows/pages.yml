@@ -1,11 +1,11 @@
-# GitHub Pages 배포 (정적 사이트: index.html + data/).
-# 올리브영에 접속하지 않음 — 이미 리포에 올라온 파일만 게시하므로 Actions 로도 동작.
+# CSV 를 올리면 JSON 을 자동 생성해 GitHub Pages 로 배포한다.
+# (올리브영 미접속 — 이미 올라온 CSV 만 가공하므로 Actions 로 정상 동작)
 name: Deploy Pages
 
 on:
   push:
     branches: ["claude/oliveyoung-data-collection-w9odk3"]
-    paths: ["index.html", "data/**", ".github/workflows/pages.yml"]
+    paths: ["index.html", "data/**", "scraper/build_site.py", ".github/workflows/pages.yml"]
   workflow_dispatch:
 
 permissions:
@@ -25,6 +25,11 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: CSV → 뷰어 JSON 생성
+        run: python -m scraper.build_site
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
