@@ -26,6 +26,27 @@ def _num(text: str | None) -> int | None:
     return int(m.group().replace(",", "")) if m else None
 
 
+def _img_url(li) -> str:
+    """썸네일(대표이미지) URL 추출. 지연로딩(data-original 등) + 프로토콜상대 URL 방어."""
+    img = li.select_one("a.prd_thumb img") or li.select_one("img")
+    if img is None:
+        return ""
+    url = ""
+    for attr in ("src", "data-original", "data-src", "data-lazy", "data-echo"):
+        v = (img.get(attr) or "").strip()
+        # 지연로딩 플레이스홀더(투명 gif/data URI)는 건너뛰고 실제 URL을 찾는다
+        if v and not v.startswith("data:") and "blank" not in v and "loading" not in v:
+            url = v
+            break
+    if not url:
+        return ""
+    if url.startswith("//"):
+        url = "https:" + url
+    elif url.startswith("/"):
+        url = config.BASE + url
+    return url
+
+
 def fetch_ranking(client: Client, flt_disp_cat_no: str) -> list[dict]:
     """카테고리 하나의 랭킹 목록을 가져와 파싱한다. flt=""이면 전체."""
     resp = client.get(config.BEST_LIST_URL, params={
@@ -84,6 +105,7 @@ def parse_ranking_html(html: str, flt_disp_cat_no: str) -> list[dict]:
             "상품명": name_el.get_text(strip=True) if name_el else "",
             "상품번호": goods_no,
             "상품페이지링크": f"{config.GOODS_DETAIL_URL}?goodsNo={goods_no}",
+            "대표이미지URL": _img_url(li),
             "정가": price_org,
             "혜택가": price_cur,
             "할인율": round((1 - price_cur / price_org) * 100, 1)

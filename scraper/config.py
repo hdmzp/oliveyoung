@@ -48,7 +48,10 @@ REQUEST_TIMEOUT = (10, 30)  # (connect, read)
 HOST_INTERVALS = {
     "www.oliveyoung.co.kr": 8.0,   # 랭킹 getBestList — 버스트 제한 회피(넉넉히)
     "m.oliveyoung.co.kr": 1.3,     # 리뷰 stats/cursor — 429 빈도 완화
+    "image.oliveyoung.co.kr": 0.3, # 대표이미지 CDN — 정적 파일이라 가볍게
 }
+# 대표이미지 저장 폴더 (URL 기준 중복 제거 — 같은 이미지는 한 번만 다운로드)
+IMAGE_DIR = "data/images"
 # 랭킹 카테고리가 연속으로 이만큼 실패하면 rate limit 으로 보고 중단(재실행 시 이어서)
 RANKING_ABORT_AFTER_FAILS = 2
 # Cloudflare 403 시 브라우저로 쿠키를 확보하는 최대 횟수(한 실행당)

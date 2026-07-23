@@ -51,6 +51,10 @@
   .rk.t1{background:#fff4d6;color:#b8860b}
   .rk.t2{background:#eef1f4;color:#6b7280}
   .rk.t3{background:#fae7d4;color:#b45309}
+  .pcell{display:flex;align-items:center;gap:10px}
+  .thumb{width:46px;height:46px;flex:0 0 auto;object-fit:cover;border-radius:7px;
+    border:1px solid var(--rule);background:#f4f4f4}
+  .pinfo{min-width:0}
   .brand{font-size:11px;color:var(--soft);font-weight:600}
   .pname{font-weight:600;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .price .cur{font-weight:800;color:var(--ink)}
@@ -70,6 +74,9 @@
   .dhead{padding:14px 16px;border-bottom:1px solid var(--rule);position:sticky;top:0;background:#fff}
   .dhead .close{float:right;border:none;background:var(--dim);border-radius:7px;width:30px;height:30px;
     font-size:16px;cursor:pointer;color:var(--soft)}
+  .dtop{display:flex;gap:12px;align-items:flex-start}
+  .dthumb{width:64px;height:64px;flex:0 0 auto;object-fit:cover;border-radius:8px;border:1px solid var(--rule);background:#f4f4f4}
+  .dtxt{min-width:0}
   .dhead .db{font-size:11px;color:var(--soft);font-weight:600}
   .dhead .dn{font-weight:800;font-size:15px;line-height:1.35;margin:3px 0 8px}
   .dstat{display:flex;gap:14px;font-size:12.5px;color:var(--soft);flex-wrap:wrap}
@@ -130,8 +137,9 @@
   <aside class="drawer" id="drawer">
     <div class="dhead">
       <button class="close" id="drawerClose">×</button>
-      <div class="db" id="dBrand"></div>
-      <div class="dn" id="dName"></div>
+      <div class="dtop"><img id="dThumb" class="dthumb" alt="" style="display:none"><div class="dtxt">
+        <div class="db" id="dBrand"></div>
+        <div class="dn" id="dName"></div></div></div>
       <div class="dstat" id="dStat"></div>
     </div>
     <div class="chips" id="dChips"></div>
@@ -145,7 +153,7 @@ let curDate = null, curRows = [], curReviews = [], curFilter = 'all';
 
 const $ = id => document.getElementById(id);
 const nf = n => (n==null||n==='')?'':Number(String(n).replace(/,/g,'')).toLocaleString();
-const esc = s => (s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const esc = s => (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 async function getJSON(path){ try{const r=await fetch(path,{cache:'no-cache'}); return r.ok?await r.json():null;}catch(e){return null;} }
 
@@ -194,7 +202,7 @@ function renderRank(){
     const hasRev=rev.has(r.상품번호);
     return `<tr data-goods="${r.상품번호}">
       <td><span class="rk ${tcls}">${rank}</span></td>
-      <td class="pcol"><div class="brand">${esc(r.브랜드)}</div><div class="pname">${esc(r.상품명)}</div></td>
+      <td class="pcol"><div class="pcell">${r.대표이미지URL?`<img class="thumb" loading="lazy" src="${esc(r.대표이미지URL)}" onerror="this.style.visibility='hidden'">`:''}<div class="pinfo"><div class="brand">${esc(r.브랜드)}</div><div class="pname">${esc(r.상품명)}</div></div></div></td>
       <td class="col-r price">${price}</td>
       <td class="col-r rvcnt">${r.리뷰수?nf(r.리뷰수):'–'}</td>
       <td class="col-r"><span class="star">★${r.리뷰별점||'–'}</span></td>
@@ -207,6 +215,9 @@ function renderRank(){
 
 async function openDrawer(goods){
   const row=curRows.find(r=>r.상품번호===goods)||{};
+  const th=$('dThumb');
+  if(row.대표이미지URL){ th.src=row.대표이미지URL; th.style.display=''; th.onerror=()=>{th.style.display='none';}; }
+  else { th.style.display='none'; }
   $('dBrand').textContent=row.브랜드||'';
   $('dName').textContent=row.상품명||goods;
   $('dStat').innerHTML=`<span>리뷰 <b>${row.리뷰수?nf(row.리뷰수):'–'}</b></span>

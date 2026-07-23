@@ -19,7 +19,7 @@ import os
 import sys
 from pathlib import Path
 
-from . import config, ranking, reviews
+from . import config, images, ranking, reviews
 from .http_client import Client, FetchError
 from .util import (CsvAppender, Deadline, atomic_write_json, kst_now, kst_today,
                    load_json, write_csv_atomic)
@@ -27,6 +27,7 @@ from .util import (CsvAppender, Deadline, atomic_write_json, kst_now, kst_today,
 log = logging.getLogger(__name__)
 
 RANKING_FIELDS = ["수집일자", "카테고리", "순위", "브랜드", "상품명", "상품페이지링크",
+                  "대표이미지URL",
                   "정가", "혜택가", "할인율", "리뷰수", "리뷰별점",
                   "별점5비율", "별점4비율", "별점3비율", "별점2비율", "별점1비율",
                   "세일", "쿠폰", "증정", "오늘드림", "상품번호", "카테고리ID"]
@@ -41,11 +42,13 @@ SAVE_EVERY = 20
 
 class DailyRun:
     def __init__(self, date: str, deadline: Deadline, max_products: int | None,
-                 collect_review_text: bool = True, overall_only: bool = False):
+                 collect_review_text: bool = True, overall_only: bool = False,
+                 collect_images: bool = True):
         self.date = date
         self.deadline = deadline
         self.max_products = max_products
         self.collect_review_text = collect_review_text
+        self.collect_images = collect_images
         # overall_only: 전체 랭킹(TOP100)만 수집 → www 요청 1건, 429 회피 + 가벼움
         self.categories = {"": "전체"} if overall_only else dict(config.CATEGORIES)
         self.client = Client()
@@ -185,6 +188,18 @@ class DailyRun:
         self.save_state()
         return True
 
+    def phase_images(self):
+        """대표이미지 다운로드(중복 제거). 실패해도 수집 전체엔 영향 없음."""
+        if not self.collect_images:
+            return
+        rows = self.progress.get("ranking_rows") or []
+        if not rows:
+            return
+        try:
+            images.download_new_images(self.client, rows, deadline=self.deadline)
+        except Exception as exc:
+            log.error("이미지 단계 실패(무시하고 계속): %s", exc)
+
     def write_ranking_csv(self):
         rows = []
         for r in self.progress["ranking_rows"]:
@@ -215,6 +230,7 @@ class DailyRun:
                 self.write_ranking_csv()
             except Exception as exc:
                 log.error("ranking.csv 저장 실패: %s", exc)
+            self.phase_images()  # 대표이미지 다운로드(중복 제거)
         if finished:
             self.progress["completed"] = True
             # CSV에 이미 기록된 데이터를 state에 중복 보관하지 않는다 (커밋 크기 절감)
@@ -270,12 +286,14 @@ def main():
                     help="리뷰 본문 수집 생략 (리뷰수/별점만)")
     ap.add_argument("--overall-only", action="store_true",
                     help="전체 랭킹(TOP100)만 수집 — 카테고리별 랭킹 생략 (빠르고 가벼움)")
+    ap.add_argument("--no-images", action="store_true",
+                    help="대표이미지 다운로드 생략 (URL 은 그래도 CSV에 기록됨)")
     args = ap.parse_args()
 
     CONTINUATION_MARKER.unlink(missing_ok=True)
     run = DailyRun(args.date or kst_today(), Deadline(args.deadline_minutes),
                    args.max_products, collect_review_text=not args.no_review_text,
-                   overall_only=args.overall_only)
+                   overall_only=args.overall_only, collect_images=not args.no_images)
     try:
         finished = run.run()
     except Exception:
