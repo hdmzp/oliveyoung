@@ -79,6 +79,9 @@
   .dtxt{min-width:0}
   .dhead .db{font-size:11px;color:var(--soft);font-weight:600}
   .dhead .dn{font-weight:800;font-size:15px;line-height:1.35;margin:3px 0 8px}
+  .dhead .dn a{color:inherit;text-decoration:none}
+  .dhead .dn a:hover{color:var(--brand);text-decoration:underline}
+  .dhead .dn .ext{font-size:11px;color:var(--faint);margin-left:4px;vertical-align:top;font-weight:600}
   .dstat{display:flex;gap:14px;font-size:12.5px;color:var(--soft);flex-wrap:wrap}
   .dstat b{color:var(--ink)}
   .chips{display:flex;gap:6px;padding:10px 16px;border-bottom:1px solid var(--rule);flex-wrap:wrap}
@@ -219,7 +222,10 @@ async function openDrawer(goods){
   if(row.대표이미지URL){ th.src=row.대표이미지URL; th.style.display=''; th.onerror=()=>{th.style.display='none';}; }
   else { th.style.display='none'; }
   $('dBrand').textContent=row.브랜드||'';
-  $('dName').textContent=row.상품명||goods;
+  const pname=esc(row.상품명||goods), plink=row.상품페이지링크||'';
+  $('dName').innerHTML = plink
+    ? `<a href="${esc(plink)}" target="_blank" rel="noopener">${pname}<span class="ext">↗</span></a>`
+    : pname;
   $('dStat').innerHTML=`<span>리뷰 <b>${row.리뷰수?nf(row.리뷰수):'–'}</b></span>
      <span>별점 <b>★${row.리뷰별점||'–'}</b></span>
      <span id="accInfo">누적수집 <b>…</b></span>`;
