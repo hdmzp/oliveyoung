@@ -8,6 +8,8 @@ data/*_ranking.csv + data/*_reviews.csv + data/backfill/top100_reviews.csv 를 �
   본문 키워드 기준으로 재계산한다 (PLAN.md §1, §4)
 - 리뷰 유입 속도는 3가지 proxy: velocity_delta(일별 총리뷰수 증가분),
   velocity_span(최신 k건이 걸린 일수), recent30/90_share (PLAN.md §3)
+  단, 리뷰 목록 API가 도움순 고정 반환이라 velocity_span/recent*_share는
+  편향된 참고 지표이며 velocity_delta만 신뢰 가능 (PLAN.md §3 실측 참고)
 
 사용:  python -m analysis.build_dataset [--date YYYY-MM-DD]
 출력:  analysis/output/dataset_<date>.csv
