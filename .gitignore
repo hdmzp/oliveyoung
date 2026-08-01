@@ -8,3 +8,4 @@ probe_out/
 data/manifest.json
 data/ranking/
 data/reviews/
+analysis/output/
