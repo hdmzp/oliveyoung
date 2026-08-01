@@ -1,0 +1,4 @@
+﻿수집일자,상품번호,단계,오류
+2026-08-01,A000000202658,reviews,POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: HTTP 429
+2026-08-01,A000000223283,reviews,POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: HTTP 429
+2026-08-01,A000000261849,reviews,POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: HTTP 429
