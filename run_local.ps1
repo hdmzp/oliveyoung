@@ -24,9 +24,14 @@ while (Test-Path ".continuation_needed") {
 # 뷰어(index.html)용 JSON 생성
 python -m scraper.build_site *>> $log
 
+# 썸네일 자동 분류 (ANTHROPIC_API_KEY 있을 때만, 실패해도 수집엔 영향 없음)
+if ($env:ANTHROPIC_API_KEY) {
+    python -m analysis.classify_thumbnails *>> $log
+}
+
 # (선택) git 저장소면 데이터 커밋 & 푸시 — 아니면 로컬에만 저장
 if ($isGit) {
-    git add data state
+    git add data state analysis/labels
     git diff --cached --quiet
     if ($LASTEXITCODE -ne 0) {
         git commit -m "data: $(Get-Date -Format 'yyyy-MM-dd HH:mm') collect" *>> $log
