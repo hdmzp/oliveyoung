@@ -1,0 +1,38 @@
+# CSV 를 올리면 JSON 을 자동 생성해 GitHub Pages 로 배포한다.
+# (올리브영 미접속 — 이미 올라온 CSV 만 가공하므로 Actions 로 정상 동작)
+name: Deploy Pages
+
+on:
+  push:
+    branches: ["claude/oliveyoung-data-collection-w9odk3"]
+    paths: ["index.html", "data/**", "scraper/build_site.py", ".github/workflows/pages.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: CSV → 뷰어 JSON 생성
+        run: python -m scraper.build_site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: "."
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,23 @@
+﻿수집일자,상품번호,단계,오류
+2026-08-02,A000000259209,reviews,POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: HTTP 429
+2026-08-02,A000000189837,reviews,POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: HTTP 429
+2026-08-02,A000000259555,reviews,POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: HTTP 429
+2026-08-02,A000000183707,reviews,POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: HTTP 429
+2026-08-02,A000000249659,reviews,POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: HTTP 429
+2026-08-02,A000000242498,reviews,POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: HTTP 429
+2026-08-02,A000000239107,reviews,POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: HTTP 429
+2026-08-02,A000000236606,reviews,POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: HTTP 429
+2026-08-02,A000000239969,reviews,POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: HTTP 429
+2026-08-02,A000000215305,reviews,POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: HTTP 429
+2026-08-02,A000000261788,reviews,POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: HTTP 429
+2026-08-02,A000000204014,reviews,POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: HTTP 429
+2026-08-02,A000000237394,reviews,POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: HTTP 429
+2026-08-02,A000000253102,reviews,POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: HTTP 429
+2026-08-02,A000000244763,reviews,POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: HTTP 429
+2026-08-02,A000000215559,reviews,POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: HTTP 429
+2026-08-02,A000000184159,reviews,POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: HTTP 429
+2026-08-02,A000000260411,reviews,POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: HTTP 429
+2026-08-02,A000000184352,reviews,POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: HTTP 429
+2026-08-02,A000000248024,reviews,"POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: Failed to perform, curl: (6) Could not resolve host: m.oliveyoung.co.kr. See https://curl.se/libcurl/c/libcurl-errors.html first for more details."
+2026-08-02,A000000248560,stats,"GET https://m.oliveyoung.co.kr/review/api/v2/reviews/A000000248560/stats failed after 3 retries: Failed to perform, curl: (6) Could not resolve host: m.oliveyoung.co.kr. See https://curl.se/libcurl/c/libcurl-errors.html first for more details."
+2026-08-02,A000000248560,reviews,"POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: Failed to perform, curl: (6) Could not resolve host: m.oliveyoung.co.kr. See https://curl.se/libcurl/c/libcurl-errors.html first for more details."
