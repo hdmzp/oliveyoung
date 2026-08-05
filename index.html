@@ -117,6 +117,14 @@
   .rev .body{font-size:13px;line-height:1.55;white-space:pre-wrap;color:#2b2f36}
   .rev .sub{font-size:11px;color:var(--faint);margin-top:5px;display:flex;gap:10px;flex-wrap:wrap}
   .loading{padding:40px;text-align:center;color:var(--faint)}
+  /* 상단 탭 (랭킹 조회 / 분석 리포트) */
+  .tabbtns{margin-left:auto;display:flex;gap:6px;align-self:center}
+  .tabbtn{font-size:12.5px;border:1px solid var(--rule);background:#fff;border-radius:20px;
+    padding:6px 14px;cursor:pointer;color:var(--soft);font-weight:600;transition:background .12s,color .12s}
+  .tabbtn:hover{background:var(--dim)}
+  .tabbtn.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  #view-eda{display:none;height:calc(100vh - 53px)}
+  #view-eda iframe{width:100%;height:100%;border:0;display:block;background:#fff}
   @media(max-width:600px){
     .wrap{padding:8px}
     .masthead{position:static}
@@ -146,8 +154,13 @@
       <h1>올리브영 랭킹 조회</h1>
     </div>
     <p class="sub">일자별 판매 TOP100 · 카테고리별 랭킹 · 상품 클릭 시 누적 리뷰</p>
+    <nav class="tabbtns">
+      <button class="tabbtn on" id="tabRank">랭킹 조회</button>
+      <button class="tabbtn" id="tabEda">분석 리포트</button>
+    </nav>
   </div>
 
+  <div id="view-rank">
   <div class="toolbar">
     <div class="date-nav">
       <button class="arrow" id="prevDay" aria-label="이전">‹</button>
@@ -173,6 +186,11 @@
       <tbody id="rankBody"><tr><td colspan="5" class="empty">불러오는 중…</td></tr></tbody>
     </table>
   </div>
+  </div><!-- /view-rank -->
+
+  <div id="view-eda">
+    <iframe id="edaFrame" title="분석 리포트 (EDA)" loading="lazy"></iframe>
+  </div>
 
   <div class="backdrop" id="backdrop"></div>
   <aside class="drawer" id="drawer">
@@ -197,6 +215,22 @@ let curDate = null, curCat = ALL, curRows = [], curReviews = [], curFilter = 'al
 const rankCache = new Map();   // "날짜|카테고리" -> rows
 
 const $ = id => document.getElementById(id);
+
+// ---- 탭 전환 (분석 리포트는 첫 진입 시에만 로드) ----
+(function(){
+  const rankBtn = document.getElementById('tabRank'), edaBtn = document.getElementById('tabEda');
+  const rankView = document.getElementById('view-rank'), edaView = document.getElementById('view-eda');
+  function show(eda){
+    rankView.style.display = eda ? 'none' : '';
+    edaView.style.display = eda ? 'block' : 'none';
+    rankBtn.classList.toggle('on', !eda);
+    edaBtn.classList.toggle('on', eda);
+    const f = document.getElementById('edaFrame');
+    if (eda && !f.src) f.src = './eda.html';
+  }
+  rankBtn.addEventListener('click', () => show(false));
+  edaBtn.addEventListener('click', () => show(true));
+})();
 const nf = n => (n==null||n==='')?'':Number(String(n).replace(/,/g,'')).toLocaleString();
 const esc = s => (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
