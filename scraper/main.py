@@ -43,11 +43,14 @@ SAVE_EVERY = 20
 class DailyRun:
     def __init__(self, date: str, deadline: Deadline, max_products: int | None,
                  collect_review_text: bool = True, overall_only: bool = False,
-                 collect_images: bool = True):
+                 collect_images: bool = True, review_text_overall_only: bool = False):
         self.date = date
         self.deadline = deadline
         self.max_products = max_products
         self.collect_review_text = collect_review_text
+        # review_text_overall_only: 전 카테고리 랭킹+리뷰수/별점(stats)은 수집하되,
+        # 무거운 리뷰 본문(cursor)은 전체 TOP100 상품만 — 카테고리 확장 시 실행시간 억제
+        self.review_text_overall_only = review_text_overall_only
         self.collect_images = collect_images
         # overall_only: 전체 랭킹(TOP100)만 수집 → www 요청 1건, 429 회피 + 가벼움
         self.categories = {"": "전체"} if overall_only else dict(config.CATEGORIES)
@@ -148,7 +151,9 @@ class DailyRun:
             summary = {"리뷰수": None, "리뷰별점": None}
         self.progress["summaries"][goods_no] = summary
 
-        if self.collect_review_text:
+        collect_text = self.collect_review_text and (
+            not self.review_text_overall_only or goods_no in self._overall_goods)
+        if collect_text:
             try:
                 cursor = self.cursors.get(goods_no, {})
                 new_reviews, new_cursor = reviews.collect_new_reviews(
@@ -167,6 +172,8 @@ class DailyRun:
 
     def phase_products(self) -> bool:
         """True = 전부 완료, False = 데드라인으로 중단."""
+        self._overall_goods = {r["상품번호"] for r in self.progress["ranking_rows"]
+                               if r.get("카테고리ID") == "ALL"}
         products = self.unique_products()
         done = set(self.progress["products_done"])
         todo = [g for g in products if g not in done]
@@ -288,12 +295,17 @@ def main():
                     help="전체 랭킹(TOP100)만 수집 — 카테고리별 랭킹 생략 (빠르고 가벼움)")
     ap.add_argument("--no-images", action="store_true",
                     help="대표이미지 다운로드 생략 (URL 은 그래도 CSV에 기록됨)")
+    ap.add_argument("--review-text-overall-only", action="store_true",
+                    help="리뷰 본문은 전체 TOP100 상품만 수집 — 카테고리 상품은 "
+                         "랭킹+리뷰수/별점(stats)만. 전 카테고리 일일 수집을 "
+                         "1~2시간 안으로 유지하는 권장 모드")
     args = ap.parse_args()
 
     CONTINUATION_MARKER.unlink(missing_ok=True)
     run = DailyRun(args.date or kst_today(), Deadline(args.deadline_minutes),
                    args.max_products, collect_review_text=not args.no_review_text,
-                   overall_only=args.overall_only, collect_images=not args.no_images)
+                   overall_only=args.overall_only, collect_images=not args.no_images,
+                   review_text_overall_only=args.review_text_overall_only)
     try:
         finished = run.run()
     except Exception:
