@@ -20,11 +20,6 @@ python -m scraper.main --review-text-overall-only --deadline-minutes 320 >>"$LOG
 STATUS=$?
 echo "collect exit status: $STATUS" >>"$LOG"
 
-# 썸네일 자동 분류 (ANTHROPIC_API_KEY 있을 때만, 실패해도 수집엔 영향 없음)
-if [ -n "${ANTHROPIC_API_KEY:-}" ]; then
-  python -m analysis.classify_thumbnails >>"$LOG" 2>&1 || true
-fi
-
 # 데이터 커밋 & 푸시 (실패해도 다음 실행에서 재시도)
 git add data state analysis/labels 2>>"$LOG"
 if git diff --cached --quiet; then

@@ -5,7 +5,13 @@
   model(인간 모델), character(캐릭터), period(기간 한정 소구),
   claim(1위/어워즈/인증 클레임), gift(증정/1+1/더블 구성) + 근거 텍스트
 
+⚠️ 수동 실행 전용 — 일일 파이프라인에는 연결되어 있지 않다.
+   Anthropic API(별도 유료, console.anthropic.com)를 사용하므로 명시적으로
+   실행할 때만 과금된다. 현재 운영은 무과금(이미지 아카이브만 축적) 방식이며,
+   라벨링은 분석 시점에 세션에서 수동으로 하거나 이 스크립트를 배치 실행한다.
+
 사용:
+  pip install anthropic                  # 별도 설치 (requirements.txt에 없음)
   export ANTHROPIC_API_KEY=sk-ant-...   # 또는 ant auth login
   python -m analysis.classify_thumbnails                # 최신 랭킹 날짜, 전체 카테고리
   python -m analysis.classify_thumbnails --date 2026-08-05 --validate
