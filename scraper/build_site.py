@@ -59,13 +59,40 @@ def _review_files() -> list[str]:
             + glob.glob(str(DATA / "backfill" / "*.csv")))
 
 
+ALL_CAT = "ALL"
+
+
+def _split_categories(rows: list[dict]) -> dict[str, list[dict]]:
+    """랭킹 행을 카테고리ID 별로 나눈다(CSV 등장 순서 유지). 구 CSV 는 전부 '전체'."""
+    groups: dict[str, list[dict]] = {}
+    for r in rows:
+        cid = (r.get("카테고리ID") or "").strip() or ALL_CAT
+        groups.setdefault(cid, []).append(r)
+    return groups
+
+
 def main():
     ranks = _ranking_files()
     dates = list(ranks.keys())
 
     # 날짜별 랭킹 JSON
+    #  - {날짜}.json          : '전체' 랭킹 (기존 경로 유지 — 대부분의 날짜는 이것뿐)
+    #  - {날짜}/{카테고리ID}.json : 카테고리별 랭킹 (여러 카테고리를 수집한 날짜만)
+    cats_by_date: dict[str, list[dict]] = {}
     for date, path in ranks.items():
-        _write_json(DATA / "ranking" / f"{date}.json", _read(path))
+        groups = _split_categories(_read(path))
+        base = groups.get(ALL_CAT) or next(iter(groups.values()), [])
+        _write_json(DATA / "ranking" / f"{date}.json", base)
+        cats: list[dict] = []
+        for cid, rows in groups.items():
+            cats.append({
+                "id": cid,
+                "name": rows[0].get("카테고리") or cid,
+                "count": len(rows),
+            })
+            if cid != ALL_CAT:
+                _write_json(DATA / "ranking" / date / f"{cid}.json", rows)
+        cats_by_date[date] = cats
 
     # 상품별 누적 리뷰 JSON (모든 일자 + 백필, 리뷰ID 로 중복 제거)
     by_goods: dict[str, dict[str, dict]] = defaultdict(dict)
@@ -80,11 +107,15 @@ def main():
 
     _write_json(DATA / "manifest.json", {
         "dates": dates,
+        "categoriesByDate": cats_by_date,
         "goodsWithReviews": sorted(by_goods.keys()),
+        # 상품번호 -> 누적 수집 리뷰 수 (뷰어에서 '누적' 열로 표시)
+        "reviewCounts": {g: len(v) for g, v in sorted(by_goods.items())},
         "reviewCount": sum(len(v) for v in by_goods.values()),
     })
-    print(f"site build 완료: 날짜 {len(dates)}개, 리뷰 상품 {len(by_goods)}개, "
-          f"총 리뷰 {sum(len(v) for v in by_goods.values())}개")
+    multi = sum(1 for c in cats_by_date.values() if len(c) > 1)
+    print(f"site build 완료: 날짜 {len(dates)}개(카테고리 다중 {multi}일), "
+          f"리뷰 상품 {len(by_goods)}개, 총 리뷰 {sum(len(v) for v in by_goods.values())}개")
 
 
 if __name__ == "__main__":

@@ -72,6 +72,7 @@ C:\oliveyoung\
 │   ├── config.py            설정값 (카테고리·엔드포인트·속도)
 │   ├── http_client.py       요청 전송 (curl_cffi TLS 위장·재시도·속도제한)
 │   ├── ranking.py           랭킹 페이지 수집·파싱
+│   ├── build_site.py        CSV → 뷰어(index.html)용 JSON 생성
 │   ├── reviews.py           리뷰수/별점(stats) + 리뷰목록(cursor) 수집
 │   ├── cf_bootstrap.py      403 시 Edge로 검증 쿠키 확보(폴백)
 │   ├── util.py              CSV 저장·시간·데드라인·파일잠금 재시도
@@ -120,6 +121,19 @@ C:\oliveyoung\
 ### `data/backfill/top100_reviews.csv` — TOP100 과거 리뷰 전체(백필, 1회성)
 
 ### `data/YYYY-MM-DD_errors.csv` — 해당 일자 수집 실패 기록
+
+### 뷰어용 JSON — `python -m scraper.build_site` 로 CSV 에서 생성 (커밋 안 함)
+| 파일 | 내용 |
+|---|---|
+| `data/manifest.json` | 날짜 목록, **날짜별 카테고리 목록**(`categoriesByDate`), 상품별 누적 리뷰 수(`reviewCounts`), 총 리뷰 수 |
+| `data/ranking/{날짜}.json` | 그 날짜의 **전체** TOP100 |
+| `data/ranking/{날짜}/{카테고리ID}.json` | 그 날짜의 **카테고리별** TOP100 (여러 카테고리를 수집한 날짜만 생성) |
+| `data/reviews/{상품번호}.json` | 그 상품의 누적 리뷰 전체 (모든 일자 + 백필, 리뷰ID 중복 제거) |
+
+- 뷰어(`index.html`)는 카테고리를 여러 개 수집한 날짜에만 카테고리 선택 바를 띄우고,
+  카테고리를 고르면 해당 카테고리 JSON 만 따로 불러온다(날짜별 통 파일을 받지 않음).
+- 주소의 `#날짜/카테고리ID` 로 특정 카테고리 랭킹을 바로 열 수 있다
+  (예: `#2026-08-03/10000010011` = 8/3 선케어).
 
 분석 예시(pandas):
 ```python

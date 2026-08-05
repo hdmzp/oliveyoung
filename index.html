@@ -37,7 +37,22 @@
   .today-btn{font-size:12px;border:1px solid var(--rule);background:#fff;border-radius:7px;padding:6px 10px;
     cursor:pointer;color:var(--soft)}
   .today-btn:hover{background:var(--dim)}
-  .meta{font-size:11.5px;color:var(--faint);margin-left:auto}
+  .meta{font-size:11.5px;color:var(--faint);margin-left:auto;text-align:right;line-height:1.5}
+  .meta b{color:var(--soft);font-weight:700}
+  /* 카테고리 바 (여러 카테고리를 수집한 날짜만 노출) */
+  .catbar{background:var(--paper);border-bottom:1px solid var(--rule);position:sticky;top:99px;z-index:4;
+    display:none;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+  .catbar.on{display:block}
+  .catbar .inner{display:flex;align-items:center;gap:6px;padding:8px 18px;width:max-content;min-width:100%}
+  .catbar .glabel{font-size:9.5px;letter-spacing:.14em;color:var(--faint);text-transform:uppercase;
+    font-weight:700;padding:0 4px 0 8px;white-space:nowrap}
+  .catbar .glabel:first-child{padding-left:0}
+  .catbar .sep{width:1px;align-self:stretch;background:var(--rule);margin:0 2px}
+  .cat{font-size:12.5px;border:1px solid var(--rule);background:#fff;border-radius:20px;padding:5px 12px;
+    cursor:pointer;color:var(--soft);white-space:nowrap;font-weight:600;transition:background .12s,color .12s}
+  .cat:hover{background:var(--dim)}
+  .cat.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .cat .n{font-size:10.5px;opacity:.6;margin-left:4px;font-weight:700}
   .wrap{max-width:920px;margin:0 auto;padding:14px}
   table.rank{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--rule);
     border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
@@ -62,6 +77,8 @@
   .price .dc{font-size:11px;color:var(--trial);font-weight:700;margin-left:4px}
   .star{color:var(--gold);font-weight:700}
   .rvcnt{color:var(--soft);font-size:12px}
+  .rvcnt .acc{display:block;font-size:10.5px;color:var(--brand);font-weight:700;margin-top:2px}
+  .rvcnt .acc.none{color:var(--faint);font-weight:600}
   .col-r{text-align:right;white-space:nowrap}
   .empty{padding:60px 20px;text-align:center;color:var(--faint)}
   /* drawer */
@@ -100,7 +117,26 @@
   .rev .body{font-size:13px;line-height:1.55;white-space:pre-wrap;color:#2b2f36}
   .rev .sub{font-size:11px;color:var(--faint);margin-top:5px;display:flex;gap:10px;flex-wrap:wrap}
   .loading{padding:40px;text-align:center;color:var(--faint)}
-  @media(max-width:600px){ .wrap{padding:8px} table.rank td,table.rank th{padding:8px 7px} .pcol{max-width:0} }
+  @media(max-width:600px){
+    .wrap{padding:8px}
+    .masthead{position:static}
+    .toolbar{top:0}
+    .catbar{top:47px}
+    .catbar .inner{padding:8px 10px}
+    .meta{width:100%;margin:2px 0 0;text-align:left}
+    /* 좁은 화면: 상품명 칸이 남는 폭을 전부 가져가도록 고정 레이아웃 */
+    table.rank{table-layout:fixed}
+    table.rank td,table.rank th{padding:8px 6px}
+    table.rank th:nth-child(1),table.rank td:nth-child(1){width:34px}
+    table.rank th:nth-child(3),table.rank td:nth-child(3){width:80px}
+    table.rank th:nth-child(4),table.rank td:nth-child(4){width:66px}
+    table.rank th:nth-child(5),table.rank td:nth-child(5){width:44px}
+    .pcol{overflow:hidden}
+    .pcell{gap:8px}
+    .thumb{width:38px;height:38px}
+    .price .org{display:none}
+    .smhide{display:none}
+  }
 </style>
 </head>
 <body>
@@ -109,7 +145,7 @@
       <p class="kicker">CJ OliveYoung</p>
       <h1>올리브영 랭킹 조회</h1>
     </div>
-    <p class="sub">일자별 판매 TOP100 · 상품 클릭 시 누적 리뷰</p>
+    <p class="sub">일자별 판매 TOP100 · 카테고리별 랭킹 · 상품 클릭 시 누적 리뷰</p>
   </div>
 
   <div class="toolbar">
@@ -126,11 +162,13 @@
     <span class="meta" id="meta"></span>
   </div>
 
+  <nav class="catbar" id="catBar"><div class="inner" id="catInner"></div></nav>
+
   <div class="wrap">
     <table class="rank">
       <thead><tr>
         <th style="width:44px">순위</th><th>상품</th>
-        <th class="col-r">가격</th><th class="col-r">리뷰</th><th class="col-r">별점</th>
+        <th class="col-r">가격</th><th class="col-r">리뷰<span class="smhide"> / 누적</span></th><th class="col-r">별점</th>
       </tr></thead>
       <tbody id="rankBody"><tr><td colspan="5" class="empty">불러오는 중…</td></tr></tbody>
     </table>
@@ -151,8 +189,12 @@
 
 <script>
 const DATA = './data';
-let MANIFEST = {dates:[], goodsWithReviews:[]};
-let curDate = null, curRows = [], curReviews = [], curFilter = 'all';
+const ALL = 'ALL';
+// 카테고리ID 앞자리로 대분류 묶기 (칩 바 구분선/라벨용)
+const CAT_GROUPS = [['1000001','뷰티'],['1000002','헬스·푸드'],['1000003','라이프']];
+let MANIFEST = {dates:[], categoriesByDate:{}, goodsWithReviews:[], reviewCounts:{}};
+let curDate = null, curCat = ALL, curRows = [], curReviews = [], curFilter = 'all';
+const rankCache = new Map();   // "날짜|카테고리" -> rows
 
 const $ = id => document.getElementById(id);
 const nf = n => (n==null||n==='')?'':Number(String(n).replace(/,/g,'')).toLocaleString();
@@ -162,6 +204,8 @@ async function getJSON(path){ try{const r=await fetch(path,{cache:'no-cache'}); 
 
 async function init(){
   MANIFEST = await getJSON(`${DATA}/manifest.json`) || {dates:[],goodsWithReviews:[]};
+  MANIFEST.categoriesByDate = MANIFEST.categoriesByDate||{};
+  MANIFEST.reviewCounts = MANIFEST.reviewCounts||{};
   const dates = MANIFEST.dates||[];
   if(!dates.length){ $('rankBody').innerHTML='<tr><td colspan="5" class="empty">아직 수집된 데이터가 없습니다.</td></tr>'; return; }
   const picker=$('datePicker');
@@ -173,41 +217,115 @@ async function init(){
   $('drawerClose').addEventListener('click',closeDrawer);
   $('backdrop').addEventListener('click',closeDrawer);
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
-  loadDate(dates[dates.length-1]);
+  // #날짜/카테고리ID 로 특정 카테고리 랭킹 바로 열기(공유·북마크용)
+  window.addEventListener('hashchange',()=>{
+    const [d,c]=parseHash();
+    if(d&&(d!==curDate||(c||ALL)!==curCat)) loadDate(d,c||ALL);
+  });
+  window.addEventListener('resize',syncSticky);
+  const [hd,hc]=parseHash();
+  loadDate(hd||dates[dates.length-1], hc||ALL);
+}
+function parseHash(){
+  const [d,c]=decodeURIComponent(location.hash.replace(/^#/,'')).split('/');
+  return [(MANIFEST.dates||[]).includes(d)?d:null, c||null];
+}
+/** 상단 고정바(머리말·툴바·카테고리바) 높이를 재서 서로 겹치지 않게 top 을 맞춘다. */
+function syncSticky(){
+  const mast=document.querySelector('.masthead'), tb=document.querySelector('.toolbar'), cb=$('catBar');
+  const base=(getComputedStyle(mast).position==='sticky')?mast.offsetHeight:0;
+  tb.style.top=`${base}px`;
+  cb.style.top=`${base+tb.offsetHeight}px`;
+}
+function catsFor(date){
+  const cats=MANIFEST.categoriesByDate[date];
+  return (cats&&cats.length)?cats:[{id:ALL,name:'전체',count:0}];
+}
+function groupOf(id){
+  if(id===ALL) return '';
+  const g=CAT_GROUPS.find(([p])=>String(id).startsWith(p));
+  return g?g[1]:'기타';
 }
 function nearestDate(v){ const d=MANIFEST.dates; if(d.includes(v))return v;
   let best=d[0]; for(const x of d){ if(x<=v)best=x; } return best; }
 function stepDate(dir){ const d=MANIFEST.dates; const i=d.indexOf(curDate);
   const j=i+dir; if(j>=0&&j<d.length) loadDate(d[j]); }
 
-async function loadDate(date){
+async function fetchRank(date,cat){
+  const key=`${date}|${cat}`;
+  if(rankCache.has(key)) return rankCache.get(key);
+  const url = cat===ALL ? `${DATA}/ranking/${date}.json`
+                        : `${DATA}/ranking/${date}/${encodeURIComponent(cat)}.json`;
+  const rows = await getJSON(url) || [];
+  rankCache.set(key,rows);
+  return rows;
+}
+
+async function loadDate(date, cat){
+  const cats=catsFor(date);
+  // 날짜를 옮겨도 보던 카테고리를 유지 — 그 날짜에 없으면 '전체'로
+  const want = cat!==undefined ? cat : curCat;
   curDate=date;
+  curCat = cats.some(c=>c.id===want) ? want : ALL;
   const d=MANIFEST.dates, i=d.indexOf(date);
   $('dateText').textContent=fmtDate(date);
   $('datePicker').value=date;
   $('prevDay').disabled=(i<=0); $('nextDay').disabled=(i>=d.length-1);
+  renderCats();
   $('rankBody').innerHTML='<tr><td colspan="5" class="empty">불러오는 중…</td></tr>';
-  const rows = await getJSON(`${DATA}/ranking/${date}.json`) || [];
-  // '전체' 카테고리만, 순위순
-  curRows = rows.filter(r=>!r.카테고리||r.카테고리==='전체').sort((a,b)=>(+a.순위)-(+b.순위));
-  if(!curRows.length) curRows = rows.sort((a,b)=>(+a.순위)-(+b.순위));
+  const rows = await fetchRank(date,curCat);
+  curRows = rows.slice().sort((a,b)=>(+a.순위)-(+b.순위));
   renderRank();
-  $('meta').textContent=`${curRows.length}개 상품 · 최신 ${fmtDate(d[d.length-1])}`;
+  const catName=(cats.find(c=>c.id===curCat)||{}).name||'전체';
+  const acc=MANIFEST.reviewCount?` · 누적 리뷰 <b>${nf(MANIFEST.reviewCount)}</b>건`:'';
+  $('meta').innerHTML=`${esc(catName)} <b>${curRows.length}</b>개`
+    + (cats.length>1?` · 카테고리 <b>${cats.length}</b>개`:'')
+    + acc;
+  history.replaceState(null,'',`#${date}${curCat===ALL?'':'/'+curCat}`);
+  syncSticky();
+}
+
+function renderCats(){
+  const cats=catsFor(curDate), bar=$('catBar');
+  if(cats.length<=1){ bar.classList.remove('on'); $('catInner').innerHTML=''; return; }
+  let html='', lastG=null;
+  for(const c of cats){
+    const g=groupOf(c.id);
+    if(g!==lastG){
+      if(lastG!==null) html+='<span class="sep"></span>';
+      if(g) html+=`<span class="glabel">${esc(g)}</span>`;
+      lastG=g;
+    }
+    html+=`<button class="cat ${c.id===curCat?'on':''}" data-cat="${esc(c.id)}">`
+        + `${esc(c.name)}<span class="n">${c.count}</span></button>`;
+  }
+  $('catInner').innerHTML=html;
+  bar.classList.add('on');
+  $('catInner').querySelectorAll('.cat').forEach(b=>{
+    b.addEventListener('click',()=>{ if(b.dataset.cat!==curCat) loadDate(curDate,b.dataset.cat); });
+  });
+  const on=$('catInner').querySelector('.cat.on');
+  if(on) on.scrollIntoView({block:'nearest',inline:'nearest'});
 }
 
 function renderRank(){
-  const rev=new Set(MANIFEST.goodsWithReviews||[]);
+  const counts=MANIFEST.reviewCounts||{};
+  if(!curRows.length){
+    $('rankBody').innerHTML='<tr><td colspan="5" class="empty">이 카테고리의 랭킹 데이터가 없습니다.</td></tr>';
+    return;
+  }
   $('rankBody').innerHTML = curRows.map(r=>{
     const rank=+r.순위, tcls=rank<=3?`t${rank}`:'';
     const org=nf(r.정가), cur=nf(r.혜택가), dc=(+r.할인율)>0?`${r.할인율}%`:'';
     const price=`<span class="cur">${cur?cur+'원':''}</span>`+
       ((org&&org!==cur)?`<span class="org">${org}</span>`:'')+(dc?`<span class="dc">${dc}</span>`:'');
-    const hasRev=rev.has(r.상품번호);
+    const n=counts[r.상품번호]||0;
+    const acc=n?`<span class="acc">누적 ${nf(n)}</span>`:'<span class="acc none">미수집</span>';
     return `<tr data-goods="${r.상품번호}">
       <td><span class="rk ${tcls}">${rank}</span></td>
       <td class="pcol"><div class="pcell">${r.대표이미지URL?`<img class="thumb" loading="lazy" src="${esc(r.대표이미지URL)}" onerror="this.style.visibility='hidden'">`:''}<div class="pinfo"><div class="brand">${esc(r.브랜드)}</div><div class="pname">${esc(r.상품명)}</div></div></div></td>
       <td class="col-r price">${price}</td>
-      <td class="col-r rvcnt">${r.리뷰수?nf(r.리뷰수):'–'}</td>
+      <td class="col-r rvcnt">${r.리뷰수?nf(r.리뷰수):'–'}${acc}</td>
       <td class="col-r"><span class="star">★${r.리뷰별점||'–'}</span></td>
     </tr>`;
   }).join('');
@@ -248,7 +366,10 @@ function renderReviews(){
   let list=curReviews;
   if(curFilter==='trial') list=list.filter(r=>r.체험단여부==='1'||r.체험단여부===1);
   if(curFilter==='photo') list=list.filter(r=>r.포토여부==='1'||r.포토여부===1);
-  if(!list.length){ $('dList').innerHTML='<div class="loading">해당 리뷰가 없습니다.</div>'; return; }
+  if(!list.length){
+    $('dList').innerHTML=`<div class="loading">${curReviews.length?'해당 리뷰가 없습니다.':'아직 수집된 리뷰가 없습니다.'}</div>`;
+    return;
+  }
   $('dList').innerHTML=list.map(r=>{
     const sc=Math.round(+r.별점||0);
     const stars='★'.repeat(sc)+'☆'.repeat(5-sc);
