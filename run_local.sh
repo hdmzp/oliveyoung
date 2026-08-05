@@ -20,8 +20,13 @@ python -m scraper.main --review-text-overall-only --deadline-minutes 320 >>"$LOG
 STATUS=$?
 echo "collect exit status: $STATUS" >>"$LOG"
 
+# 썸네일 자동 분류 (ANTHROPIC_API_KEY 있을 때만, 실패해도 수집엔 영향 없음)
+if [ -n "${ANTHROPIC_API_KEY:-}" ]; then
+  python -m analysis.classify_thumbnails >>"$LOG" 2>&1 || true
+fi
+
 # 데이터 커밋 & 푸시 (실패해도 다음 실행에서 재시도)
-git add data state 2>>"$LOG"
+git add data state analysis/labels 2>>"$LOG"
 if git diff --cached --quiet; then
   echo "no data changes to commit" >>"$LOG"
 else
@@ -41,7 +46,7 @@ python -m scraper.build_site >>"$LOG" 2>&1
 while [ -f .continuation_needed ]; do
   echo "===== $(date '+%Y-%m-%d %H:%M:%S') continuation run =====" >>"$LOG"
   python -m scraper.main --review-text-overall-only --deadline-minutes 320 >>"$LOG" 2>&1
-  git add data state 2>>"$LOG"
+  git add data state analysis/labels 2>>"$LOG"
   git diff --cached --quiet || {
     git commit -m "data: $(date '+%Y-%m-%d %H:%M') collect (cont)" >>"$LOG" 2>&1
     git push origin "$BRANCH" >>"$LOG" 2>&1 || true
