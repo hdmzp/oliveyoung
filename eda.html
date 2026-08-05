@@ -1,4 +1,4 @@
-<title>올리브영 랭킹 EDA — 2026-07-21 ~ 08-05</title>
+<title>올리브영 판매 랭킹 결정요인 실증 분석 — 1차 보고서</title>
 <style>
 :root {
   color-scheme: light;
@@ -88,161 +88,247 @@ code { background: var(--surface); border: 1px solid var(--ring); border-radius:
   h2 { break-after: avoid; }
   .wrap { padding: 10px 0 20px; }
 }
+
+.cover { border-bottom: 2px solid var(--accent); padding: 8px 0 24px; margin-bottom: 28px; }
+.cover .proj { color: var(--accent); font-weight: 700; font-size: 13px; letter-spacing: .06em; }
+.cover h1 { font-size: 28px; margin: 6px 0 10px; }
+.cover .meta2 { color: var(--muted); font-size: 13px; }
+.toc { background: var(--surface); border: 1px solid var(--ring); border-radius: 10px; padding: 18px 22px; margin: 20px 0 8px; font-size: 13.5px; columns: 2; column-gap: 40px; }
+.toc a { color: var(--ink-2); text-decoration: none; display: block; padding: 2.5px 0; }
+.toc a:hover { color: var(--accent); }
+.toc .l1 { font-weight: 700; color: var(--ink); margin-top: 4px; }
+h3.num { font-size: 16px; margin: 30px 0 6px; }
+h4.num { font-size: 14.5px; margin: 22px 0 4px; color: var(--ink); }
+p.body { color: var(--ink-2); max-width: 76ch; margin: 0 0 12px; }
+p.body strong { color: var(--ink); }
+.cap { font-size: 12.5px; color: var(--muted); margin: 6px 0 18px; }
+.rpt-wrap { overflow-x: auto; }
 </style>
 
 <div class="wrap">
-<header class="top">
-  <div class="eyebrow">OLIVE YOUNG 랭킹 데이터 분석</div>
-  <h1>탐색적 데이터 분석 (EDA) — 2026-07-21 ~ 08-05</h1>
-  <p class="sub">랭킹 스냅샷 12일치, 유니크 리뷰 6.5만 건, 썸네일 815장을 기반으로 한 첫 EDA.
-  랭킹의 변동성, 순위를 설명하는 후보 요인, 썸네일의 시각적 패턴을 점검하고 본분석 설계에 반영할 시사점을 정리했다.</p>
+<header class="cover">
+  <div class="proj">OLIVE YOUNG 랭킹 데이터 분석 프로젝트</div>
+  <h1>올리브영 판매 랭킹 결정요인 실증 분석<br>1차 보고서 — 데이터 구축 및 탐색적 분석</h1>
+  <div class="meta2">분석 기간 2026-07-21 ~ 08-05 · 작성일 2026-08-05 · 데이터: 자체 구축 수집 파이프라인 (hdmzp/oliveyoung)</div>
 </header>
 
-<h2><span class="no">1</span>데이터 개요</h2>
-<div class="kpis">
-  <div class="kpi"><div class="lab">랭킹 수집일</div><div class="val">12일</div><div class="note">7/24–26, 8/2 결측</div></div>
-  <div class="kpi"><div class="lab">전체 TOP100 등장 상품</div><div class="val">411개</div><div class="note">기간 누적 유니크</div></div>
-  <div class="kpi"><div class="lab">카테고리 크로스섹션</div><div class="val">1,906개</div><div class="note">8/3 하루, 20개 카테고리</div></div>
-  <div class="kpi"><div class="lab">유니크 리뷰</div><div class="val">64,904건</div><div class="note">리뷰ID 기준 중복 제거</div></div>
-  <div class="kpi"><div class="lab">썸네일 아카이브</div><div class="val">815장</div><div class="note">URL 해시 기반 무결</div></div>
-  <div class="kpi"><div class="lab">체험단 키워드 리뷰</div><div class="val">217건</div><div class="note">전체의 0.33% — 신호 부족</div></div>
-</div>
-<p class="lede">8/3에 일일 실행이 21개 카테고리 전체를 수집해(2,100행) 유일한 대형 크로스섹션이 생겼다.
-이 표본이 이번 EDA에서 가장 강한 발견(§4)을 만들었다.</p>
+<nav class="toc">
+  <a class="l1" href="#s1">1. 분석 개요</a>
+  <a href="#s1">&nbsp;&nbsp;1.1 분석 배경 및 문제 제기 · 1.2 분석 목적</a>
+  <a class="l1" href="#s2">2. 분석 대상 데이터</a>
+  <a href="#s2">&nbsp;&nbsp;2.1 수집 대상 · 2.2 범위 · 2.3 명세</a>
+  <a href="#s24">&nbsp;&nbsp;2.4 수집 파이프라인 · 2.5 실측 한계</a>
+  <a class="l1" href="#s3">3. 개발 환경</a>
+  <a class="l1" href="#s4">4. 분석 방안 및 결과</a>
+  <a href="#s41">&nbsp;&nbsp;4.1 전처리 및 변수 정의</a>
+  <a href="#s42">&nbsp;&nbsp;4.2 기초 현황: 랭킹의 변동성</a>
+  <a href="#s43">&nbsp;&nbsp;4.3 TOP100의 구성: 카테고리와 브랜드</a>
+  <a href="#s44">&nbsp;&nbsp;4.4 랭킹 설명 요인 분석</a>
+  <a href="#s45">&nbsp;&nbsp;4.5 리뷰 데이터 특성과 체험단 신호</a>
+  <a href="#s46">&nbsp;&nbsp;4.6 썸네일 이미지 분석</a>
+  <a class="l1" href="#s5">5. 종합 결론 및 향후 계획</a>
+</nav>
 
-<h2><span class="no">2</span>랭킹은 얼마나 출렁이는가</h2>
-<p class="lede">전체 TOP100은 매일 3~7할이 물갈이되는 고변동 리스트다. 상위권일수록 잔류율이 높지만,
-살아남은 상품들 사이에서도 순위 상관이 날마다 0.2~0.8을 오간다.</p>
-
-<div class="card">
-  <h3>일별 신규 진입 상품 수 (전체 TOP100)</h3>
-  <p class="take">하루 평균 43개 상품이 교체된다. 8/1에는 70개가 새로 진입 — 월초 세일 개편과 겹치는 급변.</p>
-  <div class="chartbox" id="c-turnover"></div>
-</div>
-
-<div class="card">
-  <h3>연속일 순위 상관 (양일 모두 등장한 상품 기준, Spearman ρ)</h3>
-  <p class="take">잔류 상품의 순위조차 강하게 재배열된다. 8/1(ρ=0.18)과 8/3(ρ=0.22)은 순위가 사실상 리셋된 날.</p>
-  <div class="chartbox" id="c-rankcorr"></div>
-</div>
-
-<div class="card">
-  <h3>전일 순위 구간별 안정성</h3>
-  <p class="take">1–10위는 다음날 70%가 잔류하지만 61–100위는 절반이 이탈한다. 잔류해도 평균 13~21계단 움직인다.</p>
-  <div class="chartbox" id="c-tier"></div>
-</div>
-
-<div class="card">
-  <h3>8/5 TOP10 상품의 기간 내 순위 궤적</h3>
-  <p class="take">현재 상위권 상품 다수가 기간 내 50위 밖까지 다녀왔다. 상위 3개만 강조, 나머지는 회색 컨텍스트.</p>
-  <div class="legend" id="lg-traj"></div>
-  <div class="chartbox" id="c-traj"></div>
-</div>
-
-<h2><span class="no">3</span>TOP100은 누구인가 — 카테고리·브랜드 구성</h2>
-<p class="lede">전체 TOP100 슬롯(상품×일, 12일 누적 1,200개)을 8/3 카테고리 랭킹 소속으로 매핑했다(매핑률 83%).
-슬롯 수로는 <strong>메이크업(18.8%)과 스킨케어(18.1%)</strong>가 최대지만, <strong>1~10위만 보면 마스크팩(19.2%)과 푸드(9.2%)가 과대대표</strong>된다 —
-메이크업은 "넓게 걸치는" 카테고리, 마스크팩은 "최상위에 꽂히는" 카테고리다.</p>
-
-<div class="card">
-  <h3>전체 TOP100 슬롯의 카테고리 구성 — 전 구간 vs 1~10위</h3>
-  <p class="take">메이크업·선케어는 1~10위에서 비중이 절반 가까이 줄고, 마스크팩은 1.6배·푸드는 2.4배로 늘어난다. (미매핑 = 8/3 카테고리 100위 안에 없던 상품 — 기획세트 등)</p>
-  <div class="legend">
-    <span class="key"><span class="sw" style="background:var(--s1)"></span>전 구간(1~100위) 슬롯 비중</span>
-    <span class="key"><span class="sw" style="background:var(--s2)"></span>1~10위 슬롯 비중</span>
-  </div>
-  <div class="chartbox" id="c-catmix"></div>
-</div>
-
-<div class="card">
-  <h3>상시 랭커 브랜드 30개의 주력 카테고리</h3>
-  <p class="take">12일 중 10일 이상 등장한 브랜드는 227개 중 30개(13%)뿐인데, 이들이 전체 슬롯의 46%를 차지한다. 전원이 한 카테고리에 전문화되어 있다 — 여러 카테고리에 걸친 상시 브랜드는 없다.</p>
-  <div class="chartbox" id="c-brandcats"></div>
-</div>
-
-<div class="card">
-  <h3>상시 랭커 브랜드 상세 (슬롯 수 상위 15개)</h3>
-  <p class="take">두 가지 생존 전형이 보인다. ① <strong>포트폴리오형</strong>: 메디힐(상품 10개·79슬롯)·아누아(10개)처럼 여러 상품을 회전시키며 체류.
-  ② <strong>히어로 상품형</strong>: 구달·바이오던스·스킨푸드처럼 단 1개 상품으로 12일 전일 체류. 인지도(축적 리뷰) 경로도 갈린다 —
-  홀리카홀리카(리뷰 19.8만)·스킨푸드(10.3만) 같은 리뷰 자산형이 있는가 하면, 셀리맥스(중위 리뷰 1,362개)처럼 리뷰 자산 없이
-  높은 할인·신제품 회전으로 버티는 신흥형도 있다. 상품명은 거의 전부 "1위·올영픽·1+1·단독기획·연예인PICK" 클레임을 달고 있다.</p>
-  <div class="chartbox" id="c-brandtable"></div>
-</div>
-
-<h2><span class="no">4</span>무엇이 순위를 설명하는가</h2>
-<p class="lede">전체 TOP100 안에서만 보면 리뷰수·평점 모두 순위와 거의 무상관이다(ρ≈0).
-그러나 8/3 카테고리 크로스섹션(N=2,000)에서는 <strong>리뷰수가 20개 카테고리 전부에서 음(=상위권일수록 리뷰 많음)의 상관</strong>을 보였다.
-전체 TOP100의 무상관은 "이미 상위 1%만 모인 표본"이라는 범위 제한(range restriction)의 산물이다.</p>
-
-<div class="card">
-  <h3>카테고리별 순위 ~ log(리뷰수) Spearman ρ — 8/3, 카테고리당 N=100</h3>
-  <p class="take">20개 카테고리 전부 음의 상관 (평균 −0.28, 최대 네일 −0.54). 평점(ρ 평균 +0.01)은 어느 카테고리에서도 설명력이 없다.</p>
-  <div class="chartbox" id="c-catrho"></div>
-</div>
-
-<div class="card">
-  <h3>리뷰 유입 속도(velocity)와 순위의 상관 — 일자별 반복 측정</h3>
-  <p class="take">전일 대비 리뷰수 증가분이 큰 상품일수록 상위권인 경향이 11일 중 9일에서 관측(ρ&lt;0). 평균 ρ=−0.16. 방향은 일관되나 크기는 불안정 — 표본 확대 필요.</p>
-  <div class="legend">
-    <span class="key"><span class="sw" style="background:var(--pos)"></span>ρ&lt;0 · 유입 빠를수록 상위 (가설 방향)</span>
-    <span class="key"><span class="sw" style="background:var(--neg)"></span>ρ&gt;0 · 반대 방향</span>
-  </div>
-  <div class="chartbox" id="c-velrho"></div>
-</div>
-
-<div class="card">
-  <h3>전체 TOP100 평점 분포 — 천장효과</h3>
-  <p class="take">100개 상품의 평점이 4.5~5.0에 전부 몰려 있고 절반이 4.8이다. 이 표본에서 "평점 효과"는 원리적으로 식별 불가.</p>
-  <div class="chartbox" id="c-rating"></div>
-</div>
-
-<div class="card">
-  <h3>브랜드별 TOP100 점유 (상품×일 슬롯, 12일 누적)</h3>
-  <p class="take">메디힐이 79슬롯으로 독주 — 브랜드 통제(고정효과)가 필요한 이유.</p>
-  <div class="chartbox" id="c-brands"></div>
-</div>
-
-<h2><span class="no">5</span>썸네일 이미지의 시각적 패턴</h2>
-<p class="lede">상위권 썸네일일수록 <strong>더 어둡고, 채도가 높고, 흰 배경 비중이 낮다</strong>.
-8/1과 8/5 두 스냅샷에서 같은 방향으로 재현됐다 — 리뷰 변수들보다 오히려 큰 상관이다.</p>
-
-<div class="card">
-  <h3>이미지 특성 ~ 순위 Spearman ρ — 두 스냅샷 재현 비교</h3>
-  <p class="take">밝기(+)와 흰 테두리 비율(+)은 하위권과, 채도·컬러풀니스·엣지 밀도(−)는 상위권과 연관. 두 날짜 모두 부호 일치.</p>
-  <div class="legend">
-    <span class="key"><span class="sw" style="background:var(--s1)"></span>8/5 (N=91)</span>
-    <span class="key"><span class="sw" style="background:var(--s2)"></span>8/1 (N=100)</span>
-  </div>
-  <div class="chartbox" id="c-imgrho"></div>
-</div>
-
-<div class="card">
-  <h3>순위 구간별 썸네일 평균 밝기 (8/5)</h3>
-  <p class="take">1–25위 평균 164 → 76–100위 177로 단조 증가. 상위권 썸네일이 기획 이미지·텍스트 오버레이가 많은 것과 정합적.</p>
-  <div class="chartbox" id="c-imgtier"></div>
-</div>
-
-<h2><span class="no">6</span>데이터 품질 노트</h2>
+<h2 id="s1"><span class="no">1</span>분석 개요</h2>
+<h3 class="num">1.1 분석 배경 및 문제 제기</h3>
+<p class="body">올리브영은 국내 H&B 유통의 사실상 표준 채널이며, 판매 랭킹은 소비자의 탐색 진입점이자
+브랜드 마케팅의 핵심 성과 지표로 기능한다. 랭킹 상위 노출은 추가 판매를 낳고, 판매는 다시 리뷰를 축적시켜
+노출을 강화하는 피드백 구조가 존재할 것으로 추정되지만, 랭킹 산정 방식은 공개되어 있지 않다.
+한편 업계에서는 체험단·리뷰 이벤트를 통한 리뷰 부양이 관행화되어 있어, 리뷰 지표가 순수한 수요 신호인지에
+대한 의문도 제기된다.</p>
+<p class="body">현재까지 이 주제에 대한 논의는 대부분 경험칙에 의존하며, 상품 단위 데이터로 다음 질문을
+검증한 사례는 찾기 어렵다. 첫째, 리뷰의 <strong>축적 규모</strong>와 <strong>유입 속도</strong> 중 무엇이 현재 랭킹과 더 강하게 연관되는가.
+둘째, 체험단 등 <strong>대가성 리뷰의 비중</strong>이 높은 상품이 실제로 랭킹에서 유리한가. 본 프로젝트는 이를 검증하기 위해
+랭킹·리뷰·이미지를 매일 수집하는 자체 파이프라인을 구축하였고, 본 보고서는 그 1차 산출물로서
+데이터 구축 과정과 탐색적 분석(EDA) 결과를 정리한다.</p>
+<h3 class="num">1.2 분석 목적</h3>
+<p class="body">본 분석의 최종 목표는 "리뷰 축적 패턴과 체험단 비중이 현재 랭킹을 얼마나 설명하는가"를
+상품 단위 크로스섹션·패널 데이터로 검증하는 것이다. 구체적 연구 질문은 다음 세 가지다.</p>
 <ul class="flat">
-  <li class="warnrow"><strong>체험단 신호 부족.</strong> 키워드 매칭 리뷰가 6.5만 건 중 217건(0.33%). 8/5 TOP100의 수집 리뷰에서는 0건이라 crosssection 회귀에서 자동 제외됐다. 키워드 확장 또는 LLM 분류 없이는 Q2(체험단 효과) 분석 불가.</li>
-  <li class="warnrow"><strong>리뷰 표본은 최신순이 아니라 도움순.</strong> 리뷰 목록 API가 정렬 요청을 무시함을 실측으로 확인. 유입 속도는 랭킹 CSV의 리뷰수 증가분(velocity)만 신뢰 가능.</li>
-  <li><strong>8/2 랭킹 누락.</strong> 리뷰·에러 파일은 있으나 랭킹 CSV가 없다(그날 랭킹 단계 실패 추정). 7/24–26도 결측.</li>
-  <li><strong>8/3만 카테고리 전수 수집.</strong> <code>run_local.sh</code>(카테고리 포함)와 <code>run_local.ps1</code>(전체만)의 차이로 추정. 카테고리 수집을 매일로 고정하면 N=2,000 크로스섹션이 매일 쌓인다 — 이번 EDA 최대 발견이 이 표본에서 나왔다.</li>
-  <li><strong>스키마 드리프트.</strong> 7/21–22 랭킹 파일에는 이미지 URL 컬럼이 없음. 분석 코드는 처리 완료.</li>
+<li><strong>Q1 (유입 속도).</strong> 최근 리뷰가 몰린 상품일수록 랭킹이 높은가 — 리뷰 유입 속도와 순위의 연관을 측정한다.</li>
+<li><strong>Q2 (체험단).</strong> 체험단 비중이 높은 상품이 랭킹에서 유리한가, 아니면 별점만 부풀릴 뿐 랭킹과는 무관한가.</li>
+<li><strong>Q3 (규모 vs 평점).</strong> 리뷰 수와 평점 중 무엇이 랭킹 설명력이 높은가 — 변수군별 설명력을 분해 비교한다.</li>
+</ul>
+<p class="body">아울러 랭킹 썸네일 이미지를 함께 아카이빙하고 있어, 상위권 썸네일의 시각적 문법(밝기·채도·
+프로모션 텍스트)이 존재하는지를 부가 질문으로 탐색한다. 단, 랭킹 상위 표본은 절단 표본이며 역인과
+(상위 노출 → 리뷰 증가) 경로가 존재하므로, 본 보고서의 모든 결과는 인과가 아닌 <strong>연관성·설명력</strong>으로 해석한다.</p>
+
+<h2 id="s2"><span class="no">2</span>분석 대상 데이터</h2>
+<h3 class="num">2.1 데이터 수집 대상</h3>
+<p class="body">공식 오픈 API가 존재하지 않으므로, 웹/모바일 서비스가 사용하는 비공개 엔드포인트를 식별하여
+수집 대상으로 삼았다.</p>
+<div class="rpt-wrap"><table class="rpt"><tr><th>구분</th><th>데이터</th><th>수집 방법 / 엔드포인트</th><th>활용 목적</th></tr><tr><td>필수</td><td>판매 랭킹 TOP100 (전체+21개 카테고리)</td><td>getBestList.do 서버렌더링 HTML 파싱</td><td>종속변수(순위), 가격·할인·프로모션 배지</td></tr><tr><td>필수</td><td>상품별 리뷰 통계</td><td>리뷰 stats API (리뷰수·평균별점·별점분포)</td><td>리뷰 규모·평점 변수, 리뷰 유입 속도 산출</td></tr><tr><td>필수</td><td>리뷰 목록 (본문 포함)</td><td>리뷰 cursor API (페이지네이션)</td><td>리뷰 구성·체험단 신호·작성일 분석</td></tr><tr><td>보조</td><td>상품 대표 이미지</td><td>이미지 CDN 다운로드 (URL 해시 아카이빙)</td><td>썸네일 시각 특성 분석</td></tr></table></div><p class="cap">표 1. 데이터 수집 대상</p>
+<h3 class="num">2.2 데이터 수집 범위 및 기간</h3>
+<div class="rpt-wrap"><table class="rpt"><tr><th>구분</th><th>수집 범위 / 기준</th></tr><tr><td>수집 기간</td><td>2026-07-21 ~ 08-05 (12개 수집일 · 결측 7/24–26, 8/2)</td></tr><tr><td>랭킹 범위</td><td>전체 TOP100 매일 · 21개 카테고리×100위는 8/3 1회(이후 매일로 전환)</td></tr><tr><td>리뷰 범위</td><td>랭킹 등장 상품의 신규 리뷰 증분 + 백필(상품당 최대 150건)</td></tr><tr><td>수집 시각</td><td>매일 KST 10:00 (Windows 작업 스케줄러)</td></tr><tr><td>누적 규모</td><td>유니크 상품 1,906개 · 유니크 리뷰 64,904건 · 썸네일 815장</td></tr></table></div><p class="cap">표 2. 데이터 수집 범위 (2026-08-05 기준 누적)</p>
+<h3 class="num">2.3 데이터 명세</h3>
+<div class="rpt-wrap"><table class="rpt"><tr><th>파일</th><th>단위</th><th>주요 컬럼</th></tr><tr><td>YYYY-MM-DD_ranking.csv</td><td>상품×카테고리×일</td><td>순위, 브랜드, 상품명, 정가/혜택가/할인율, 리뷰수, 리뷰별점, 별점1~5비율, 세일/쿠폰/증정/오늘드림, 상품번호, 대표이미지URL</td></tr><tr><td>YYYY-MM-DD_reviews.csv</td><td>리뷰 1건</td><td>리뷰ID, 작성일, 별점, 리뷰타입, 체험단여부, 피부타입/톤/고민, 도움수, 포토여부, 재구매, 리뷰본문</td></tr><tr><td>backfill/top100_reviews.csv</td><td>리뷰 1건</td><td>동일 스키마의 과거 리뷰 일괄 수집분</td></tr><tr><td>images/*.jpg·png</td><td>이미지 1장</td><td>파일명 = md5(대표이미지URL) 상위 16자리 — URL 변경(썸네일 교체) 이력 보존</td></tr></table></div><p class="cap">표 3. 수집 파일 명세 (CSV: utf-8-sig, 일자별 파일 분리)</p>
+
+<h3 class="num" id="s24">2.4 수집 파이프라인 설계</h3>
+<p class="body">수집기는 Python으로 구현하였으며, 다음 설계 원칙을 따른다.</p>
+<ul class="flat">
+<li><strong>가정용 PC에서 실행.</strong> 대상 서버가 Cloudflare로 데이터센터 IP를 차단하므로 클라우드가 아닌
+로컬 PC에서 매일 10시에 스케줄 실행하고, 결과 CSV를 GitHub 저장소로 푸시한다. TLS 핑거프린트
+임퍼서네이션(curl_cffi)으로 일반 브라우저와 동일한 시그니처를 유지한다.</li>
+<li><strong>정중한 수집(politeness).</strong> 호스트별 최소 요청 간격(랭킹 8.0초, 리뷰 API 1.3초, 이미지 CDN 0.3초)을
+강제하고, HTTP 429 수신 시 15초×n(최대 120초) 지수 백오프, 연속 실패 시 쿨다운을 적용한다.</li>
+<li><strong>중단 내구성.</strong> 진행 상태를 체크포인트(JSON)로 저장하여 데드라인 도달·오류 중단 후 재실행하면
+완료 지점부터 이어서 수집한다. 리뷰는 수집 즉시 CSV에 append+fsync하여 유실을 방지한다.</li>
+<li><strong>중복 회피.</strong> 리뷰는 상품별 기수집 리뷰ID 커서로 신규분만 수집하고, 이미지는 URL 해시 파일명으로
+중복 다운로드를 차단한다. 이미지 파일명이 URL에 결정적으로 대응되므로 썸네일 교체 이력이 자동 보존된다.</li>
+<li><strong>실행 시간 관리.</strong> 전 카테고리 수집 시 리뷰 본문까지 걷으면 8시간을 초과함을 확인하여,
+카테고리 상품은 랭킹+리뷰 통계만 수집하고 리뷰 본문은 전체 TOP100 상품으로 한정하는 모드
+(--review-text-overall-only)를 도입했다. 예상 일일 실행 시간은 1~2시간이다.</li>
+</ul>
+<h3 class="num">2.5 API 실측으로 확인된 수집 한계</h3>
+<p class="body">수집 과정에서 API의 문서화되지 않은 동작을 실측으로 확인하였고, 이는 변수 설계에 직접 반영되었다.</p>
+<div class="rpt-wrap"><table class="rpt"><tr><th>항목</th><th>실측 내용</th><th>분석 상의 처리</th></tr><tr><td>리뷰 정렬</td><td>cursor API가 sort:RECENT 요청을 무시하고 도움순 고정 반환</td><td>리뷰 표본을 '노출면(도움순 상위) 표본'으로 재정의</td></tr><tr><td>페이지 크기</td><td>pageSize=20 요청에도 페이지당 10건 반환 → 첫 수집 상품당 30건 절단</td><td>유입 속도는 리뷰 표본 대신 랭킹 CSV의 일별 총리뷰수 증분으로 산출</td></tr><tr><td>체험단 표시</td><td>API에 체험단 필드 없음 — 본문 표기 문구로만 추정 가능</td><td>키워드 재계산(하한 추정치), LLM 분류 고도화 예정</td></tr><tr><td>수집 결측</td><td>7/24–26(PC 미가동), 8/2(랭킹 단계 실패)</td><td>차분 계산 시 경과일로 정규화</td></tr><tr><td>스키마 드리프트</td><td>7/21–22 파일에 대표이미지URL 컬럼 부재</td><td>전처리에서 컬럼 유무 허용</td></tr></table></div><p class="cap">표 4. 실측으로 확인된 수집 한계와 대응</p>
+
+<h2 id="s3"><span class="no">3</span>개발 환경</h2>
+<p class="body">수집·분석 모두 Python 3.11 이상을 사용한다. 수집기는 Windows(작업 스케줄러)와
+macOS/Linux(cron)에서 동일하게 동작하도록 셸/PowerShell 러너를 제공하며, 분석 코드는 저장소의
+analysis/ 모듈로 재현 가능하다. 정적 결과물은 GitHub Actions가 CSV를 JSON으로 가공하여 GitHub Pages로 배포한다.</p>
+<div class="rpt-wrap"><table class="rpt"><tr><th>구분</th><th>도구</th><th>용도</th></tr><tr><td>수집</td><td>curl_cffi</td><td>TLS 핑거프린트 임퍼서네이션 (Cloudflare 통과)</td></tr><tr><td>수집</td><td>BeautifulSoup4 + lxml</td><td>랭킹 HTML 파싱</td></tr><tr><td>수집</td><td>Playwright</td><td>cf_clearance 쿠키 폴백 발급</td></tr><tr><td>분석</td><td>pandas · numpy</td><td>전처리, 상관/회귀, 지표 산출</td></tr><tr><td>분석</td><td>Pillow</td><td>썸네일 저수준 특성 추출</td></tr><tr><td>시각화</td><td>순수 SVG/JS (라이브러리 무의존)</td><td>본 보고서의 인터랙티브 차트</td></tr></table></div><p class="cap">표 5. 핵심 활용 라이브러리</p>
+
+<h2 id="s4"><span class="no">4</span>분석 방안 및 결과</h2>
+<h3 class="num" id="s41">4.1 데이터 전처리 및 변수 정의</h3>
+<p class="body">전처리는 다음 순서로 수행한다. (i) 일자별 리뷰 파일과 백필을 병합한 뒤 (상품번호, 리뷰ID) 기준
+중복 제거 — 일별 재수집분이 많아 원시 21,901행이 유니크 기준으로 크게 줄어든다. (ii) 체험단여부 컬럼은
+수집 시기별로 판정 규칙이 달랐던 이력이 있어 저장값을 폐기하고 본문 표기 문구 기준으로 재계산한다.
+(iii) 7/21–22 파일의 이미지 컬럼 부재 등 스키마 드리프트를 허용 병합한다. (iv) 전체 TOP100 상품은
+8/3 카테고리 랭킹 소속으로 매핑한다(매핑률 83%). 주요 파생변수는 표 6과 같다.</p>
+<div class="rpt-wrap"><table class="rpt"><tr><th>변수</th><th>정의</th><th>비고</th></tr><tr><td>velocity_delta</td><td>연속 스냅샷 간 총리뷰수 증가분/일 (경과일 정규화)</td><td>유일하게 표본 편향 없는 유입 속도 지표</td></tr><tr><td>velocity_span·recent30_share</td><td>수집 리뷰 작성일 기반 속도/최근성</td><td>도움순 표본 편향으로 참고용 강등</td></tr><tr><td>trial_share</td><td>본문 표기 문구(체험단·협찬·무상제공 등) 매칭 비율</td><td>하한 추정치, 저장된 플래그는 미사용</td></tr><tr><td>log_review_cnt · star1_share 등</td><td>log10(1+리뷰수), 별점분포 비율</td><td>stats API 전수 기준</td></tr><tr><td>카테고리 매핑</td><td>전체 TOP100 상품번호 → 8/3 카테고리 랭킹 소속</td><td>매핑률 83%</td></tr><tr><td>이미지 특성</td><td>밝기·채도·colorfulness·흰테두리비율·엣지밀도</td><td>Hasler-Süsstrunk(2003) 등 저수준 지표</td></tr></table></div><p class="cap">표 6. 주요 파생변수 정의</p>
+
+<h3 class="num" id="s42">4.2 기초 현황: 랭킹의 변동성</h3>
+<p class="body">랭킹 분석의 전제로 종속변수인 순위 자체의 안정성을 진단하였다. 결과적으로 전체 TOP100은
+<strong>매일 평균 43개 상품이 교체되는 고변동 리스트</strong>였다. 특히 8/1에는 100개 중 70개가 신규 진입하였는데,
+이는 월초 프로모션 개편 주기와 겹친다. 살아남은 상품 사이에서도 전일 대비 순위 상관(Spearman ρ)은
+0.18~0.78을 오갔다(그림 2). 즉 순위는 일 단위로 강하게 재배열되며, 월초에는 사실상 리셋된다.</p>
+<div class="card"><h3>그림 1. 일별 신규 진입 상품 수 (전체 TOP100)</h3><p class="take">하루 평균 43개 상품이 교체된다. 8/1에는 70개가 새로 진입 — 월초 세일 개편과 겹치는 급변.</p><div class="chartbox" id="c-turnover"></div></div>
+<div class="card"><h3>그림 2. 연속일 순위 상관 (양일 모두 등장한 상품 기준, Spearman ρ)</h3><p class="take">잔류 상품의 순위조차 강하게 재배열된다. 8/1(ρ=0.18)과 8/3(ρ=0.22)은 순위가 사실상 리셋된 날.</p><div class="chartbox" id="c-rankcorr"></div></div>
+<p class="body">순위 구간별로는 위계가 뚜렷하다. 1–10위 상품의 익일 잔류율은 70%인 반면 61–100위는 49%로,
+하위권일수록 이탈 위험이 크다. 잔류하더라도 평균 13~21계단을 이동한다(그림 3). 8/5 기준 TOP10 상품의
+기간 내 궤적(그림 4)을 보면, 현재 최상위 상품 다수가 기간 중 50위 밖을 다녀왔다.</p>
+<div class="card"><h3>그림 3. 전일 순위 구간별 안정성</h3><p class="take">1–10위는 다음날 70%가 잔류하지만 61–100위는 절반이 이탈한다. 잔류해도 평균 13~21계단 움직인다.</p><div class="chartbox" id="c-tier"></div></div>
+<div class="card"><h3>그림 4. 8/5 TOP10 상품의 기간 내 순위 궤적</h3><p class="take">현재 상위권 상품 다수가 기간 내 50위 밖까지 다녀왔다. 상위 3개만 강조, 나머지는 회색 컨텍스트.</p><div class="legend" id="lg-traj"></div><div class="chartbox" id="c-traj"></div></div>
+<h4 class="num">4.2.1 신규 진입 상품의 특성</h4>
+<p class="body">신규 진입 상품 471건과 잔류 상품 629건을 비교하면(표 7), 신규 진입 상품의 중위 누적 리뷰수는
+5,698건으로 잔류 상품(17,539건)의 3분의 1 수준이다. 즉 <strong>리뷰 자산이 작은 상품도 끊임없이 리스트에 진입</strong>하며,
+진입 지점은 46%가 61–100위 구간이고 TOP10 직행은 7.2%에 불과하다. 할인율·증정 여부는 두 집단 간
+차이가 거의 없어, 진입 자체를 가르는 것은 프로모션 강도보다는 단기 판매 모멘텀으로 추정된다.</p>
+<div class="rpt-wrap"><table class="rpt"><tr><th>구분</th><th>관측 수</th><th>평균 순위</th><th>중위 순위</th><th>중위 리뷰수</th><th>평균 할인율(%)</th><th>증정 비율</th></tr><tr><td>잔류 상품(전일에도 등장)</td><td>629</td><td>47.58</td><td>47</td><td>17,539</td><td>25.79</td><td>0.48</td></tr><tr><td>신규 진입 상품</td><td>471</td><td>54.4</td><td>57</td><td>5,698</td><td>26.71</td><td>0.41</td></tr></table></div><p class="cap">표 7. 신규 진입 vs 잔류 상품 특성 비교 (11개 전이일 합산)</p>
+
+<h3 class="num" id="s43">4.3 TOP100의 구성: 카테고리와 브랜드</h3>
+<p class="body">전체 TOP100 슬롯(상품×일, 12일 누적 1,200개)의 카테고리 구성을 보면 메이크업(18.8%)과
+스킨케어(18.1%)가 최대이나, <strong>1~10위 구간만 보면 순서가 뒤집힌다</strong>. 마스크팩이 19.2%(전 구간 대비 1.6배),
+푸드가 9.2%(2.4배)로 과대대표되고 메이크업은 10.8%로 줄어든다(그림 5). 메이크업은 많은 상품이 넓게
+걸치는 카테고리, 마스크팩·푸드는 소수 상품이 최상위에 꽂히는 카테고리다.</p>
+<div class="card"><h3>그림 5. 전체 TOP100 슬롯의 카테고리 구성 — 전 구간 vs 1~10위</h3><p class="take">메이크업·선케어는 1~10위에서 비중이 절반 가까이 줄고, 마스크팩은 1.6배·푸드는 2.4배로 늘어난다. (미매핑 = 8/3 카테고리 100위 안에 없던 상품 — 기획세트 등)</p><div class="legend"><span class="key"><span class="sw" style="background:var(--s1)"></span>전 구간(1~100위) 슬롯 비중</span><span class="key"><span class="sw" style="background:var(--s2)"></span>1~10위 슬롯 비중</span></div><div class="chartbox" id="c-catmix"></div></div>
+<p class="body">카테고리 간 이질성도 크다(표 9). 8/3 카테고리 랭킹 기준 중위 리뷰수는 메이크업 15,817건에서
+취미/팬시 1건까지 4개 자릿수가 갈리고, 세일 배지 비율도 선케어 97%에서 취미/팬시 16%까지 벌어진다.
+비(非)뷰티 카테고리(패션·홈리빙·취미)는 리뷰 기반 자체가 얇아, 본분석에서는 뷰티 카테고리와 분리 취급이 필요하다.</p>
+<div class="rpt-wrap"><table class="rpt"><tr><th>카테고리</th><th>중위 리뷰수</th><th>평균 별점</th><th>중위 혜택가(원)</th><th>평균 할인율(%)</th><th>세일 비율</th><th>증정 비율</th></tr><tr><td>메이크업</td><td>15,817</td><td>4.76</td><td>16,700</td><td>18.66</td><td>0.78</td><td>0.36</td></tr><tr><td>마스크팩</td><td>11,535</td><td>4.8</td><td>17,900</td><td>31.81</td><td>0.96</td><td>0.27</td></tr><tr><td>클렌징</td><td>8,360</td><td>4.81</td><td>18,550</td><td>20.9</td><td>0.83</td><td>0.3</td></tr><tr><td>뷰티소품</td><td>7,946</td><td>4.8</td><td>8,330</td><td>12.18</td><td>0.53</td><td>0.24</td></tr><tr><td>바디케어</td><td>6,379</td><td>4.8</td><td>15,100</td><td>18.84</td><td>0.79</td><td>0.11</td></tr><tr><td>스킨케어</td><td>6,371</td><td>4.82</td><td>26,600</td><td>28.74</td><td>0.85</td><td>0.48</td></tr><tr><td>구강용품</td><td>5,337</td><td>4.77</td><td>10,900</td><td>17.51</td><td>0.82</td><td>0.24</td></tr><tr><td>헤어케어</td><td>5,105</td><td>4.8</td><td>20,810</td><td>22.67</td><td>0.9</td><td>0.1</td></tr><tr><td>위생용품</td><td>4,663</td><td>4.83</td><td>8,550</td><td>19.68</td><td>0.58</td><td>0.15</td></tr><tr><td>푸드</td><td>4,560</td><td>4.82</td><td>5,300</td><td>14.29</td><td>0.45</td><td>0.04</td></tr><tr><td>더모 코스메틱</td><td>4,304</td><td>4.82</td><td>26,700</td><td>22.64</td><td>0.83</td><td>0.42</td></tr><tr><td>건강식품</td><td>4,006</td><td>4.83</td><td>20,700</td><td>23.07</td><td>0.78</td><td>0.1</td></tr><tr><td>선케어</td><td>3,775</td><td>4.77</td><td>20,430</td><td>23.99</td><td>0.97</td><td>0.36</td></tr><tr><td>헬스/건강용품</td><td>2,304</td><td>4.7</td><td>15,330</td><td>14.24</td><td>0.72</td><td>0.04</td></tr><tr><td>맨즈에딧</td><td>1,407</td><td>4.85</td><td>19,900</td><td>20.07</td><td>0.75</td><td>0.27</td></tr><tr><td>향수/디퓨저</td><td>1,240</td><td>4.76</td><td>37,300</td><td>21.47</td><td>0.83</td><td>0.28</td></tr><tr><td>네일</td><td>838</td><td>4.68</td><td>10,625</td><td>10.61</td><td>0.61</td><td>0.16</td></tr><tr><td>패션</td><td>77</td><td>4.32</td><td>19,550</td><td>11.23</td><td>0.38</td><td>0.0</td></tr><tr><td>홈리빙/가전</td><td>18</td><td>4.17</td><td>16,180</td><td>16.37</td><td>0.24</td><td>0.0</td></tr><tr><td>취미/팬시</td><td>1</td><td>3.25</td><td>31,500</td><td>9.52</td><td>0.16</td><td>0.0</td></tr></table></div><p class="cap">표 9. 카테고리별 기초 통계 (8/3, 카테고리당 TOP100 기준)</p>
+<h4 class="num">4.3.1 상시 랭커 브랜드의 특징</h4>
+<p class="body">12일 중 10일 이상 등장한 브랜드는 전체 227개 중 30개(13%)에 불과하나 이들이 슬롯의 46%를
+차지한다(반대로 125개 브랜드는 1~2일 등장 후 사라진다). 상시 브랜드 30개는 <strong>전원이 단일 카테고리
+전문 브랜드</strong>였으며(그림 6), 생존 방식은 두 전형으로 갈린다. 메디힐(상품 10개·79슬롯)·아누아(10개)처럼
+여러 상품을 회전시키는 <strong>포트폴리오형</strong>과, 구달·바이오던스·스킨푸드처럼 단일 상품으로 전 기간 체류하는
+<strong>히어로 상품형</strong>이다. 인지도 경로도 이원화되어 있다 — 홀리카홀리카(중위 리뷰 19.8만)·스킨푸드(10.3만)의
+리뷰 자산형과, 셀리맥스(중위 리뷰 1,362건)처럼 리뷰 자산 없이 높은 할인·신제품 회전으로 체류하는
+신흥형이 공존한다. 상시 브랜드 상품명에는 "1위·올영픽·1+1·단독기획·연예인 PICK" 류 클레임이 사실상
+표준으로 부착되어 있다.</p>
+<div class="card"><h3>그림 6. 상시 랭커 브랜드 30개의 주력 카테고리</h3><p class="take">12일 중 10일 이상 등장한 브랜드 30개 전원이 한 카테고리에 전문화되어 있다.</p><div class="chartbox" id="c-brandcats"></div></div>
+<div class="card"><h3>그림 10. 브랜드별 TOP100 점유 (상품×일 슬롯, 12일 누적)</h3><p class="take">메디힐이 79슬롯으로 독주 — 본분석에서 브랜드 고정효과 통제가 필요한 이유.</p><div class="chartbox" id="c-brands"></div></div>
+<div class="card"><h3>표 8. 상시 랭커 브랜드 상세 (슬롯 수 상위 15개)</h3>
+<p class="take">아래 표는 등장일수 10일 이상 브랜드를 슬롯 수 기준으로 정렬한 것이다. 전체 30개는 하단에서 펼쳐볼 수 있다.</p>
+<div class="chartbox" id="c-brandtable"></div></div>
+
+<h3 class="num" id="s44">4.4 랭킹 설명 요인 분석</h3>
+<h4 class="num">4.4.1 리뷰 규모: 범위 제한의 함정과 카테고리 크로스섹션</h4>
+<p class="body">전체 TOP100 내부에서 순위와 리뷰수의 상관은 사실상 0이다(8/5 기준 ρ=−0.01). 그러나 이는
+"이미 상위 1%만 모인 표본"에서 발생하는 <strong>범위 제한(range restriction)</strong>의 산물이다. 8/3 카테고리
+크로스섹션(20개 카테고리 × 100위, N=2,000)에서는 <strong>log(리뷰수)가 20개 카테고리 전부에서 순위와 음의
+상관</strong>(값이 클수록 상위권)을 보였다 — 평균 ρ=−0.28, 최대 네일 −0.54(그림 7). 반면 평점의 카테고리 내
+상관은 평균 +0.01로 어느 카테고리에서도 설명력이 없었다. Q3에 대한 잠정 답은 명확하다:
+<strong>규모는 설명하고, 평점은 설명하지 못한다.</strong></p>
+<div class="card"><h3>그림 7. 카테고리별 순위 ~ log(리뷰수) Spearman ρ — 8/3, 카테고리당 N=100</h3><p class="take">20개 카테고리 전부 음의 상관 (평균 −0.28, 최대 네일 −0.54). 평점(ρ 평균 +0.01)은 어느 카테고리에서도 설명력이 없다.</p><div class="chartbox" id="c-catrho"></div></div>
+<h4 class="num">4.4.2 리뷰 유입 속도</h4>
+<p class="body">유입 속도(velocity_delta)는 일자별 반복 측정에서 11일 중 9일 동안 가설 방향(유입이 빠를수록
+상위권, ρ&lt;0)을 보였고 평균 ρ=−0.16이었다(그림 8). 방향은 일관되나 크기가 −0.34~+0.17로 출렁여, 확정에는
+날짜 풀링과 카테고리 고정효과가 필요하다. 유입 속도 상위 상품(표 10)에서는 두 가지가 관찰된다.
+첫째, 일 1,000~3,000건급 유입 상품(웰라쥬·셀라딕스)이 실제로 상위권(18위·36위)에 위치한다. 둘째,
+유입 2위 상품의 상품명에 <strong>"리뷰이벤트"가 명시</strong>되어 있다 — 리뷰 유입이 순수 수요 신호가 아니라
+마케팅 개입의 결과일 수 있음을 보여주는 직접 증거로, Q2(대가성 리뷰)와 연결되는 관찰이다.</p>
+<div class="card"><h3>그림 8. 리뷰 유입 속도(velocity)와 순위의 상관 — 일자별 반복 측정</h3><p class="take">전일 대비 리뷰수 증가분이 큰 상품일수록 상위권인 경향이 11일 중 9일에서 관측(ρ<0). 평균 ρ=−0.16.</p><div class="legend"><span class="key"><span class="sw" style="background:var(--pos)"></span>ρ&lt;0 · 유입 빠를수록 상위 (가설 방향)</span><span class="key"><span class="sw" style="background:var(--neg)"></span>ρ&gt;0 · 반대 방향</span></div><div class="chartbox" id="c-velrho"></div></div>
+<div class="rpt-wrap"><table class="rpt"><tr><th>8/5 순위</th><th>브랜드</th><th>상품명</th><th>누적 리뷰수</th><th>리뷰 유입/일</th></tr><tr><td>18</td><td>웰라쥬</td><td>웰라쥬 리얼 히알루로닉 블루 100 앰플 100ml 기획 (+60ml 리필+수딩크림…</td><td>17,635</td><td>2,967</td></tr><tr><td>36</td><td>셀라딕스</td><td>[리뷰이벤트/트러블1등] 셀라딕스 세범 리밸런싱 RX 131 앰플 30ml 기획 (…</td><td>3,072</td><td>1,020</td></tr><tr><td>1</td><td>메디힐</td><td>[15년 연속 1위] 메디힐 에센셜 마스크팩 10/10+1매 기획 7종 골라담기</td><td>466,058</td><td>899</td></tr><tr><td>50</td><td>메디힐</td><td>[15년연속 1위] 메디힐 에센셜 마스크팩 1매 고기능 7종 골라담기</td><td>514,000</td><td>674</td></tr><tr><td>39</td><td>딜라이트 프로젝트</td><td>[8월올영픽]딜라이트 프로젝트 단백질쉐이크 모음전(1개입/7개입/통)</td><td>147,200</td><td>486</td></tr><tr><td>51</td><td>홀리카홀리카</td><td>[NEW젤테일] 홀리카홀리카 마이페이브 피스 아이섀도우/젤테일/피스 빔/피스 밤</td><td>200,120</td><td>333</td></tr><tr><td>49</td><td>VT</td><td>[톡신마켓특가][1등선크림/끈적임ZERO] VT 피디알엔 에어 클라우드 선스크린 5…</td><td>8,422</td><td>279</td></tr><tr><td>96</td><td>롬앤</td><td>[NEW두유코어/1등틴트] 롬앤 더 쥬시 래스팅 틴트 단품/기획</td><td>263,389</td><td>275</td></tr><tr><td>92</td><td>쏘피</td><td>[8월올영픽]쏘피 쿨링프레쉬 생리대 19종 택 1 (패드/안심숙면팬티/라이너/번들)</td><td>52,162</td><td>175</td></tr><tr><td>72</td><td>네이밍</td><td>[8월올영픽/공동개발] 네이밍 플러피 파우더 블러쉬 (+아티스트 브러쉬) 20col…</td><td>39,877</td><td>173</td></tr></table></div><p class="cap">표 10. 리뷰 유입 속도 상위 10개 상품 (8/5 기준, 유입/일 = 직전 수집일 대비 총리뷰수 증가분)</p>
+<h4 class="num">4.4.3 평점의 천장효과와 다변량 분해</h4>
+<p class="body">전체 TOP100의 평점은 4.5~5.0 구간에 전부 몰려 있고 절반이 4.8이다(그림 9). 이 표본에서 평점
+효과는 원리적으로 식별 불가능하며, "평점이 무관하다"가 아니라 "천장에 눌려 분산이 없다"로 해석해야 한다.
+표준화 OLS(표 11)에서도 전체 모형의 설명력은 R²=0.11로 낮고 개별 계수는 유의 수준에 도달하지 못했다
+— N=87의 단일 스냅샷으로는 검정력이 부족하며, 이것이 카테고리 수집 일상화가 필요한 직접적 이유다.
+변수군별로는 가격/프로모션(ΔR²=0.059)과 리뷰 구성(0.033)이 상대적으로 컸다.</p>
+<div class="card"><h3>그림 9. 전체 TOP100 평점 분포 — 천장효과</h3><p class="take">100개 상품의 평점이 4.5~5.0에 전부 몰려 있고 절반이 4.8이다. 이 표본에서 '평점 효과'는 원리적으로 식별 불가.</p><div class="chartbox" id="c-rating"></div></div>
+<div class="rpt-wrap"><table class="rpt"><tr><th>변수군</th><th>단독 R²</th><th>전체 모형에서 제외 시 ΔR²</th></tr><tr><td>규모(리뷰수)</td><td>0.001</td><td>0.003</td></tr><tr><td>평점</td><td>0.003</td><td>0.003</td></tr><tr><td>유입속도</td><td>0.023</td><td>0.015</td></tr><tr><td>리뷰 구성(노출면)</td><td>0.032</td><td>0.033</td></tr><tr><td>가격/프로모션</td><td>0.046</td><td>0.059</td></tr></table></div><p class="cap">표 11. 변수군별 설명력 분해 (8/5, 표준화 OLS, 완전사례 N=87 고정, 전체 모형 R²=0.112)</p>
+<p class="body">가격·프로모션 변수를 부연하면, 8/5 전체 TOP100의 배지 부착률은 오늘드림 99%, 세일 89%,
+쿠폰 69%, 증정 49%로 <strong>프로모션이 사실상 상수</strong>에 가깝다. 다만 순위 구간별로는 1~25위의 평균 할인율(32.9%)이
+51~75위(24.0%)보다 높고 증정 비율도 상위 구간이 높아(0.56 vs 0.36), 상위권일수록 프로모션 강도가
+세다는 약한 경향이 있다.</p>
+
+<h3 class="num" id="s45">4.5 리뷰 데이터 특성과 체험단 신호</h3>
+<p class="body">수집된 유니크 리뷰 64,904건은 도움순 상위 표본임을 전제로 해석해야 한다(표 4). 이 표본에서
+별점 5점 비율은 87.3%, 포토 리뷰 비율은 73.7%로, <strong>소비자가 상품 페이지에서 처음 접하는 노출면은
+고평점·포토 리뷰가 지배</strong>한다. 리뷰타입은 NORMAL 73%, 오프라인 구매 22%로 온라인 구매 리뷰가 다수다.</p>
+<div class="rpt-wrap"><table class="rpt"><tr><th>항목</th><th>값</th></tr><tr><td>별점 5점 비율</td><td>87.3%</td></tr><tr><td>별점 4점 이하</td><td>12.7%</td></tr><tr><td>포토 리뷰 비율</td><td>73.7%</td></tr><tr><td>재구매 표시 비율</td><td>13.1%</td></tr><tr><td>리뷰타입 구성</td><td>NORMAL 73.3% · OFFLINE 21.8% · GIFT 4.4% · OL_YOUNG 0.5%</td></tr><tr><td>체험단 표기 리뷰</td><td>217건 (0.33%) — 도브·바세린·플르부아 등 일부 브랜드에 집중, 2026년 6~7월 작성분에 집중</td></tr></table></div><p class="cap">표 12. 수집 리뷰 표본(도움순 상위) 기초 통계</p>
+<p class="body">체험단 표기 리뷰는 217건(0.33%)에 그쳤다. 브랜드별로는 도브(19건)·바세린(12건)·플르부아(12건)
+등에 집중되고 작성 시점도 2026년 6~7월에 몰려 있어, <strong>특정 브랜드의 캠페인 단위로 발생</strong>하는 패턴이
+관찰된다. 다만 이 수치는 본문에 표기 문구를 남긴 리뷰만 포착한 하한 추정치다. 표기를 사진에만 넣거나
+문구가 변형된 경우를 놓치므로, Q2의 본격 검증을 위해서는 키워드 확장과 LLM 분류로 탐지율을 끌어올리는
+작업이 선행되어야 한다(5.3절).</p>
+
+<h3 class="num" id="s46">4.6 썸네일 이미지 분석</h3>
+<p class="body">랭킹 썸네일 815장에서 밝기·채도·colorfulness·흰 테두리 비율·엣지 밀도를 추출하여 순위와의
+상관을 측정하였다. 상위권 썸네일일수록 <strong>더 어둡고, 채도가 높고, 흰 배경 비중이 낮은</strong> 경향이 8/1과 8/5
+두 스냅샷에서 같은 방향으로 재현되었다(그림 11). 순위 구간별 평균 밝기는 1–25위 164에서 76–100위
+177로 단조 증가한다(그림 12). 이는 상위권 썸네일이 흰 배경의 단품 컷보다 기획 이미지·텍스트 오버레이
+중심으로 구성되는 것과 정합적이며, 현 시점 상관 크기(ρ≈0.15~0.20)는 리뷰 변수들보다 오히려 크다.
+다음 단계로 OCR을 통한 프로모션 클레임("1위", "1+1") 추출을 계획하고 있다.</p>
+<div class="card"><h3>그림 11. 이미지 특성 ~ 순위 Spearman ρ — 두 스냅샷 재현 비교</h3><p class="take">밝기(+)와 흰 테두리 비율(+)은 하위권과, 채도·컬러풀니스·엣지 밀도(−)는 상위권과 연관. 두 날짜 모두 부호 일치.</p><div class="legend"><span class="key"><span class="sw" style="background:var(--s1)"></span>8/5 (N=91)</span><span class="key"><span class="sw" style="background:var(--s2)"></span>8/1 (N=100)</span></div><div class="chartbox" id="c-imgrho"></div></div>
+<div class="card"><h3>그림 12. 순위 구간별 썸네일 평균 밝기 (8/5)</h3><p class="take">1–25위 평균 164 → 76–100위 177로 단조 증가. 상위권 썸네일이 기획 이미지·텍스트 오버레이가 많은 것과 정합적.</p><div class="chartbox" id="c-imgtier"></div></div>
+
+<h2 id="s5"><span class="no">5</span>종합 결론 및 향후 계획</h2>
+<h3 class="num">5.1 분석 결과 요약</h3>
+<ul class="flat">
+<li><strong>랭킹은 고변동 시스템이다.</strong> 일 평균 43개 상품이 교체되고 월초에는 사실상 리셋된다. 순위 수준뿐 아니라
+진입·잔류를 종속변수로 삼는 설계가 필요하다.</li>
+<li><strong>리뷰 규모는 카테고리 안에서 일관되게 순위를 설명한다</strong> (20/20 카테고리 음의 상관, 평균 ρ=−0.28).
+전체 TOP100 내부의 무상관은 범위 제한의 착시다.</li>
+<li><strong>평점은 천장효과로 식별 불가.</strong> 상위 표본의 평점 분산이 소멸하여, 평점 효과 검증은 카테고리
+크로스섹션의 별점 분포 변수로 재시도해야 한다.</li>
+<li><strong>리뷰 유입 속도는 방향이 일관된 유망 가설이다</strong> (11일 중 9일 ρ&lt;0). 유입 상위 상품에서 "리뷰이벤트"
+명시 사례가 확인되어, 유입 속도와 마케팅 개입의 얽힘을 분리하는 것이 본분석의 핵심 과제다.</li>
+<li><strong>TOP100의 상시 세력은 30개 전문 브랜드다.</strong> 단일 카테고리 전문화, 포트폴리오형/히어로형의 이원 전략,
+리뷰 자산형/신흥 할인형의 공존이 확인되었다.</li>
+<li><strong>썸네일에는 시각적 문법이 있다.</strong> 상위권일수록 어둡고 채도 높은 기획형 이미지가 우세하며, 이 상관은
+두 스냅샷에서 재현되었다.</li>
+</ul>
+<h3 class="num">5.2 데이터 품질 개선 조치 (완료)</h3>
+<ul class="flat">
+<li>체험단여부 저장값 폐기 및 본문 기준 재계산 로직으로 전환 (전처리 단계).</li>
+<li>리뷰 정렬·페이지 크기의 실측 결과를 반영하여 유입 속도 지표를 velocity_delta로 일원화.</li>
+<li>전 카테고리 일일 수집 모드(--review-text-overall-only) 도입 — 실행 시간을 8시간에서 1~2시간으로 단축,
+8/6부터 N=2,000 크로스섹션이 매일 축적된다.</li>
+</ul>
+<h3 class="num">5.3 본분석 로드맵</h3>
+<ul class="flat">
+<li><strong>+2주 (카테고리 패널 약 28,000 관측치):</strong> 카테고리·날짜 고정효과 pooled 회귀로 Q1·Q3 검정.
+리뷰수·유입속도·별점분포·가격/프로모션의 설명력 분해를 카테고리 표본에서 재실행.</li>
+<li><strong>+4주:</strong> 동적 패널(Δ순위 ~ 전기 유입속도)로 선후관계 접근, 진입/잔류 로지스틱, 썸네일 교체 이벤트 스터디.</li>
+<li><strong>체험단 고도화:</strong> 키워드 확장 → 소량 수동 라벨링 → LLM 배치 분류로 탐지율 제고 후 Q2 검증.
+"노출면(도움순 상위) 내 체험단 비중"을 병행 지표로 사용.</li>
+<li><strong>이미지 고도화:</strong> 한국어 OCR로 썸네일 프로모션 클레임을 더미변수화, CLIP 임베딩 기반 썸네일 유형 분류.</li>
 </ul>
 
-<h2><span class="no">7</span>본분석 설계에 주는 시사점</h2>
-<ul class="flat">
-  <li><strong>전체 TOP100 단독 크로스섹션은 답을 못 준다.</strong> 범위 제한 때문에 리뷰수·평점이 전부 무상관으로 보인다. 카테고리 크로스섹션(가능하면 매일)을 표본의 기본 단위로 삼을 것.</li>
-  <li><strong>velocity 효과는 방향이 일관되므로 살아있는 가설.</strong> 단일 날짜 ρ는 −0.34~+0.17로 출렁이므로, 날짜 풀링 + 카테고리 고정효과로 검정력을 확보해야 한다.</li>
-  <li><strong>평점은 TOP100에선 버리고, 카테고리 표본에서만 별점 분포(1점 비율 등)로 재시도.</strong></li>
-  <li><strong>랭킹이 이 정도로 고변동이면 "순위" 자체보다 "진입/잔류"가 더 안정적인 종속변수일 수 있다</strong> — 잔류 여부 로지스틱, 등장일수 모형을 병행 권장.</li>
-  <li><strong>이미지 변수는 기대 이상.</strong> 방향 재현이 확인됐으니 다음 단계(OCR로 "1위"·"1+1" 클레임 추출)에 투자할 가치가 있다.</li>
-</ul>
-
-<p class="foot">데이터: hdmzp/oliveyoung — data/*_ranking.csv(12일), *_reviews.csv + backfill(리뷰ID 중복 제거), data/images/(815장).
-분석 코드: analysis/build_dataset.py · crosssection.py · image_features.py, 스냅샷 기준일 2026-08-05.
-모든 차트는 아래 "표로 보기"로 수치 확인 가능.</p>
+<p class="foot">저장소: hdmzp/oliveyoung — 수집기 scraper/, 분석 코드 analysis/(build_dataset.py · crosssection.py · image_features.py),
+데이터 data/*.csv · data/images/. 본 보고서의 모든 차트는 하단 "표로 보기"로 수치를 확인할 수 있다. 기준일 2026-08-05.</p>
 </div>
 <div id="tip" role="status"></div>
 
@@ -487,7 +573,7 @@ function table(afterId, headers, rows){
   table("c-imgtier", ["순위 구간","평균 밝기","평균 채도","흰 테두리 비율","엣지 밀도"],
     data.map(d=>[d.tier, d.brightness, d.saturation, d.white_border_share, d.edge_density]));
 })();
-</script>\n
+</script>
 <script>
 const D2 = {
  catmix: [{"cat":"메이크업","full":18.8,"top10":10.8},{"cat":"스킨케어","full":18.1,"top10":14.2},{"cat":"마스크팩","full":11.8,"top10":19.2},{"cat":"선케어","full":10.2,"top10":6.7},{"cat":"클렌징","full":5.8,"top10":5.0},{"cat":"헤어케어","full":4.4,"top10":5.0},{"cat":"푸드","full":3.9,"top10":9.2},{"cat":"(미매핑)","full":17.3,"top10":23.3},{"cat":"기타 12개","full":9.7,"top10":6.6}],
