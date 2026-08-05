@@ -11,14 +11,14 @@ $branch = if ($isGit) { (git rev-parse --abbrev-ref HEAD).Trim() } else { "" }
 # 가상환경이 있으면 사용
 if (Test-Path ".venv\Scripts\Activate.ps1") { . .\.venv\Scripts\Activate.ps1 }
 
-# 수집 (전체 랭킹 TOP100 + 리뷰수/별점/신규리뷰). 데드라인 320분.
-python -m scraper.main --overall-only --deadline-minutes 320 *>> $log
+# 수집: 전 카테고리 랭킹+리뷰수/별점, 리뷰 본문은 전체 TOP100만. 데드라인 320분.
+python -m scraper.main --review-text-overall-only --deadline-minutes 320 *>> $log
 "collect exit status: $LASTEXITCODE" | Out-File -Append $log
 
 # 데드라인으로 중단됐으면 완료까지 이어서 실행
 while (Test-Path ".continuation_needed") {
     "===== $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') continuation run =====" | Out-File -Append $log
-    python -m scraper.main --overall-only --deadline-minutes 320 *>> $log
+    python -m scraper.main --review-text-overall-only --deadline-minutes 320 *>> $log
 }
 
 # 뷰어(index.html)용 JSON 생성
