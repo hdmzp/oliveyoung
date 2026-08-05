@@ -1,0 +1,577 @@
+<title>올리브영 랭킹 EDA — 2026-07-21 ~ 08-05</title>
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7; --surface: #fcfcfb;
+  --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+  --grid: #e1e0d9; --axis: #c3c2b7; --ring: rgba(11,11,11,0.10);
+  --accent: #5c7026;            /* 올리브 그린 — 헤더/아이브로우 전용 */
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a;
+  --pos: #2a78d6; --neg: #e34948;   /* 다이버징: blue↔red */
+  --gray-mark: #c9c8c0;
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19;
+    --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --ring: rgba(255,255,255,0.10);
+    --accent: #a8bf5a;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+    --pos: #3987e5; --neg: #e66767;
+    --gray-mark: #4a4a47;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19;
+  --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+  --grid: #2c2c2a; --axis: #383835; --ring: rgba(255,255,255,0.10);
+  --accent: #a8bf5a;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+  --pos: #3987e5; --neg: #e66767;
+  --gray-mark: #4a4a47;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--page); color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  line-height: 1.6; font-size: 15px;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 40px 20px 80px; }
+header.top { border-bottom: 2px solid var(--accent); padding-bottom: 20px; margin-bottom: 32px; }
+.eyebrow { color: var(--accent); font-weight: 700; font-size: 12.5px; letter-spacing: .08em; margin-bottom: 6px; }
+h1 { font-size: 26px; margin: 0 0 8px; line-height: 1.3; text-wrap: balance; }
+.sub { color: var(--ink-2); max-width: 64ch; margin: 0; }
+h2 { font-size: 19px; margin: 48px 0 4px; color: var(--ink); }
+h2 .no { color: var(--accent); font-weight: 800; margin-right: 6px; }
+.lede { color: var(--ink-2); margin: 0 0 16px; max-width: 68ch; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 24px 0 8px; }
+.kpi { background: var(--surface); border: 1px solid var(--ring); border-radius: 8px; padding: 12px 14px; }
+.kpi .lab { font-size: 12px; color: var(--muted); }
+.kpi .val { font-size: 24px; font-weight: 650; margin-top: 2px; }
+.kpi .note { font-size: 11.5px; color: var(--ink-2); margin-top: 2px; }
+.card { background: var(--surface); border: 1px solid var(--ring); border-radius: 10px; padding: 18px 18px 10px; margin: 16px 0; }
+.card h3 { margin: 0 0 2px; font-size: 15.5px; }
+.card .take { margin: 0 0 12px; font-size: 13.5px; color: var(--ink-2); max-width: 70ch; }
+.legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink-2); margin: 0 0 6px; }
+.legend .key { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+svg text { font-family: inherit; }
+.gridline { stroke: var(--grid); stroke-width: 1; }
+.axisline { stroke: var(--axis); stroke-width: 1; }
+.ticktxt { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.lbltxt  { fill: var(--ink-2); font-size: 11.5px; }
+.valtxt  { fill: var(--ink); font-size: 11px; font-variant-numeric: tabular-nums; }
+.anno    { fill: var(--muted); font-size: 11px; }
+details.tbl { margin: 8px 0 6px; font-size: 13px; }
+details.tbl summary { color: var(--muted); cursor: pointer; font-size: 12.5px; }
+details.tbl table { border-collapse: collapse; margin-top: 8px; font-variant-numeric: tabular-nums; }
+details.tbl th, details.tbl td { border: 1px solid var(--grid); padding: 4px 10px; text-align: right; }
+details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
+.chartbox { overflow-x: auto; }
+#tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--page);
+  font-size: 12px; padding: 5px 9px; border-radius: 6px; opacity: 0; transition: opacity .12s;
+  z-index: 10; max-width: 280px; line-height: 1.4; }
+@media (prefers-reduced-motion: reduce) { #tip { transition: none; } }
+ul.flat { padding-left: 20px; max-width: 72ch; } ul.flat li { margin-bottom: 8px; }
+.warnrow { border-left: 3px solid var(--s2); padding-left: 12px; }
+code { background: var(--surface); border: 1px solid var(--ring); border-radius: 4px; padding: 0 5px; font-size: 13px; }
+.foot { margin-top: 48px; color: var(--muted); font-size: 12.5px; border-top: 1px solid var(--grid); padding-top: 16px; }
+.rpt { border-collapse: collapse; font-size: 12.5px; font-variant-numeric: tabular-nums; margin: 4px 0 10px; }
+.rpt th, .rpt td { border: 1px solid var(--grid); padding: 4px 9px; text-align: right; white-space: nowrap; }
+.rpt th { color: var(--ink-2); font-weight: 600; }
+.rpt th:nth-child(-n+2), .rpt td:nth-child(-n+2) { text-align: left; }
+@media print {
+  details.tbl, #tip { display: none; }
+  .card { break-inside: avoid; }
+  h2 { break-after: avoid; }
+  .wrap { padding: 10px 0 20px; }
+}
+</style>
+
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">OLIVE YOUNG 랭킹 데이터 분석</div>
+  <h1>탐색적 데이터 분석 (EDA) — 2026-07-21 ~ 08-05</h1>
+  <p class="sub">랭킹 스냅샷 12일치, 유니크 리뷰 6.5만 건, 썸네일 815장을 기반으로 한 첫 EDA.
+  랭킹의 변동성, 순위를 설명하는 후보 요인, 썸네일의 시각적 패턴을 점검하고 본분석 설계에 반영할 시사점을 정리했다.</p>
+</header>
+
+<h2><span class="no">1</span>데이터 개요</h2>
+<div class="kpis">
+  <div class="kpi"><div class="lab">랭킹 수집일</div><div class="val">12일</div><div class="note">7/24–26, 8/2 결측</div></div>
+  <div class="kpi"><div class="lab">전체 TOP100 등장 상품</div><div class="val">411개</div><div class="note">기간 누적 유니크</div></div>
+  <div class="kpi"><div class="lab">카테고리 크로스섹션</div><div class="val">1,906개</div><div class="note">8/3 하루, 20개 카테고리</div></div>
+  <div class="kpi"><div class="lab">유니크 리뷰</div><div class="val">64,904건</div><div class="note">리뷰ID 기준 중복 제거</div></div>
+  <div class="kpi"><div class="lab">썸네일 아카이브</div><div class="val">815장</div><div class="note">URL 해시 기반 무결</div></div>
+  <div class="kpi"><div class="lab">체험단 키워드 리뷰</div><div class="val">217건</div><div class="note">전체의 0.33% — 신호 부족</div></div>
+</div>
+<p class="lede">8/3에 일일 실행이 21개 카테고리 전체를 수집해(2,100행) 유일한 대형 크로스섹션이 생겼다.
+이 표본이 이번 EDA에서 가장 강한 발견(§4)을 만들었다.</p>
+
+<h2><span class="no">2</span>랭킹은 얼마나 출렁이는가</h2>
+<p class="lede">전체 TOP100은 매일 3~7할이 물갈이되는 고변동 리스트다. 상위권일수록 잔류율이 높지만,
+살아남은 상품들 사이에서도 순위 상관이 날마다 0.2~0.8을 오간다.</p>
+
+<div class="card">
+  <h3>일별 신규 진입 상품 수 (전체 TOP100)</h3>
+  <p class="take">하루 평균 43개 상품이 교체된다. 8/1에는 70개가 새로 진입 — 월초 세일 개편과 겹치는 급변.</p>
+  <div class="chartbox" id="c-turnover"></div>
+</div>
+
+<div class="card">
+  <h3>연속일 순위 상관 (양일 모두 등장한 상품 기준, Spearman ρ)</h3>
+  <p class="take">잔류 상품의 순위조차 강하게 재배열된다. 8/1(ρ=0.18)과 8/3(ρ=0.22)은 순위가 사실상 리셋된 날.</p>
+  <div class="chartbox" id="c-rankcorr"></div>
+</div>
+
+<div class="card">
+  <h3>전일 순위 구간별 안정성</h3>
+  <p class="take">1–10위는 다음날 70%가 잔류하지만 61–100위는 절반이 이탈한다. 잔류해도 평균 13~21계단 움직인다.</p>
+  <div class="chartbox" id="c-tier"></div>
+</div>
+
+<div class="card">
+  <h3>8/5 TOP10 상품의 기간 내 순위 궤적</h3>
+  <p class="take">현재 상위권 상품 다수가 기간 내 50위 밖까지 다녀왔다. 상위 3개만 강조, 나머지는 회색 컨텍스트.</p>
+  <div class="legend" id="lg-traj"></div>
+  <div class="chartbox" id="c-traj"></div>
+</div>
+
+<h2><span class="no">3</span>TOP100은 누구인가 — 카테고리·브랜드 구성</h2>
+<p class="lede">전체 TOP100 슬롯(상품×일, 12일 누적 1,200개)을 8/3 카테고리 랭킹 소속으로 매핑했다(매핑률 83%).
+슬롯 수로는 <strong>메이크업(18.8%)과 스킨케어(18.1%)</strong>가 최대지만, <strong>1~10위만 보면 마스크팩(19.2%)과 푸드(9.2%)가 과대대표</strong>된다 —
+메이크업은 "넓게 걸치는" 카테고리, 마스크팩은 "최상위에 꽂히는" 카테고리다.</p>
+
+<div class="card">
+  <h3>전체 TOP100 슬롯의 카테고리 구성 — 전 구간 vs 1~10위</h3>
+  <p class="take">메이크업·선케어는 1~10위에서 비중이 절반 가까이 줄고, 마스크팩은 1.6배·푸드는 2.4배로 늘어난다. (미매핑 = 8/3 카테고리 100위 안에 없던 상품 — 기획세트 등)</p>
+  <div class="legend">
+    <span class="key"><span class="sw" style="background:var(--s1)"></span>전 구간(1~100위) 슬롯 비중</span>
+    <span class="key"><span class="sw" style="background:var(--s2)"></span>1~10위 슬롯 비중</span>
+  </div>
+  <div class="chartbox" id="c-catmix"></div>
+</div>
+
+<div class="card">
+  <h3>상시 랭커 브랜드 30개의 주력 카테고리</h3>
+  <p class="take">12일 중 10일 이상 등장한 브랜드는 227개 중 30개(13%)뿐인데, 이들이 전체 슬롯의 46%를 차지한다. 전원이 한 카테고리에 전문화되어 있다 — 여러 카테고리에 걸친 상시 브랜드는 없다.</p>
+  <div class="chartbox" id="c-brandcats"></div>
+</div>
+
+<div class="card">
+  <h3>상시 랭커 브랜드 상세 (슬롯 수 상위 15개)</h3>
+  <p class="take">두 가지 생존 전형이 보인다. ① <strong>포트폴리오형</strong>: 메디힐(상품 10개·79슬롯)·아누아(10개)처럼 여러 상품을 회전시키며 체류.
+  ② <strong>히어로 상품형</strong>: 구달·바이오던스·스킨푸드처럼 단 1개 상품으로 12일 전일 체류. 인지도(축적 리뷰) 경로도 갈린다 —
+  홀리카홀리카(리뷰 19.8만)·스킨푸드(10.3만) 같은 리뷰 자산형이 있는가 하면, 셀리맥스(중위 리뷰 1,362개)처럼 리뷰 자산 없이
+  높은 할인·신제품 회전으로 버티는 신흥형도 있다. 상품명은 거의 전부 "1위·올영픽·1+1·단독기획·연예인PICK" 클레임을 달고 있다.</p>
+  <div class="chartbox" id="c-brandtable"></div>
+</div>
+
+<h2><span class="no">4</span>무엇이 순위를 설명하는가</h2>
+<p class="lede">전체 TOP100 안에서만 보면 리뷰수·평점 모두 순위와 거의 무상관이다(ρ≈0).
+그러나 8/3 카테고리 크로스섹션(N=2,000)에서는 <strong>리뷰수가 20개 카테고리 전부에서 음(=상위권일수록 리뷰 많음)의 상관</strong>을 보였다.
+전체 TOP100의 무상관은 "이미 상위 1%만 모인 표본"이라는 범위 제한(range restriction)의 산물이다.</p>
+
+<div class="card">
+  <h3>카테고리별 순위 ~ log(리뷰수) Spearman ρ — 8/3, 카테고리당 N=100</h3>
+  <p class="take">20개 카테고리 전부 음의 상관 (평균 −0.28, 최대 네일 −0.54). 평점(ρ 평균 +0.01)은 어느 카테고리에서도 설명력이 없다.</p>
+  <div class="chartbox" id="c-catrho"></div>
+</div>
+
+<div class="card">
+  <h3>리뷰 유입 속도(velocity)와 순위의 상관 — 일자별 반복 측정</h3>
+  <p class="take">전일 대비 리뷰수 증가분이 큰 상품일수록 상위권인 경향이 11일 중 9일에서 관측(ρ&lt;0). 평균 ρ=−0.16. 방향은 일관되나 크기는 불안정 — 표본 확대 필요.</p>
+  <div class="legend">
+    <span class="key"><span class="sw" style="background:var(--pos)"></span>ρ&lt;0 · 유입 빠를수록 상위 (가설 방향)</span>
+    <span class="key"><span class="sw" style="background:var(--neg)"></span>ρ&gt;0 · 반대 방향</span>
+  </div>
+  <div class="chartbox" id="c-velrho"></div>
+</div>
+
+<div class="card">
+  <h3>전체 TOP100 평점 분포 — 천장효과</h3>
+  <p class="take">100개 상품의 평점이 4.5~5.0에 전부 몰려 있고 절반이 4.8이다. 이 표본에서 "평점 효과"는 원리적으로 식별 불가.</p>
+  <div class="chartbox" id="c-rating"></div>
+</div>
+
+<div class="card">
+  <h3>브랜드별 TOP100 점유 (상품×일 슬롯, 12일 누적)</h3>
+  <p class="take">메디힐이 79슬롯으로 독주 — 브랜드 통제(고정효과)가 필요한 이유.</p>
+  <div class="chartbox" id="c-brands"></div>
+</div>
+
+<h2><span class="no">5</span>썸네일 이미지의 시각적 패턴</h2>
+<p class="lede">상위권 썸네일일수록 <strong>더 어둡고, 채도가 높고, 흰 배경 비중이 낮다</strong>.
+8/1과 8/5 두 스냅샷에서 같은 방향으로 재현됐다 — 리뷰 변수들보다 오히려 큰 상관이다.</p>
+
+<div class="card">
+  <h3>이미지 특성 ~ 순위 Spearman ρ — 두 스냅샷 재현 비교</h3>
+  <p class="take">밝기(+)와 흰 테두리 비율(+)은 하위권과, 채도·컬러풀니스·엣지 밀도(−)는 상위권과 연관. 두 날짜 모두 부호 일치.</p>
+  <div class="legend">
+    <span class="key"><span class="sw" style="background:var(--s1)"></span>8/5 (N=91)</span>
+    <span class="key"><span class="sw" style="background:var(--s2)"></span>8/1 (N=100)</span>
+  </div>
+  <div class="chartbox" id="c-imgrho"></div>
+</div>
+
+<div class="card">
+  <h3>순위 구간별 썸네일 평균 밝기 (8/5)</h3>
+  <p class="take">1–25위 평균 164 → 76–100위 177로 단조 증가. 상위권 썸네일이 기획 이미지·텍스트 오버레이가 많은 것과 정합적.</p>
+  <div class="chartbox" id="c-imgtier"></div>
+</div>
+
+<h2><span class="no">6</span>데이터 품질 노트</h2>
+<ul class="flat">
+  <li class="warnrow"><strong>체험단 신호 부족.</strong> 키워드 매칭 리뷰가 6.5만 건 중 217건(0.33%). 8/5 TOP100의 수집 리뷰에서는 0건이라 crosssection 회귀에서 자동 제외됐다. 키워드 확장 또는 LLM 분류 없이는 Q2(체험단 효과) 분석 불가.</li>
+  <li class="warnrow"><strong>리뷰 표본은 최신순이 아니라 도움순.</strong> 리뷰 목록 API가 정렬 요청을 무시함을 실측으로 확인. 유입 속도는 랭킹 CSV의 리뷰수 증가분(velocity)만 신뢰 가능.</li>
+  <li><strong>8/2 랭킹 누락.</strong> 리뷰·에러 파일은 있으나 랭킹 CSV가 없다(그날 랭킹 단계 실패 추정). 7/24–26도 결측.</li>
+  <li><strong>8/3만 카테고리 전수 수집.</strong> <code>run_local.sh</code>(카테고리 포함)와 <code>run_local.ps1</code>(전체만)의 차이로 추정. 카테고리 수집을 매일로 고정하면 N=2,000 크로스섹션이 매일 쌓인다 — 이번 EDA 최대 발견이 이 표본에서 나왔다.</li>
+  <li><strong>스키마 드리프트.</strong> 7/21–22 랭킹 파일에는 이미지 URL 컬럼이 없음. 분석 코드는 처리 완료.</li>
+</ul>
+
+<h2><span class="no">7</span>본분석 설계에 주는 시사점</h2>
+<ul class="flat">
+  <li><strong>전체 TOP100 단독 크로스섹션은 답을 못 준다.</strong> 범위 제한 때문에 리뷰수·평점이 전부 무상관으로 보인다. 카테고리 크로스섹션(가능하면 매일)을 표본의 기본 단위로 삼을 것.</li>
+  <li><strong>velocity 효과는 방향이 일관되므로 살아있는 가설.</strong> 단일 날짜 ρ는 −0.34~+0.17로 출렁이므로, 날짜 풀링 + 카테고리 고정효과로 검정력을 확보해야 한다.</li>
+  <li><strong>평점은 TOP100에선 버리고, 카테고리 표본에서만 별점 분포(1점 비율 등)로 재시도.</strong></li>
+  <li><strong>랭킹이 이 정도로 고변동이면 "순위" 자체보다 "진입/잔류"가 더 안정적인 종속변수일 수 있다</strong> — 잔류 여부 로지스틱, 등장일수 모형을 병행 권장.</li>
+  <li><strong>이미지 변수는 기대 이상.</strong> 방향 재현이 확인됐으니 다음 단계(OCR로 "1위"·"1+1" 클레임 추출)에 투자할 가치가 있다.</li>
+</ul>
+
+<p class="foot">데이터: hdmzp/oliveyoung — data/*_ranking.csv(12일), *_reviews.csv + backfill(리뷰ID 중복 제거), data/images/(815장).
+분석 코드: analysis/build_dataset.py · crosssection.py · image_features.py, 스냅샷 기준일 2026-08-05.
+모든 차트는 아래 "표로 보기"로 수치 확인 가능.</p>
+</div>
+<div id="tip" role="status"></div>
+
+<script>
+const D = {"dates": ["07-21", "07-22", "07-23", "07-27", "07-28", "07-29", "07-30", "07-31", "08-01", "08-03", "08-04", "08-05"], "turnover": [{"date": "07-22", "new": 36, "gap_days": 1}, {"date": "07-23", "new": 51, "gap_days": 1}, {"date": "07-27", "new": 53, "gap_days": 4}, {"date": "07-28", "new": 42, "gap_days": 1}, {"date": "07-29", "new": 39, "gap_days": 1}, {"date": "07-30", "new": 35, "gap_days": 1}, {"date": "07-31", "new": 38, "gap_days": 1}, {"date": "08-01", "new": 70, "gap_days": 1}, {"date": "08-03", "new": 45, "gap_days": 2}, {"date": "08-04", "new": 28, "gap_days": 1}, {"date": "08-05", "new": 34, "gap_days": 1}], "rankcorr": [{"date": "07-22", "rho": 0.672, "common": 64}, {"date": "07-23", "rho": 0.457, "common": 49}, {"date": "07-27", "rho": 0.505, "common": 47}, {"date": "07-28", "rho": 0.662, "common": 58}, {"date": "07-29", "rho": 0.673, "common": 61}, {"date": "07-30", "rho": 0.748, "common": 65}, {"date": "07-31", "rho": 0.776, "common": 62}, {"date": "08-01", "rho": 0.181, "common": 30}, {"date": "08-03", "rho": 0.223, "common": 55}, {"date": "08-04", "rho": 0.625, "common": 72}, {"date": "08-05", "rho": 0.582, "common": 66}], "tier_stats": [{"tier": "1-10", "mean_absmove": 13.2, "stay_rate": 0.7}, {"tier": "11-30", "mean_absmove": 17.0, "stay_rate": 0.545}, {"tier": "31-60", "mean_absmove": 19.4, "stay_rate": 0.661}, {"tier": "61-100", "mean_absmove": 20.7, "stay_rate": 0.486}], "traj": [{"goods": "A000000223414", "name": "메디힐 [15년 연속 1위] 메디힐 에센셜 마스", "ranks": {"07-21": 1, "07-22": 2, "07-23": 3, "07-27": 1, "07-28": 2, "07-29": 1, "07-30": 9, "07-31": 31, "08-01": 1, "08-03": 1, "08-04": 2, "08-05": 1}}, {"goods": "A000000217767", "name": "일리윤 일리윤 세라마이드아토 집중크림 150ml", "ranks": {"07-21": null, "07-22": null, "07-23": 83, "07-27": null, "07-28": null, "07-29": null, "07-30": null, "07-31": null, "08-01": null, "08-03": null, "08-04": 6, "08-05": 2}}, {"goods": "A000000182630", "name": "넘버즈인 [8월올영픽/대용량140매] 넘버즈인 1", "ranks": {"07-21": null, "07-22": 85, "07-23": 77, "07-27": 80, "07-28": null, "07-29": null, "07-30": null, "07-31": null, "08-01": null, "08-03": null, "08-04": 18, "08-05": 3}}, {"goods": "A000000228103", "name": "나르카 [노세범/뽀송앞머리] 나르카 프레시 세범", "ranks": {"07-21": null, "07-22": null, "07-23": null, "07-27": 77, "07-28": null, "07-29": null, "07-30": null, "07-31": null, "08-01": null, "08-03": null, "08-04": 28, "08-05": 4}}, {"goods": "A000000207225", "name": "넘버즈인 [8월올영픽/트러블진정세럼] 넘버즈인 1", "ranks": {"07-21": null, "07-22": null, "07-23": null, "07-27": null, "07-28": null, "07-29": null, "07-30": null, "07-31": null, "08-01": null, "08-03": null, "08-04": 23, "08-05": 5}}, {"goods": "A000000231822", "name": "넘버즈인 [8월올영픽/24시간파우더] 넘버즈인 1", "ranks": {"07-21": null, "07-22": null, "07-23": 78, "07-27": null, "07-28": null, "07-29": null, "07-30": null, "07-31": null, "08-01": null, "08-03": 74, "08-04": 47, "08-05": 6}}, {"goods": "A000000245626", "name": "런드리유 [1,000만장판매] 런드리유 소프트 바", "ranks": {"07-21": null, "07-22": null, "07-23": null, "07-27": null, "07-28": null, "07-29": null, "07-30": null, "07-31": null, "08-01": null, "08-03": null, "08-04": null, "08-05": 7}}, {"goods": "A000000261630", "name": "힌스 [3일특가 마지막날/올리브영 단독 선런칭", "ranks": {"07-21": null, "07-22": null, "07-23": null, "07-27": null, "07-28": null, "07-29": null, "07-30": null, "07-31": null, "08-01": null, "08-03": 8, "08-04": 5, "08-05": 8}}, {"goods": "A000000205979", "name": "넘버즈인 [8월올영픽/10매] 넘버즈인 마스크팩 ", "ranks": {"07-21": null, "07-22": null, "07-23": null, "07-27": null, "07-28": null, "07-29": null, "07-30": null, "07-31": null, "08-01": null, "08-03": 92, "08-04": 25, "08-05": 9}}, {"goods": "A000000259872", "name": "에이프릴스킨 [리뉴얼/철벽커버] 에이프릴스킨 히어로쿠", "ranks": {"07-21": null, "07-22": null, "07-23": 34, "07-27": null, "07-28": null, "07-29": null, "07-30": null, "07-31": null, "08-01": 91, "08-03": 21, "08-04": 66, "08-05": 10}}], "vel_rho_daily": [{"date": "07-22", "rho": -0.109, "n": 64}, {"date": "07-23", "rho": -0.307, "n": 49}, {"date": "07-27", "rho": -0.224, "n": 47}, {"date": "07-28", "rho": -0.23, "n": 58}, {"date": "07-29", "rho": -0.206, "n": 61}, {"date": "07-30", "rho": 0.11, "n": 65}, {"date": "07-31", "rho": 0.168, "n": 62}, {"date": "08-01", "rho": -0.311, "n": 30}, {"date": "08-03", "rho": -0.336, "n": 55}, {"date": "08-04", "rho": -0.247, "n": 72}, {"date": "08-05", "rho": -0.046, "n": 66}], "brands": {"메디힐": 79, "에스트라": 34, "브링그린": 27, "아누아": 27, "바닐라코": 26, "딜라이트 프로젝트": 25, "넘버즈인": 22, "VT": 20, "쏘내추럴": 20, "셀리맥스": 20}, "rating_hist": {"4.5": 1, "4.6": 2, "4.7": 21, "4.8": 52, "4.9": 19, "5.0": 5}, "cat_rho": [{"cat": "네일", "n": 100, "log_review_cnt": -0.542, "rating": 0.028, "disc": -0.158, "star5": 0.023}, {"cat": "위생용품", "n": 100, "log_review_cnt": -0.423, "rating": 0.008, "disc": -0.195, "star5": -0.048}, {"cat": "푸드", "n": 100, "log_review_cnt": -0.398, "rating": 0.236, "disc": -0.066, "star5": 0.203}, {"cat": "패션", "n": 100, "log_review_cnt": -0.392, "rating": 0.094, "disc": -0.212, "star5": 0.085}, {"cat": "더모 코스메틱", "n": 100, "log_review_cnt": -0.382, "rating": -0.073, "disc": -0.123, "star5": -0.149}, {"cat": "취미/팬시", "n": 100, "log_review_cnt": -0.371, "rating": 0.029, "disc": 0.073, "star5": 0.441}, {"cat": "맨즈에딧", "n": 100, "log_review_cnt": -0.364, "rating": 0.174, "disc": -0.002, "star5": 0.104}, {"cat": "마스크팩", "n": 100, "log_review_cnt": -0.362, "rating": 0.044, "disc": -0.155, "star5": 0.009}, {"cat": "선케어", "n": 100, "log_review_cnt": -0.335, "rating": -0.259, "disc": -0.081, "star5": -0.199}, {"cat": "향수/디퓨저", "n": 100, "log_review_cnt": -0.326, "rating": 0.016, "disc": 0.088, "star5": 0.051}, {"cat": "뷰티소품", "n": 100, "log_review_cnt": -0.325, "rating": 0.004, "disc": -0.42, "star5": 0.013}, {"cat": "건강식품", "n": 100, "log_review_cnt": -0.254, "rating": 0.101, "disc": -0.117, "star5": 0.079}, {"cat": "홈리빙/가전", "n": 100, "log_review_cnt": -0.205, "rating": -0.154, "disc": -0.005, "star5": -0.102}, {"cat": "클렌징", "n": 100, "log_review_cnt": -0.204, "rating": 0.038, "disc": -0.042, "star5": 0.017}, {"cat": "구강용품", "n": 100, "log_review_cnt": -0.164, "rating": -0.003, "disc": -0.074, "star5": -0.013}, {"cat": "헬스/건강용품", "n": 100, "log_review_cnt": -0.151, "rating": 0.04, "disc": -0.118, "star5": 0.042}, {"cat": "헤어케어", "n": 100, "log_review_cnt": -0.138, "rating": 0.067, "disc": -0.08, "star5": -0.015}, {"cat": "스킨케어", "n": 100, "log_review_cnt": -0.111, "rating": 0.031, "disc": -0.183, "star5": 0.043}, {"cat": "메이크업", "n": 100, "log_review_cnt": -0.047, "rating": -0.161, "disc": -0.143, "star5": -0.187}, {"cat": "바디케어", "n": 100, "log_review_cnt": -0.026, "rating": -0.023, "disc": 0.031, "star5": -0.054}], "img_tier": [{"tier": "1-25", "brightness": 164.2, "saturation": 0.3, "white_border_share": 0.1, "edge_density": 8.6}, {"tier": "26-50", "brightness": 166.0, "saturation": 0.3, "white_border_share": 0.1, "edge_density": 8.1}, {"tier": "51-75", "brightness": 172.2, "saturation": 0.3, "white_border_share": 0.2, "edge_density": 8.0}, {"tier": "76-100", "brightness": 177.2, "saturation": 0.3, "white_border_share": 0.1, "edge_density": 7.8}], "img_rho_0805": {"brightness": 0.154, "saturation": -0.084, "white_border_share": 0.186, "edge_density": -0.122, "colorfulness": -0.096}, "img_rho_0801": {"brightness": 0.203, "saturation": -0.192, "white_border_share": 0.168, "edge_density": -0.079, "colorfulness": -0.12}, "days_present_hist": {"1": 210, "2": 62, "3": 30, "4": 25, "5": 20, "6": 6, "7": 15, "8": 13, "9": 4, "10": 4, "11": 9, "12": 13}};
+const NS = "http://www.w3.org/2000/svg";
+function el(t, at, parent){ const e = document.createElementNS(NS, t);
+  for (const k in at) e.setAttribute(k, at[k]); if (parent) parent.appendChild(e); return e; }
+function svg(box, w, h){ const s = el("svg", {viewBox:`0 0 ${w} ${h}`, width:"100%",
+  style:"max-width:"+w+"px;display:block"}, document.getElementById(box)); return s; }
+const tip = document.getElementById("tip");
+function bindTip(node, html){
+  node.addEventListener("mousemove", ev => { tip.innerHTML = html; tip.style.opacity = 1;
+    const pad = 14, tw = tip.offsetWidth;
+    let x = ev.clientX + pad; if (x + tw > innerWidth - 8) x = ev.clientX - tw - pad;
+    tip.style.left = x + "px"; tip.style.top = (ev.clientY + pad) + "px"; });
+  node.addEventListener("mouseleave", () => tip.style.opacity = 0);
+}
+function table(afterId, headers, rows){
+  const det = document.createElement("details"); det.className = "tbl";
+  det.innerHTML = "<summary>표로 보기</summary>";
+  const t = document.createElement("table");
+  t.innerHTML = "<tr>" + headers.map(h=>`<th>${h}</th>`).join("") + "</tr>" +
+    rows.map(r=>"<tr>"+r.map(c=>`<td>${c}</td>`).join("")+"</tr>").join("");
+  det.appendChild(t); document.getElementById(afterId).after(det);
+}
+
+/* ---- 2-1 일별 신규 진입 (bar) ---- */
+(function(){
+  const data = D.turnover, W = 900, H = 240, L = 44, R = 12, T = 16, B = 34;
+  const s = svg("c-turnover", W, H), pw = W-L-R, ph = H-T-B, ymax = 80;
+  for (let v = 0; v <= ymax; v += 20){ const y = T+ph - ph*v/ymax;
+    el("line", {x1:L, x2:W-R, y1:y, y2:y, class: v?"gridline":"axisline"}, s);
+    el("text", {x:L-8, y:y+4, "text-anchor":"end", class:"ticktxt"}, s).textContent = v; }
+  const bw = Math.min(24, pw/data.length*0.55), step = pw/data.length;
+  data.forEach((d,i)=>{ const h = ph*d.new/ymax, x = L+step*i+(step-bw)/2, y = T+ph-h;
+    const r = el("path", {d:`M${x},${T+ph} L${x},${y+4} Q${x},${y} ${x+4},${y} L${x+bw-4},${y} Q${x+bw},${y} ${x+bw},${y+4} L${x+bw},${T+ph} Z`,
+      fill:"var(--s1)"}, s);
+    bindTip(r, `<b>${d.date}</b><br>신규 진입 ${d.new}개` + (d.gap_days>1?`<br>직전 수집과 ${d.gap_days}일 간격`:""));
+    if (d.new >= 70 || d.gap_days > 1)
+      el("text", {x:x+bw/2, y:y-6, "text-anchor":"middle", class:"valtxt"}, s).textContent = d.new + (d.gap_days>1?"*":"");
+    el("text", {x:x+bw/2, y:H-12, "text-anchor":"middle", class:"ticktxt"}, s).textContent = d.date; });
+  el("text", {x:W-R, y:T+2, "text-anchor":"end", class:"anno"}, s).textContent = "* 직전 수집일과 2일 이상 간격";
+  table("c-turnover", ["날짜","신규 진입","직전과 간격(일)"], data.map(d=>[d.date, d.new, d.gap_days]));
+})();
+
+/* ---- 2-2 연속일 순위 상관 (line) ---- */
+(function(){
+  const data = D.rankcorr, W = 900, H = 240, L = 44, R = 12, T = 16, B = 34;
+  const s = svg("c-rankcorr", W, H), pw = W-L-R, ph = H-T-B;
+  const yv = v => T + ph - ph*v;   // 0..1
+  for (let v = 0; v <= 1; v += 0.25){ const y = yv(v);
+    el("line", {x1:L, x2:W-R, y1:y, y2:y, class: v?"gridline":"axisline"}, s);
+    el("text", {x:L-8, y:y+4, "text-anchor":"end", class:"ticktxt"}, s).textContent = v.toFixed(2); }
+  const xs = i => L + pw*(i+0.5)/data.length;
+  el("polyline", {points: data.map((d,i)=>`${xs(i)},${yv(d.rho)}`).join(" "),
+    fill:"none", stroke:"var(--s1)", "stroke-width":2, "stroke-linejoin":"round", "stroke-linecap":"round"}, s);
+  data.forEach((d,i)=>{ const c = el("circle", {cx:xs(i), cy:yv(d.rho), r:4.5,
+      fill:"var(--s1)", stroke:"var(--surface)", "stroke-width":2}, s);
+    el("circle", {cx:xs(i), cy:yv(d.rho), r:12, fill:"transparent"}, s).addEventListener?.("mousemove",()=>{});
+    bindTip(c, `<b>${d.date}</b><br>ρ = ${d.rho}<br>공통 상품 ${d.common}개`);
+    el("text", {x:xs(i), y:H-12, "text-anchor":"middle", class:"ticktxt"}, s).textContent = d.date; });
+  const dip = data.find(d=>d.date==="08-01");
+  el("text", {x: xs(data.indexOf(dip)), y: yv(dip.rho)+22, "text-anchor":"middle", class:"anno"}, s)
+    .textContent = "월초 개편 ρ=0.18";
+  table("c-rankcorr", ["날짜","ρ","공통 상품 수"], data.map(d=>[d.date, d.rho, d.common]));
+})();
+
+/* ---- 2-3 구간별 안정성 (two mini bars) ---- */
+(function(){
+  const data = D.tier_stats, W = 900, H = 210, half = W/2;
+  const s = svg("c-tier", W, H);
+  function mini(x0, title, get, fmt, ymax){
+    const L = x0+52, R = x0+half-24, T = 34, B = 30, pw = R-L, ph = H-T-B;
+    el("text", {x:x0+52, y:18, class:"lbltxt", "font-weight":600}, s).textContent = title;
+    for (let f = 0; f <= 1.0001; f += 0.5){ const y = T+ph-ph*f;
+      el("line", {x1:L, x2:R, y1:y, y2:y, class: f?"gridline":"axisline"}, s);
+      el("text", {x:L-6, y:y+4, "text-anchor":"end", class:"ticktxt"}, s).textContent = fmt(ymax*f); }
+    const step = pw/data.length, bw = Math.min(24, step*0.5);
+    data.forEach((d,i)=>{ const v = get(d), h = ph*v/ymax, x = L+step*i+(step-bw)/2, y = T+ph-h;
+      const r = el("path", {d:`M${x},${T+ph} L${x},${y+4} Q${x},${y} ${x+4},${y} L${x+bw-4},${y} Q${x+bw},${y} ${x+bw},${y+4} L${x+bw},${T+ph} Z`, fill:"var(--s1)"}, s);
+      bindTip(r, `<b>${d.tier}위</b><br>${title}: ${fmt(v)}`);
+      el("text", {x:x+bw/2, y:y-5, "text-anchor":"middle", class:"valtxt"}, s).textContent = fmt(v);
+      el("text", {x:x+bw/2, y:H-10, "text-anchor":"middle", class:"ticktxt"}, s).textContent = d.tier; });
+  }
+  mini(0,   "다음날 잔류율", d=>d.stay_rate, v=>Math.round(v*100)+"%", 1);
+  mini(half,"잔류 시 평균 이동 계단수", d=>d.mean_absmove, v=>Math.round(v*10)/10, 25);
+  table("c-tier", ["전일 순위","잔류율","평균 |Δ순위|"], data.map(d=>[d.tier, Math.round(d.stay_rate*100)+"%", d.mean_absmove]));
+})();
+
+/* ---- 2-4 TOP10 궤적 (emphasis lines) ---- */
+(function(){
+  const W = 900, H = 330, L = 44, R = 40, T = 16, B = 34;
+  const s = svg("c-traj", W, H), pw = W-L-R, ph = H-T-B, dates = D.dates;
+  const yv = r => T + ph*(r-1)/99, xs = i => L + pw*i/(dates.length-1);
+  [1,25,50,75,100].forEach(r=>{ const y = yv(r);
+    el("line", {x1:L, x2:W-R+8, y1:y, y2:y, class:"gridline"}, s);
+    el("text", {x:L-8, y:y+4, "text-anchor":"end", class:"ticktxt"}, s).textContent = r; });
+  dates.forEach((d,i)=>{ if (i%2===0 || i===dates.length-1)
+    el("text", {x:xs(i), y:H-12, "text-anchor":"middle", class:"ticktxt"}, s).textContent = d; });
+  const cols = ["var(--s1)","var(--s2)","var(--s3)"];
+  const lg = document.getElementById("lg-traj");
+  D.traj.forEach((t, k)=>{
+    const em = k < 3, col = em ? cols[k] : "var(--gray-mark)";
+    let seg = [];
+    const flush = () => { if (seg.length > 1)
+      el("polyline", {points: seg.join(" "), fill:"none", stroke:col,
+        "stroke-width": em?2:1.5, opacity: em?1:0.55, "stroke-linejoin":"round", "stroke-linecap":"round"}, s);
+      seg = []; };
+    dates.forEach((d,i)=>{ const r = t.ranks[d];
+      if (r == null) { flush(); return; }
+      seg.push(`${xs(i)},${yv(r)}`); });
+    flush();
+    dates.forEach((d,i)=>{ const r = t.ranks[d]; if (r == null) return;
+      const c = el("circle", {cx:xs(i), cy:yv(r), r: em?4:3, fill:col,
+        stroke:"var(--surface)", "stroke-width":2, opacity: em?1:0.7}, s);
+      bindTip(c, `<b>${t.name}</b><br>${d} · ${r}위`); });
+    if (em){
+      // 우측 끝에서 세 시리즈가 수렴 → 직접 라벨 대신 범례+툴팁 사용
+      const key = document.createElement("span"); key.className = "key";
+      key.innerHTML = `<span class="sw" style="background:${["#2a78d6","#eb6834","#1baf7a"][k]}"></span>${t.name}`;
+      lg.appendChild(key);
+    }});
+  const g = document.createElement("span"); g.className = "key";
+  g.innerHTML = `<span class="sw" style="background:var(--gray-mark)"></span>나머지 TOP10 (컨텍스트)`;
+  lg.appendChild(g);
+  table("c-traj", ["상품", ...D.dates], D.traj.map(t=>[t.name, ...D.dates.map(d=>t.ranks[d] ?? "–")]));
+})();
+
+/* ---- 3-1 카테고리 rho dot plot ---- */
+(function(){
+  const data = D.cat_rho, W = 900, rowH = 22, T = 30, B = 34, L = 120, R = 60;
+  const H = T + B + rowH*data.length;
+  const s = svg("c-catrho", W, H), pw = W-L-R;
+  const xmin = -0.6, xmax = 0.1, xv = v => L + pw*(v-xmin)/(xmax-xmin);
+  for (let v = -0.6; v <= 0.1001; v += 0.1){ const x = xv(v);
+    el("line", {x1:x, x2:x, y1:T-6, y2:H-B, class: Math.abs(v)<1e-9?"axisline":"gridline"}, s);
+    el("text", {x:x, y:H-B+16, "text-anchor":"middle", class:"ticktxt"}, s).textContent = v.toFixed(1); }
+  el("text", {x:xv(0), y:T-12, "text-anchor":"middle", class:"anno"}, s).textContent = "ρ = 0";
+  data.forEach((c,i)=>{ const y = T + rowH*i + rowH/2;
+    el("text", {x:L-10, y:y+4, "text-anchor":"end", class:"lbltxt"}, s).textContent = c.cat;
+    el("line", {x1:xv(0), x2:xv(c.log_review_cnt), y1:y, y2:y, stroke:"var(--grid)", "stroke-width":1}, s);
+    const dot = el("circle", {cx:xv(c.log_review_cnt), cy:y, r:5, fill:"var(--s1)",
+      stroke:"var(--surface)", "stroke-width":2}, s);
+    bindTip(dot, `<b>${c.cat}</b><br>log(리뷰수) ρ = ${c.log_review_cnt}<br>평점 ρ = ${c.rating}<br>할인율 ρ = ${c.disc}`);
+    if (i===0 || i===data.length-1)
+      el("text", {x:xv(c.log_review_cnt)-10, y:y+4, "text-anchor":"end", class:"valtxt"}, s).textContent = c.log_review_cnt.toFixed(2);
+  });
+  table("c-catrho", ["카테고리","log(리뷰수) ρ","평점 ρ","할인율 ρ"],
+    data.map(c=>[c.cat, c.log_review_cnt, c.rating, c.disc]));
+})();
+
+/* ---- 3-2 velocity daily rho (diverging bar) ---- */
+(function(){
+  const data = D.vel_rho_daily, W = 900, H = 250, L = 48, R = 12, T = 16, B = 34;
+  const s = svg("c-velrho", W, H), pw = W-L-R, ph = H-T-B;
+  const ymin = -0.4, ymax = 0.25, yv = v => T + ph*(ymax-v)/(ymax-ymin);
+  for (let v = -0.4; v <= 0.2501; v += 0.1){ const y = yv(v);
+    el("line", {x1:L, x2:W-R, y1:y, y2:y, class: Math.abs(v)<1e-9?"axisline":"gridline"}, s);
+    el("text", {x:L-8, y:y+4, "text-anchor":"end", class:"ticktxt"}, s).textContent = v.toFixed(1); }
+  const step = pw/data.length, bw = Math.min(24, step*0.5);
+  data.forEach((d,i)=>{ const x = L+step*i+(step-bw)/2, y0 = yv(0), y1 = yv(d.rho);
+    const neg = d.rho < 0, top = Math.min(y0,y1), h = Math.abs(y0-y1);
+    const r = el("rect", {x:x, y:top, width:bw, height:Math.max(h,1), rx:0,
+      fill: neg ? "var(--pos)" : "var(--neg)"}, s);
+    // 4px 라운드는 데이터 끝단에만
+    r.setAttribute("rx", 3);
+    bindTip(r, `<b>${d.date}</b><br>velocity~순위 ρ = ${d.rho}<br>N = ${d.n}`);
+    el("text", {x:x+bw/2, y:H-12, "text-anchor":"middle", class:"ticktxt"}, s).textContent = d.date; });
+  table("c-velrho", ["날짜","ρ","N"], data.map(d=>[d.date, d.rho, d.n]));
+})();
+
+/* ---- 3-3 평점 히스토그램 ---- */
+(function(){
+  const keys = Object.keys(D.rating_hist), W = 560, H = 220, L = 44, R = 12, T = 16, B = 34;
+  const s = svg("c-rating", W, H), pw = W-L-R, ph = H-T-B, ymax = 60;
+  for (let v = 0; v <= ymax; v += 20){ const y = T+ph-ph*v/ymax;
+    el("line", {x1:L, x2:W-R, y1:y, y2:y, class: v?"gridline":"axisline"}, s);
+    el("text", {x:L-8, y:y+4, "text-anchor":"end", class:"ticktxt"}, s).textContent = v; }
+  const step = pw/keys.length, bw = Math.min(24, step*0.55);
+  keys.forEach((k,i)=>{ const v = D.rating_hist[k], h = ph*v/ymax, x = L+step*i+(step-bw)/2, y = T+ph-h;
+    const r = el("path", {d:`M${x},${T+ph} L${x},${y+4} Q${x},${y} ${x+4},${y} L${x+bw-4},${y} Q${x+bw},${y} ${x+bw},${y+4} L${x+bw},${T+ph} Z`, fill:"var(--s1)"}, s);
+    bindTip(r, `평점 ${k} — ${v}개 상품`);
+    el("text", {x:x+bw/2, y:y-5, "text-anchor":"middle", class:"valtxt"}, s).textContent = v;
+    el("text", {x:x+bw/2, y:H-12, "text-anchor":"middle", class:"ticktxt"}, s).textContent = k; });
+  table("c-rating", ["평점","상품 수"], keys.map(k=>[k, D.rating_hist[k]]));
+})();
+
+/* ---- 3-4 브랜드 (horizontal bar) ---- */
+(function(){
+  const names = Object.keys(D.brands), W = 900, rowH = 26, T = 8, B = 30, L = 130, R = 50;
+  const H = T + B + rowH*names.length, s = svg("c-brands", W, H), pw = W-L-R, xmax = 80;
+  for (let v = 0; v <= xmax; v += 20){ const x = L + pw*v/xmax;
+    el("line", {x1:x, x2:x, y1:T, y2:H-B, class: v?"gridline":"axisline"}, s);
+    el("text", {x:x, y:H-B+16, "text-anchor":"middle", class:"ticktxt"}, s).textContent = v; }
+  names.forEach((n,i)=>{ const v = D.brands[n], y = T + rowH*i + (rowH-16)/2, w = pw*v/xmax;
+    el("text", {x:L-10, y:y+12, "text-anchor":"end", class:"lbltxt"}, s).textContent = n;
+    const r = el("path", {d:`M${L},${y} L${L+w-4},${y} Q${L+w},${y} ${L+w},${y+4} L${L+w},${y+12} Q${L+w},${y+16} ${L+w-4},${y+16} L${L},${y+16} Z`, fill:"var(--s1)"}, s);
+    bindTip(r, `<b>${n}</b><br>${v} 슬롯 (상품×일)`);
+    el("text", {x:L+w+6, y:y+12, class:"valtxt"}, s).textContent = v; });
+  table("c-brands", ["브랜드","슬롯 수"], names.map(n=>[n, D.brands[n]]));
+})();
+
+/* ---- 4-1 이미지 rho 재현 비교 (paired dot plot) ---- */
+(function(){
+  const feats = [["brightness","밝기"],["white_border_share","흰 테두리 비율"],["saturation","채도"],
+                 ["colorfulness","컬러풀니스"],["edge_density","엣지 밀도"]];
+  const W = 900, rowH = 30, T = 30, B = 34, L = 130, R = 40;
+  const H = T + B + rowH*feats.length, s = svg("c-imgrho", W, H), pw = W-L-R;
+  const xmin = -0.25, xmax = 0.25, xv = v => L + pw*(v-xmin)/(xmax-xmin);
+  for (let v = -0.2; v <= 0.2001; v += 0.1){ const x = xv(v);
+    el("line", {x1:x, x2:x, y1:T-6, y2:H-B, class: Math.abs(v)<1e-9?"axisline":"gridline"}, s);
+    el("text", {x:x, y:H-B+16, "text-anchor":"middle", class:"ticktxt"}, s).textContent = v.toFixed(1); }
+  el("text", {x:xv(-0.2), y:T-12, class:"anno"}, s).textContent = "← 값이 클수록 상위권";
+  el("text", {x:xv(0.2), y:T-12, "text-anchor":"end", class:"anno"}, s).textContent = "값이 클수록 하위권 →";
+  feats.forEach((f,i)=>{ const y = T + rowH*i + rowH/2;
+    el("text", {x:L-10, y:y+4, "text-anchor":"end", class:"lbltxt"}, s).textContent = f[1];
+    const a = D.img_rho_0805[f[0]], b = D.img_rho_0801[f[0]];
+    el("line", {x1:xv(Math.min(a,b)), x2:xv(Math.max(a,b)), y1:y, y2:y, stroke:"var(--grid)", "stroke-width":1}, s);
+    const d1 = el("circle", {cx:xv(a), cy:y, r:5, fill:"var(--s1)", stroke:"var(--surface)", "stroke-width":2}, s);
+    const d2 = el("circle", {cx:xv(b), cy:y, r:5, fill:"var(--s2)", stroke:"var(--surface)", "stroke-width":2}, s);
+    bindTip(d1, `<b>${f[1]}</b> · 8/5<br>ρ = ${a}`); bindTip(d2, `<b>${f[1]}</b> · 8/1<br>ρ = ${b}`); });
+  table("c-imgrho", ["특성","ρ (8/5)","ρ (8/1)"], feats.map(f=>[f[1], D.img_rho_0805[f[0]], D.img_rho_0801[f[0]]]));
+})();
+
+/* ---- 4-2 순위 구간별 밝기 (lollipop, 절단축이므로 막대 대신 점) ---- */
+(function(){
+  const data = D.img_tier, W = 620, H = 200, L = 70, R = 30, T = 16, B = 34;
+  const s = svg("c-imgtier", W, H), pw = W-L-R, ph = H-T-B;
+  const xmin = 150, xmax = 185, xv = v => L + pw*(v-xmin)/(xmax-xmin);
+  for (let v = 150; v <= 185; v += 5){ const x = xv(v);
+    el("line", {x1:x, x2:x, y1:T, y2:H-B, class:"gridline"}, s);
+    el("text", {x:x, y:H-B+16, "text-anchor":"middle", class:"ticktxt"}, s).textContent = v; }
+  const rowH = ph/data.length;
+  data.forEach((d,i)=>{ const y = T + rowH*i + rowH/2;
+    el("text", {x:L-10, y:y+4, "text-anchor":"end", class:"lbltxt"}, s).textContent = d.tier+"위";
+    el("line", {x1:xv(xmin), x2:xv(d.brightness), y1:y, y2:y, stroke:"var(--grid)", "stroke-width":1}, s);
+    const c = el("circle", {cx:xv(d.brightness), cy:y, r:5.5, fill:"var(--s1)", stroke:"var(--surface)", "stroke-width":2}, s);
+    bindTip(c, `<b>${d.tier}위</b><br>평균 밝기 ${d.brightness} (0–255)`);
+    el("text", {x:xv(d.brightness)+11, y:y+4, class:"valtxt"}, s).textContent = d.brightness; });
+  el("text", {x:W-R, y:T+2, "text-anchor":"end", class:"anno"}, s).textContent = "축 150부터 (절단축) — 밝기 0–255";
+  table("c-imgtier", ["순위 구간","평균 밝기","평균 채도","흰 테두리 비율","엣지 밀도"],
+    data.map(d=>[d.tier, d.brightness, d.saturation, d.white_border_share, d.edge_density]));
+})();
+</script>\n
+<script>
+const D2 = {
+ catmix: [{"cat":"메이크업","full":18.8,"top10":10.8},{"cat":"스킨케어","full":18.1,"top10":14.2},{"cat":"마스크팩","full":11.8,"top10":19.2},{"cat":"선케어","full":10.2,"top10":6.7},{"cat":"클렌징","full":5.8,"top10":5.0},{"cat":"헤어케어","full":4.4,"top10":5.0},{"cat":"푸드","full":3.9,"top10":9.2},{"cat":"(미매핑)","full":17.3,"top10":23.3},{"cat":"기타 12개","full":9.7,"top10":6.6}],
+ brandcats: [["스킨케어",8],["메이크업",8],["선케어",4],["마스크팩",4],["클렌징",3],["헤어케어",2],["푸드",1]],
+ brands: [
+  ["메디힐","마스크팩",12,79,10,42.5,1,76818,37.9],
+  ["에스트라","스킨케어",12,34,7,52.1,9,12300,21.4],
+  ["브링그린","스킨케어",12,27,6,41.3,3,22129,38.9],
+  ["아누아","스킨케어",10,27,10,46.4,2,8451,51.2],
+  ["바닐라코","메이크업",12,26,3,47.0,8,3992,16.1],
+  ["딜라이트 프로젝트","푸드",12,25,7,36.4,1,43690,6.2],
+  ["셀리맥스","스킨케어",12,20,3,60.4,18,1362,30.4],
+  ["쏘내추럴","메이크업",12,20,3,44.2,6,3344,21.2],
+  ["VT","선케어·스킨케어",11,20,4,37.7,6,6411,36.0],
+  ["닥터지","스킨케어·선케어",11,18,4,72.2,42,3907,25.4],
+  ["토니모리","메이크업",10,17,3,62.2,11,61130,29.6],
+  ["어노브","헤어케어",11,16,4,35.3,4,87222,27.5],
+  ["라운드랩","선케어",10,16,5,38.1,1,22841,28.4],
+  ["식물나라","선케어",10,16,6,50.8,11,12613,36.8],
+  ["셀라딕스","스킨케어",12,15,3,53.8,13,5099,12.2],
+  ["헤라","메이크업",10,14,3,30.2,6,16942,17.8],
+  ["비플레인","클렌징",12,14,4,37.6,2,17602,13.7],
+  ["마녀공장","클렌징",12,13,2,43.2,8,54218,32.5],
+  ["홀리카홀리카","메이크업",12,13,2,47.0,33,197643,19.5],
+  ["구달","선케어",12,12,1,42.2,18,43373,18.6],
+  ["바이오던스","마스크팩",12,12,1,42.5,11,7515,15.2],
+  ["스킨푸드","마스크팩",12,12,1,57.4,36,103226,37.6],
+  ["에스네이처","스킨케어",12,12,2,41.8,9,16241,42.2],
+  ["웰라쥬","스킨케어",12,12,2,29.9,3,10059,40.6],
+  ["페리페라","메이크업",11,12,2,70.7,41,98016,3.5],
+  ["바이오더마","클렌징",10,12,4,57.3,3,52246,31.4],
+  ["릴리이브","헤어케어",11,11,1,50.5,25,12114,3.1],
+  ["비디비치","메이크업",11,11,1,61.5,37,7752,20.0],
+  ["이옴","마스크팩",11,11,1,58.8,6,5262,31.9],
+  ["정샘물","메이크업",11,11,1,54.3,21,37865,18.6]]
+};
+
+/* ---- 3-A 카테고리 구성 (grouped horizontal bars) ---- */
+(function(){
+  const data = D2.catmix, W = 900, rowH = 42, T = 8, B = 32, L = 100, R = 60;
+  const H = T + B + rowH*data.length, s = svg("c-catmix", W, H), pw = W-L-R, xmax = 25;
+  for (let v = 0; v <= xmax; v += 5){ const x = L + pw*v/xmax;
+    el("line", {x1:x, x2:x, y1:T, y2:H-B, class: v?"gridline":"axisline"}, s);
+    el("text", {x:x, y:H-B+16, "text-anchor":"middle", class:"ticktxt"}, s).textContent = v+"%"; }
+  data.forEach((d,i)=>{ const y0 = T + rowH*i;
+    el("text", {x:L-10, y:y0+rowH/2+4, "text-anchor":"end", class:"lbltxt"}, s).textContent = d.cat;
+    [["full","var(--s1)","전 구간"],["top10","var(--s2)","1~10위"]].forEach((sr,k)=>{
+      const w = Math.max(pw*d[sr[0]]/xmax, 1), y = y0 + 5 + k*17, bh = 14;
+      const r = el("path", {d:`M${L},${y} L${L+w-4},${y} Q${L+w},${y} ${L+w},${y+4} L${L+w},${y+bh-4} Q${L+w},${y+bh} ${L+w-4},${y+bh} L${L},${y+bh} Z`, fill:sr[1]}, s);
+      bindTip(r, `<b>${d.cat}</b> · ${sr[2]}<br>슬롯 비중 ${d[sr[0]]}%`);
+      el("text", {x:L+w+5, y:y+bh-3, class:"valtxt"}, s).textContent = d[sr[0]]+"%"; });
+  });
+  table("c-catmix", ["카테고리","전 구간 비중(%)","1~10위 비중(%)"], data.map(d=>[d.cat, d.full, d.top10]));
+})();
+
+/* ---- 3-B 상시 브랜드 주력 카테고리 ---- */
+(function(){
+  const data = D2.brandcats, W = 620, rowH = 27, T = 8, B = 30, L = 90, R = 50;
+  const H = T + B + rowH*data.length, s = svg("c-brandcats", W, H), pw = W-L-R, xmax = 8;
+  for (let v = 0; v <= xmax; v += 2){ const x = L + pw*v/xmax;
+    el("line", {x1:x, x2:x, y1:T, y2:H-B, class: v?"gridline":"axisline"}, s);
+    el("text", {x:x, y:H-B+16, "text-anchor":"middle", class:"ticktxt"}, s).textContent = v; }
+  data.forEach((d,i)=>{ const y = T + rowH*i + (rowH-16)/2, w = Math.max(pw*d[1]/xmax, 1);
+    el("text", {x:L-10, y:y+12, "text-anchor":"end", class:"lbltxt"}, s).textContent = d[0];
+    const r = el("path", {d:`M${L},${y} L${L+w-4},${y} Q${L+w},${y} ${L+w},${y+4} L${L+w},${y+12} Q${L+w},${y+16} ${L+w-4},${y+16} L${L},${y+16} Z`, fill:"var(--s1)"}, s);
+    bindTip(r, `<b>${d[0]}</b> 주력 상시 브랜드 ${d[1]}개`);
+    el("text", {x:L+w+6, y:y+12, class:"valtxt"}, s).textContent = d[1]; });
+  table("c-brandcats", ["주력 카테고리","브랜드 수"], data);
+})();
+
+/* ---- 3-C 브랜드 상세 테이블 ---- */
+(function(){
+  const box = document.getElementById("c-brandtable");
+  const headers = ["브랜드","주력 카테고리","등장일(/12)","슬롯","상품 수","평균 순위","최고 순위","중위 리뷰수","평균 할인율(%)"];
+  function render(rows){
+    return "<tr>" + headers.map(h=>`<th>${h}</th>`).join("") + "</tr>" +
+      rows.map(b=>`<tr><td>${b[0]}</td><td>${b[1]}</td><td>${b[2]}</td><td>${b[3]}</td><td>${b[4]}</td><td>${b[5]}</td><td>${b[6]}</td><td>${b[7].toLocaleString()}</td><td>${b[8]}</td></tr>`).join("");
+  }
+  const t = document.createElement("table"); t.className = "rpt";
+  t.innerHTML = render(D2.brands.slice(0,15));
+  box.appendChild(t);
+  const det = document.createElement("details"); det.className = "tbl";
+  det.innerHTML = "<summary>전체 30개 브랜드 보기</summary>";
+  const t2 = document.createElement("table"); t2.innerHTML = render(D2.brands);
+  det.appendChild(t2); box.after(det);
+})();
+</script>

@@ -5,7 +5,7 @@ name: Deploy Pages
 on:
   push:
     branches: ["claude/oliveyoung-data-collection-w9odk3"]
-    paths: ["index.html", "data/**", "scraper/build_site.py", ".github/workflows/pages.yml"]
+    paths: ["index.html", "eda.html", "data/**", "scraper/build_site.py", ".github/workflows/pages.yml"]
   workflow_dispatch:
 
 permissions:
