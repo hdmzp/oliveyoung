@@ -95,6 +95,10 @@ code { background: var(--surface); border: 1px solid var(--ring); border-radius:
 .cover .proj { color: var(--accent); font-weight: 700; font-size: 13px; letter-spacing: .06em; }
 .cover h1 { font-size: 28px; margin: 6px 0 10px; }
 .cover .meta2 { color: var(--muted); font-size: 13px; }
+.dlbtn { display: inline-block; background: var(--accent); color: #fff; font-size: 13px; font-weight: 700;
+  padding: 8px 16px; border-radius: 20px; text-decoration: none; }
+.dlbtn:hover { opacity: .85; }
+@media print { .dlbtn { display: none; } }
 .toc { background: var(--surface); border: 1px solid var(--ring); border-radius: 10px; padding: 18px 22px; margin: 20px 0 8px; font-size: 13.5px; columns: 2; column-gap: 40px; }
 .toc a { color: var(--ink-2); text-decoration: none; display: block; padding: 2.5px 0; }
 .toc a:hover { color: var(--accent); }
@@ -112,6 +116,7 @@ p.body strong { color: var(--ink); }
   <div class="proj">OLIVE YOUNG 랭킹 데이터 분석 프로젝트</div>
   <h1>올리브영 판매 랭킹 결정요인 실증 분석<br>1차 보고서 — 데이터 구축 및 탐색적 분석</h1>
   <div class="meta2">분석 기간 2026-07-21 ~ 08-05 · 작성일 2026-08-05 · 데이터: 자체 구축 수집 파이프라인 (hdmzp/oliveyoung)</div>
+  <p style="margin:14px 0 0"><a class="dlbtn" href="./report_v1.docx" download="올리브영_랭킹_분석_1차보고서.docx">📄 보고서 DOCX 다운로드</a></p>
 </header>
 
 <nav class="toc">
