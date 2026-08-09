@@ -84,6 +84,8 @@ def velocity_delta(rank_all: pd.DataFrame, snapshot: pd.Timestamp) -> pd.Series:
     """연속 등장 날짜쌍의 (리뷰수 증가분 / 경과일) 평균. 스냅샷 이후 데이터는 제외."""
     hist = rank_all[rank_all["수집일자"] <= snapshot]
     hist = hist.dropna(subset=["리뷰수"]).sort_values("수집일자")
+    # 카테고리 일일 수집 후 같은 날 같은 상품이 여러 행(전체+카테고리) → 1행만
+    hist = hist.drop_duplicates(subset=["수집일자", "상품번호"])
     out = {}
     for goods, g in hist.groupby("상품번호"):
         if len(g) < 2:
