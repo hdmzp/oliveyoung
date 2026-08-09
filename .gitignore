@@ -9,3 +9,7 @@ data/manifest.json
 data/ranking/
 data/reviews/
 analysis/output/
+
+# 썸네일 아카이브는 로컬 PC에만 축적 (용량 문제로 리포엔 미푸시)
+# — 이미지 분석은 수집 PC에서 analysis/image_features.py 실행
+data/images/
