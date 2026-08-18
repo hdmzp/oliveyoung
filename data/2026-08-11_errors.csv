@@ -1,0 +1,2 @@
+﻿수집일자,상품번호,단계,오류
+2026-08-11,A000000150361,reviews,POST https://m.oliveyoung.co.kr/review/api/v2/reviews/cursor failed after 3 retries: HTTP 429
