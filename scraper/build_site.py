@@ -1,4 +1,4 @@
-"""index.html 뷰어가 읽을 JSON 을 생성한다 (CSV → JSON).
+"""랭킹 조회 페이지(ranking.html)가 읽을 JSON 을 생성한다 (CSV → JSON).
 
 - data/manifest.json          : 조회 가능한 날짜 목록 + 리뷰 있는 상품 목록
 - data/ranking/{날짜}.json     : 그 날짜의 랭킹(1~100)
