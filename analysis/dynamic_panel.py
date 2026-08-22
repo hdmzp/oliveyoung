@@ -32,11 +32,16 @@ from scipy import stats
 
 from .growth import OUT_DIR, build_panel, fe_ols
 
-MAX_GAP = 1          # 시차는 인접 수집일(간격 1일)만 사용
+MAX_GAP = 1          # 기본 시차 = 인접 수집일
+LAGS = (1, 3, 7)     # 함께 검정할 시차(수집일 기준)
 
 
-def make_lags(p: pd.DataFrame) -> pd.DataFrame:
-    """상품×일 패널에 1기 시차와 차분을 붙인다 (카테고리별로 독립 계산)."""
+def make_lags(p: pd.DataFrame, k: int = 1) -> pd.DataFrame:
+    """상품×일 패널에 k기 시차와 차분을 붙인다 (카테고리별로 독립 계산).
+
+    리뷰는 구매보다 며칠~몇 주 늦게 작성되므로 1일 시차만으로는 '리뷰 → 판매'
+    경로를 포착하기 어렵다. k 를 늘려 같은 검정을 반복한다.
+    """
     d = p.dropna(subset=["순위", "velocity_log", "log_review_cnt"]).copy()
     d["ln_rank"] = np.log(d["순위"])
     days = pd.Index(sorted(d["수집일자"].unique()))
@@ -45,10 +50,10 @@ def make_lags(p: pd.DataFrame) -> pd.DataFrame:
     d = d.sort_values(["카테고리", "상품번호", "di"])
     g = d.groupby(["카테고리", "상품번호"], sort=False)
     for c in ["ln_rank", "velocity_log", "log_review_cnt", "할인율", "log_price"]:
-        d[f"L_{c}"] = g[c].shift()
-    d["L_di"] = g["di"].shift()
+        d[f"L_{c}"] = g[c].shift(k)
+    d["L_di"] = g["di"].shift(k)
     d["gap"] = d["di"] - d["L_di"]
-    d = d[d["gap"] == MAX_GAP].copy()
+    d = d[d["gap"] == k].copy()
     d["d_rank"] = d["ln_rank"] - d["L_ln_rank"]
     d["d_vel"] = d["velocity_log"] - d["L_velocity_log"]
     return d
@@ -136,6 +141,50 @@ def main() -> None:
     w(f"    {'시차 종속변수 제외':<26}{a2.tc[ia]:>+16.2f}{b2.tc[ib]:>+16.2f}")
     w("    (t 는 상품 클러스터 기준. 부호 해석: 방향 A 는 음수면 '전기 유입이 많을수록")
     w("     당기 순위가 상승', 방향 B 는 음수면 '전기 순위가 좋을수록 당기 유입 증가')")
+    w()
+
+    # --- 4-1. 시차를 늘려가며 재검정 ---------------------------------------
+    w("■ 4-1. 시차를 늘리면 달라지는가 (핵심 보완)")
+    w("    리뷰는 구매 시점보다 며칠~몇 주 늦게 작성된다. 1일 시차로 '리뷰 → 판매'")
+    w("    경로가 안 잡히는 것은 시차가 짧아서일 수 있으므로 3일·7일로도 검정한다.")
+    w(f"    {'시차':<8}{'N':>8}{'A: 유입→순위 t':>16}{'B: 순위→유입 t':>16}"
+      f"{'A 유의':>8}{'B 유의':>8}")
+    lag_rows = []
+    for k in LAGS:
+        dk = make_lags(p, k)
+        if len(dk) < 500:
+            w(f"    {k}일{'':<5}{len(dk):>8,}  (표본 부족)")
+            continue
+        ak = fe_ols(dk, ["L_velocity_log", "L_log_review_cnt", "L_할인율",
+                         "L_log_price"], y_col="d_rank")
+        bk = fe_ols(dk, ["L_ln_rank", "L_log_review_cnt", "L_할인율",
+                         "L_log_price"], y_col="velocity_log")
+        tka = ak.tc[ak.names.index("L_velocity_log")]
+        tkb = bk.tc[bk.names.index("L_ln_rank")]
+        lag_rows.append((k, len(dk), tka, tkb))
+        def mark(t, want_neg=True):
+            if abs(t) <= 2:
+                return "아니오"
+            return "예" if (t < 0) == want_neg else "예(반대부호)"
+        w(f"    {k}일{'':<5}{len(dk):>8,}{tka:>+16.2f}{tkb:>+16.2f}"
+          f"{mark(tka):>10}{mark(tkb):>10}")
+    w()
+    if lag_rows:
+        anyA = any(abs(t) > 2 and t < 0 for _, _, t, _ in lag_rows)
+        if anyA:
+            w("    ▶ 시차를 늘리자 '유입 → 순위' 경로가 나타난다. 1일 시차로 잡히지")
+            w("      않았던 것은 리뷰 작성 지연 때문이었을 가능성이 크다.")
+        else:
+            w("    ▶ 시차를 3일·7일로 늘려도 '유입이 순위를 끌어올리는' 경로는 나타나지")
+            w("      않는다. 리뷰 작성 지연만으로는 방향 A 의 부재를 설명하기 어려우므로,")
+            w("      '판매가 리뷰를 만든다'는 해석이 더 견고해진다.")
+            wrong = [(k, t) for k, _, t, _ in lag_rows if t > 2]
+            if wrong:
+                ks = ", ".join(f"{k}일" for k, _ in wrong)
+                w(f"      ※ 다만 {ks} 시차에서 방향 A 가 통계적으로는 유의하되 부호가")
+                w("        양(+)이다. 이는 '유입이 많았던 상품일수록 그 뒤 순위가 오히려")
+                w("        내려간다'는 뜻으로, 리뷰가 순위를 밀어올린다는 주장과 정반대다.")
+                w("        일시적 급등 뒤의 평균회귀로 보는 편이 자연스럽다.")
     w()
 
     ta, tb = abs(a2.tc[ia]), abs(b2.tc[ib])

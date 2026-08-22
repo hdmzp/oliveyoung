@@ -206,6 +206,46 @@ def main() -> None:
         w("    ▶ 교체와 프로모션 부착의 동반은 뚜렷하지 않다.")
     w()
 
+    # --- 3-2. 프로모션 무변화 부분표본 --------------------------------------
+    w("■ 3-2. 프로모션이 그대로였던 교체만 추려서 재검정")
+    w("    교체와 프로모션이 함께 일어난다면, 배지가 전혀 바뀌지 않은 날의 교체만")
+    w("    남기면 썸네일 단독 효과에 가까워진다.")
+    changed = (pb2[[f"d_{b}" for b in BADGE]].abs().sum(axis=1) > 0)
+    pb2["badge_changed"] = changed
+    clean_keys = set(zip(pb2.loc[pb2["is_ev"] & ~changed, "상품번호"],
+                         pb2.loc[pb2["is_ev"] & ~changed, "di"]))
+    w(f"    간격 1일 교체 {len(ev1):,}건 중 배지 변화가 없던 교체 "
+      f"{len(clean_keys):,}건 ({len(clean_keys) / max(len(ev1), 1):.0%})")
+    if len(clean_keys) >= 50:
+        ck = pd.DataFrame(list(clean_keys), columns=["상품번호", "t0"])
+        mc = pn.merge(ck, on="상품번호", how="inner")
+        mc["rel"] = mc["di"] - mc["t0"]
+        mc = mc[mc["rel"].between(-2, 2)]
+        pc = mc.groupby("rel")["ln_dm"].agg(["mean", "size"])
+        w(f"    {'상대일':>7}{'관측':>9}{'평균 ln(순위) 편차':>20}")
+        for k, r in pc.iterrows():
+            mark = "  ← 교체일" if k == 0 else ""
+            w(f"    {int(k):>+7}{int(r['size']):>9,}{r['mean']:>+20.4f}{mark}")
+        pre_c = pc.loc[pc.index < 0, "mean"].mean()
+        post_c = pc.loc[pc.index > 0, "mean"].mean()
+        w(f"    교체 전 {pre_c:+.4f} → 교체 후 {post_c:+.4f} "
+          f"(차이 {post_c - pre_c:+.4f})")
+        w()
+        d0 = pc.loc[0, "mean"] if 0 in pc.index else float("nan")
+        dm1 = pc.loc[-1, "mean"] if -1 in pc.index else float("nan")
+        if post_c > d0:
+            w("    ▶ 프로모션 변화를 걷어내도 패턴의 모양은 그대로다. 교체 직전"
+              f"({dm1:+.3f})과 당일({d0:+.3f})에 순위가 평소보다 높고, 교체 뒤에는")
+            w(f"      오히려 평소 수준으로 되돌아간다({post_c:+.3f}).")
+            w("      즉 썸네일을 바꿔서 순위가 오른 것이 아니라, 순위가 좋을 때 썸네일을")
+            w("      바꾼다고 읽는 편이 자연스럽다. 프로모션은 이 패턴의 원인이 아니었다.")
+        else:
+            w("    ▶ 프로모션 변화를 걷어내자 교체 이후 순위가 개선되는 방향으로 바뀐다.")
+            w("      썸네일 교체 자체의 효과일 가능성을 배제할 수 없다.")
+    else:
+        w("    표본이 50건 미만이라 재검정을 생략한다.")
+    w()
+
     # --- 4. 교체 상품의 특성 ----------------------------------------------
     w("■ 4. 어떤 상품이 썸네일을 바꾸는가")
     pn["ever_ev"] = pn["상품번호"].isin(ev1["상품번호"])
