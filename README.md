@@ -72,7 +72,7 @@ C:\oliveyoung\
 │   ├── config.py            설정값 (카테고리·엔드포인트·속도)
 │   ├── http_client.py       요청 전송 (curl_cffi TLS 위장·재시도·속도제한)
 │   ├── ranking.py           랭킹 페이지 수집·파싱
-│   ├── build_site.py        CSV → 뷰어(index.html)용 JSON 생성
+│   ├── build_site.py        CSV → 뷰어(ranking.html)용 JSON 생성
 │   ├── reviews.py           리뷰수/별점(stats) + 리뷰목록(cursor) 수집
 │   ├── cf_bootstrap.py      403 시 Edge로 검증 쿠키 확보(폴백)
 │   ├── util.py              CSV 저장·시간·데드라인·파일잠금 재시도
@@ -105,7 +105,7 @@ C:\oliveyoung\
 ### `data/images/` — 대표이미지 원본(중복 제거 아카이브)
 - 랭킹 각 상품의 대표이미지를 **URL 기준으로 한 번만** 다운로드(파일명 = URL의 md5 앞 16자).
   같은 이미지는 매일 다시 안 받고, 프로모 이미지가 바뀌면(=URL 변경) 새 파일로 보존됨.
-- 뷰어(index.html)는 저장 파일이 아니라 **`대표이미지URL`을 직접 표시**하므로, 이 폴더는 순수 분석용 아카이브.
+- 뷰어(ranking.html)는 저장 파일이 아니라 **`대표이미지URL`을 직접 표시**하므로, 이 폴더는 순수 분석용 아카이브.
 - 특정 CSV 행의 이미지 파일 찾기: `hashlib.md5(url.encode()).hexdigest()[:16]` → `data/images/<그값>.<확장자>`
 - 다운로드 생략: `python -m scraper.main --overall-only --no-images` (URL은 그래도 CSV에 남음)
 
@@ -130,7 +130,7 @@ C:\oliveyoung\
 | `data/ranking/{날짜}/{카테고리ID}.json` | 그 날짜의 **카테고리별** TOP100 (여러 카테고리를 수집한 날짜만 생성) |
 | `data/reviews/{상품번호}.json` | 그 상품의 누적 리뷰 전체 (모든 일자 + 백필, 리뷰ID 중복 제거) |
 
-- 뷰어(`index.html`)는 카테고리를 여러 개 수집한 날짜에만 카테고리 선택 바를 띄우고,
+- 뷰어(`ranking.html`)는 카테고리를 여러 개 수집한 날짜에만 카테고리 선택 바를 띄우고,
   카테고리를 고르면 해당 카테고리 JSON 만 따로 불러온다(날짜별 통 파일을 받지 않음).
 - 주소의 `#날짜/카테고리ID` 로 특정 카테고리 랭킹을 바로 열 수 있다
   (예: `#2026-08-03/10000010011` = 8/3 선케어).
