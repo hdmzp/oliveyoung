@@ -1,8 +1,11 @@
 """리뷰 본문 텍스트 분석 (보고서 5.9절).
 
-- 리뷰 본문에서 소비자가 실제로 언급하는 어휘를 추출한다
-- 순위 상위권 / 하위권 상품의 리뷰에서 변별되는 어휘를 비교한다
-- 사전 정의한 소구 속성별 언급률을 순위 구간으로 나누어 집계한다
+순위와의 연관성을 검증하는 절이 아니라, 수집한 리뷰 본문이 어떤 내용으로
+채워져 있는지를 기술적으로 정리하는 부가 분석이다.
+
+- 리뷰 본문에서 소비자가 실제로 사용하는 어휘를 추출한다
+- 사전 정의한 소구 속성 10종의 언급률을 전체·카테고리별로 집계한다
+- 포토 첨부·재구매 표시·본문 길이 등 리뷰의 구조적 특성을 요약한다
 
 사용:  python -m analysis.review_text
 출력:  analysis/output/review_text.json  (웹 리포트가 읽는 집계 결과)
@@ -125,183 +128,91 @@ def tokenize(text: str) -> list[str]:
     return out
 
 
-def log_odds(a: Counter, b: Counter, vocab: list[str], alpha: float = 1.0) -> dict[str, float]:
-    """두 집단의 변별 어휘 — 사전확률을 둔 로그오즈비 (z 점수)."""
-    na, nb = sum(a.values()), sum(b.values())
-    res = {}
-    for w in vocab:
-        ya, yb = a[w] + alpha, b[w] + alpha
-        d = math.log(ya / (na + alpha - ya)) - math.log(yb / (nb + alpha - yb))
-        var = 1 / ya + 1 / yb
-        res[w] = d / math.sqrt(var)
-    return res
-
-
-def product_level(reviews: list[dict], mean_rank: dict[str, float],
-                  min_reviews: int = 20) -> dict:
-    """상품을 하나의 관측으로 묶어 구간 간 비율 차이를 검정한다."""
-    per = defaultdict(lambda: {"n": 0, "paid": 0, "rep": 0, "tier": None})
-    for r in reviews:
-        body = (r.get("리뷰본문") or "").strip()
-        if len(body) < 10:
-            continue
-        goods = r.get("상품번호")
-        mr = mean_rank.get(goods)
-        if mr is None:
-            continue
-        tier = "top" if mr <= 25 else ("bottom" if mr >= 76 else None)
-        if tier is None:
-            continue
-        d = per[goods]
-        d["tier"] = tier
-        d["n"] += 1
-        if PAID.search(body):
-            d["paid"] += 1
-        if r.get("재구매") == "1":
-            d["rep"] += 1
-
-    groups = {"top": defaultdict(list), "bottom": defaultdict(list)}
-    for d in per.values():
-        if d["n"] < min_reviews:
-            continue
-        for key in ("paid", "rep"):
-            groups[d["tier"]][key].append(d[key] / d["n"] * 100)
-
-    res = {"min_reviews": min_reviews,
-           "n_products": {t: len(groups[t]["paid"]) for t in groups}}
-    for key, label in (("paid", "대가성 공시 표기율"), ("rep", "재구매 표시율")):
-        a, b = groups["top"][key], groups["bottom"][key]
-        ma, mb = sum(a) / len(a), sum(b) / len(b)
-        va = sum((x - ma) ** 2 for x in a) / len(a)
-        vb = sum((x - mb) ** 2 for x in b) / len(b)
-        se = math.sqrt(va / len(a) + vb / len(b))
-        res[key] = {"label": label, "top": round(ma, 2), "bottom": round(mb, 2),
-                    "t": round(abs(ma - mb) / se, 2) if se else 0.0}
-    return res
-
-
 def main() -> None:
     reviews = load_reviews()
-    mean_rank, rep_cat = load_mean_rank()
+    _, rep_cat = load_mean_rank()
 
     doc_freq = Counter()
-    tier_docs = {"top": 0, "bottom": 0}
-    attr_hits = {"top": Counter(), "bottom": Counter()}
-    struct = {"top": Counter(), "bottom": Counter()}
-    n_len = {"top": [], "bottom": []}
-    paid = {"top": 0, "bottom": 0}
+    attr_all = Counter()
+    attr_by_cat = defaultdict(Counter)
+    cat_docs = Counter()
+    lengths = []
+    photo = repurchase = 0
+    stars = Counter()
     n_texts = 0
-    # 카테고리 교란 통제용: 카테고리별 · 구간별 토큰 집계
-    by_cat = defaultdict(lambda: {"top": Counter(), "bottom": Counter()})
-    cat_docs = defaultdict(lambda: {"top": 0, "bottom": 0})
 
     for r in reviews:
         body = (r.get("리뷰본문") or "").strip()
         if len(body) < 10:
             continue
         n_texts += 1
-        toks = tokenize(body)
-        doc_freq.update(set(toks))
-
-        goods = r.get("상품번호")
-        mr = mean_rank.get(goods)
-        if mr is None:
-            continue
-        tier = "top" if mr <= 25 else ("bottom" if mr >= 76 else None)
-        if tier is None:
-            continue
-
-        tier_docs[tier] += 1
-        n_len[tier].append(len(body))
-        cat = rep_cat.get(goods, "기타")
-        by_cat[cat][tier].update(toks)
-        cat_docs[cat][tier] += 1
-
-        if PAID.search(body):
-            paid[tier] += 1
-        for name, keys in ATTRS:
-            if any(k in body for k in keys):
-                attr_hits[tier][name] += 1
+        doc_freq.update(set(tokenize(body)))
+        lengths.append(len(body))
         if r.get("포토여부") == "1":
-            struct[tier]["photo"] += 1
+            photo += 1
         if r.get("재구매") == "1":
-            struct[tier]["repurchase"] += 1
+            repurchase += 1
+        try:
+            stars[int(float(r.get("별점") or 0))] += 1
+        except ValueError:
+            pass
 
-    # 워드클라우드 — 문서빈도 기준 (한 리뷰에 여러 번 나와도 1회)
+        hit = [name for name, keys in ATTRS if any(k in body for k in keys)]
+        attr_all.update(hit)
+        cat = rep_cat.get(r.get("상품번호"))
+        if cat:
+            cat_docs[cat] += 1
+            attr_by_cat[cat].update(hit)
+
     merged = Counter()
     for w, n in doc_freq.items():
         merged[MERGE.get(w, w)] += n
     cloud = [[w, n] for w, n in merged.most_common(48)]
 
-    # 변별 어휘 — 카테고리 안에서 구간을 비교한 뒤 카테고리 간 평균
-    #   같은 카테고리 안에서만 비교하므로 '샴푸·네일' 같은 품목 고유명사가 걸러진다
-    per_word = defaultdict(list)
-    for cat, cnt in by_cat.items():
-        if cat_docs[cat]["top"] < 150 or cat_docs[cat]["bottom"] < 150:
-            continue  # 표본이 얇은 카테고리는 제외
-        vocab = [w for w in set(cnt["top"]) | set(cnt["bottom"])
-                 if cnt["top"][w] + cnt["bottom"][w] >= 20]
-        z = log_odds(cnt["top"], cnt["bottom"], vocab)
-        for w, s_ in z.items():
-            per_word[w].append(s_)
+    attrs = sorted(
+        ([name, round(attr_all[name] / n_texts * 100, 1)] for name, _ in ATTRS),
+        key=lambda x: -x[1],
+    )
+    order = [a[0] for a in attrs]
 
-    MIN_CATS = 4
-    agg = {w: sum(v) / len(v) for w, v in per_word.items() if len(v) >= MIN_CATS}
-    ranked = sorted(agg.items(), key=lambda kv: kv[1])
-    distinct = {
-        "top": [[w, round(sc, 2), len(per_word[w])] for w, sc in ranked[::-1][:10]],
-        "bottom": [[w, round(sc, 2), len(per_word[w])] for w, sc in ranked[:10]],
-    }
-    n_cats = sum(1 for c in by_cat if cat_docs[c]["top"] >= 150 and cat_docs[c]["bottom"] >= 150)
+    # 카테고리 × 속성 언급률 — 리뷰 표본이 충분한 카테고리만
+    MIN_DOCS = 800
+    cats = [c for c, n in cat_docs.most_common() if n >= MIN_DOCS]
+    profile = [
+        {
+            "cat": c,
+            "n": cat_docs[c],
+            "rates": [round(attr_by_cat[c][a] / cat_docs[c] * 100, 1) for a in order],
+        }
+        for c in cats
+    ]
 
-    attrs = []
-    for name, _ in ATTRS:
-        t = attr_hits["top"][name] / tier_docs["top"] * 100
-        b = attr_hits["bottom"][name] / tier_docs["bottom"] * 100
-        attrs.append([name, round(t, 1), round(b, 1)])
-    attrs.sort(key=lambda x: -max(x[1], x[2]))
-
+    lengths.sort()
     out = {
         "corpus": {
             "reviews": n_texts,
-            "top_docs": tier_docs["top"],
-            "bottom_docs": tier_docs["bottom"],
-            "cats_used": n_cats,
+            "cats_used": len(cats),
+            "min_docs": MIN_DOCS,
         },
         "cloud": cloud,
-        "distinct": distinct,
         "attrs": attrs,
-        "paid": {
-            "top": round(paid["top"] / tier_docs["top"] * 100, 2),
-            "bottom": round(paid["bottom"] / tier_docs["bottom"] * 100, 2),
-            "top_n": paid["top"],
-            "bottom_n": paid["bottom"],
-        },
+        "profile": {"attrs": order, "rows": profile},
         "struct": {
-            "top": {
-                "photo": round(struct["top"]["photo"] / tier_docs["top"] * 100, 1),
-                "repurchase": round(struct["top"]["repurchase"] / tier_docs["top"] * 100, 1),
-                "len": round(sum(n_len["top"]) / len(n_len["top"]), 1),
-            },
-            "bottom": {
-                "photo": round(struct["bottom"]["photo"] / tier_docs["bottom"] * 100, 1),
-                "repurchase": round(struct["bottom"]["repurchase"] / tier_docs["bottom"] * 100, 1),
-                "len": round(sum(n_len["bottom"]) / len(n_len["bottom"]), 1),
-            },
+            "photo": round(photo / n_texts * 100, 1),
+            "repurchase": round(repurchase / n_texts * 100, 1),
+            "len_mean": round(sum(lengths) / len(lengths)),
+            "len_median": lengths[len(lengths) // 2],
+            "len_p90": lengths[int(len(lengths) * 0.9)],
+            "stars": {str(k): stars[k] for k in sorted(stars)},
         },
     }
-    # 상품 단위 비교 — 리뷰 단위로 세면 같은 상품의 반복 관측이 유의성을 부풀린다 (4.1절)
-    out["by_product"] = product_level(reviews, mean_rank)
-
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=1)
     print(json.dumps(out["corpus"], ensure_ascii=False))
-    print("상위권 변별:", [(w, s_) for w, s_, _ in distinct["top"]])
-    print("하위권 변별:", [(w, s_) for w, s_, _ in distinct["bottom"]])
-    print("대가성:", out["paid"])
     print("속성:", attrs)
-    print("구조:", out["struct"])
+    print("구조:", json.dumps(out["struct"], ensure_ascii=False))
+    print("카테고리:", [(p["cat"], p["n"]) for p in profile])
 
 
 if __name__ == "__main__":
