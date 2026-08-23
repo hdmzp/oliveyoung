@@ -72,8 +72,26 @@
         <a href="#data"><span class="no">02</span>분석 대상 데이터<span class="desc">수집 대상 · 범위 · 변수 명세</span></a>
         <a href="#env"><span class="no">03</span>개발 환경<span class="desc">실행 환경 · 라이브러리 · 파이프라인</span></a>
         <a href="#method"><span class="no">04</span>분석 방법<span class="desc">비교 설계 · 해석 기준</span></a>
-        <a href="#results"><span class="no">05</span>분석 결과<span class="desc">가설별 실증 검증 10개 절</span></a>
+        <div class="toc-cell">
+          <a class="toc-main" href="#results"><span class="no">05</span>분석 결과</a>
+          <button class="toc-toggle" id="tocToggle" type="button" aria-expanded="false" aria-controls="tocSub">
+            <span class="tt-text">10개 절 펼치기</span><span class="caret" aria-hidden="true">▾</span>
+          </button>
+        </div>
         <a href="#conclusion"><span class="no">06</span>결론 및 제언<span class="desc">결과 요약 · 실무 제언 · 한계</span></a>
+      </div>
+
+      <div class="toc-sub" id="tocSub" hidden>
+        <a href="#r51"><span class="sn">5.1</span>랭킹의 일별 유동성</a>
+        <a href="#r52"><span class="sn">5.2</span>리뷰 총량과 리뷰 증가 속도의 영향력 비교</a>
+        <a href="#r53"><span class="sn">5.3</span>랭킹 산정 기준 판별 — 판매량 vs 매출액</a>
+        <a href="#r54"><span class="sn">5.4</span>프로모션 유형별 효과와 역인과 구조</a>
+        <a href="#r55"><span class="sn">5.5</span>브랜드 요인의 기여도</a>
+        <a href="#r56"><span class="sn">5.6</span>순위 상승 요인과 잔류 요인의 분리</a>
+        <a href="#r57"><span class="sn">5.7</span>리뷰와 판매의 선후 관계 검정</a>
+        <a href="#r58"><span class="sn">5.8</span>대가성 리뷰의 영향 검증</a>
+        <a href="#r59"><span class="sn">5.9</span>리뷰 본문의 내용 구성</a>
+        <a href="#r510"><span class="sn">5.10</span>썸네일 시각 요소와 순위의 관계</a>
       </div>
     </nav>
   </div>
@@ -446,7 +464,7 @@
     </div>
 
     <!-- 5.1 -->
-    <h3 class="sub-head"><span class="n">5.1</span>랭킹의 일별 유동성</h3>
+    <h3 class="sub-head" id="r51"><span class="n">5.1</span>랭킹의 일별 유동성</h3>
     <div class="hstep">
       <span class="lab">검증 질문</span>
       <p class="prose">
@@ -520,7 +538,7 @@
     </div>
 
     <!-- 5.2 -->
-    <h3 class="sub-head"><span class="n">5.2</span>리뷰 총량과 리뷰 증가 속도의 영향력 비교</h3>
+    <h3 class="sub-head" id="r52"><span class="n">5.2</span>리뷰 총량과 리뷰 증가 속도의 영향력 비교</h3>
     <div class="hstep">
       <span class="lab">검증 질문</span>
       <p class="prose">
@@ -597,7 +615,7 @@
     </div>
 
     <!-- 5.3 -->
-    <h3 class="sub-head"><span class="n">5.3</span>랭킹 산정 기준 판별 — 판매량 vs 매출액</h3>
+    <h3 class="sub-head" id="r53"><span class="n">5.3</span>랭킹 산정 기준 판별 — 판매량 vs 매출액</h3>
     <div class="hstep">
       <span class="lab">검증 질문</span>
       <p class="prose">
@@ -643,7 +661,7 @@
         <div class="fig-sub">등매출선(Iso-revenue curve) 대비 · 상품 단위 산점도</div>
       </div>
       <div class="fig-img plain">
-        <img src="assets/report/fig7_scatter.png" alt="가격(로그)과 리뷰 증가 속도(로그)의 산점도. 순위 구간별로 점 크기와 색이 다르며, 상위권 상품이 등매출선 외곽을 따라 분포한다." loading="lazy">
+        <img src="assets/report/fig7_scatter.png" width="1035" height="600" alt="가격(로그)과 리뷰 증가 속도(로그)의 산점도. 순위 구간별로 점 크기와 색이 다르며, 상위권 상품이 등매출선 외곽을 따라 분포한다." loading="lazy">
       </div>
       <div class="fig-note">
         저가 다판매 상품군에 상위 랭킹이 편중되는 현상은 나타나지 않았다. 상위권 상품들은 가격축이나 판매량축
@@ -668,7 +686,7 @@
     </div>
 
     <!-- 5.4 -->
-    <h3 class="sub-head"><span class="n">5.4</span>프로모션 유형별 효과와 역인과 구조</h3>
+    <h3 class="sub-head" id="r54"><span class="n">5.4</span>프로모션 유형별 효과와 역인과 구조</h3>
     <div class="hstep">
       <span class="lab">검증 질문</span>
       <p class="prose">
@@ -747,7 +765,7 @@
     </div>
 
     <!-- 5.5 -->
-    <h3 class="sub-head"><span class="n">5.5</span>브랜드 요인의 기여도</h3>
+    <h3 class="sub-head" id="r55"><span class="n">5.5</span>브랜드 요인의 기여도</h3>
     <div class="hstep">
       <span class="lab">검증 질문</span>
       <p class="prose">
@@ -791,7 +809,7 @@
 
     <div class="brandshots">
       <div class="brandshot">
-        <img src="assets/report/brand_medihill.jpg" alt="메디힐 에센셜 마스크팩 기획 상품 썸네일" loading="lazy">
+        <img src="assets/report/brand_medihill.jpg" width="400" height="400" alt="메디힐 에센셜 마스크팩 기획 상품 썸네일" loading="lazy">
         <div>
           <div class="b-tag">실적 소구형</div>
           <h4>메디힐 — 에센셜 마스크팩 10/10+1매 기획</h4>
@@ -800,7 +818,7 @@
         </div>
       </div>
       <div class="brandshot">
-        <img src="assets/report/brand_anua.png" alt="아누아 피디알엔 히알루론산 수분 캡슐 미스트 썸네일" loading="lazy">
+        <img src="assets/report/brand_anua.png" width="400" height="400" alt="아누아 피디알엔 히알루론산 수분 캡슐 미스트 썸네일" loading="lazy">
         <div>
           <div class="b-tag">모델 소구형</div>
           <h4>아누아 — 피디알엔 히알루론산 수분 캡슐 미스트</h4>
@@ -822,7 +840,7 @@
     </div>
 
     <!-- 5.6 -->
-    <h3 class="sub-head"><span class="n">5.6</span>순위 상승 요인과 잔류 요인의 분리</h3>
+    <h3 class="sub-head" id="r56"><span class="n">5.6</span>순위 상승 요인과 잔류 요인의 분리</h3>
     <div class="hstep">
       <span class="lab">검증 질문</span>
       <p class="prose">
@@ -872,7 +890,7 @@
     </div>
 
     <!-- 5.7 -->
-    <h3 class="sub-head"><span class="n">5.7</span>리뷰와 판매의 선후 관계 검정</h3>
+    <h3 class="sub-head" id="r57"><span class="n">5.7</span>리뷰와 판매의 선후 관계 검정</h3>
     <div class="hstep">
       <span class="lab">검증 질문</span>
       <p class="prose">
@@ -961,7 +979,7 @@
     </div>
 
     <!-- 5.8 -->
-    <h3 class="sub-head"><span class="n">5.8</span>대가성 리뷰의 영향 검증</h3>
+    <h3 class="sub-head" id="r58"><span class="n">5.8</span>대가성 리뷰의 영향 검증</h3>
     <div class="hstep">
       <span class="lab">검증 질문</span>
       <p class="prose">
@@ -1032,7 +1050,7 @@
     </div>
 
     <!-- 5.9 -->
-    <h3 class="sub-head"><span class="n">5.9</span>리뷰 본문의 내용 구성</h3>
+    <h3 class="sub-head" id="r59"><span class="n">5.9</span>리뷰 본문의 내용 구성</h3>
     <div class="callout">
       <span class="c-tag">이 절의 성격</span>
       본 절은 가설 검증 절이 아니다. 앞선 분석에서 리뷰는 <b>얼마나 빠르게 쌓이는가</b>만이 순위와 연결되는
@@ -1125,7 +1143,7 @@
     </div>
 
     <!-- 5.10 -->
-    <h3 class="sub-head"><span class="n">5.10</span>썸네일 시각 요소와 순위의 관계</h3>
+    <h3 class="sub-head" id="r510"><span class="n">5.10</span>썸네일 시각 요소와 순위의 관계</h3>
     <div class="hstep">
       <span class="lab">검증 질문</span>
       <p class="prose">
@@ -1166,7 +1184,7 @@
 
     <div class="shots">
       <div class="shot">
-        <img src="assets/report/thumb_text.jpg" alt="쏘피 쿨링프레쉬 생리대 썸네일" loading="lazy">
+        <img src="assets/report/thumb_text.jpg" width="400" height="400" alt="쏘피 쿨링프레쉬 생리대 썸네일" loading="lazy">
         <div class="s-body">
           <div class="s-tag">문구 중심 · 복잡도 高</div>
           <h4>쏘피 쿨링프레쉬</h4>
@@ -1174,7 +1192,7 @@
         </div>
       </div>
       <div class="shot">
-        <img src="assets/report/thumb_model.jpg" alt="더마토리 살리시닉 포어 클리어 블랙 모공 토너패드 썸네일" loading="lazy">
+        <img src="assets/report/thumb_model.jpg" width="400" height="400" alt="더마토리 살리시닉 포어 클리어 블랙 모공 토너패드 썸네일" loading="lazy">
         <div class="s-body">
           <div class="s-tag">인물 · 인플루언서 PICK</div>
           <h4>더마토리 모공 토너패드</h4>
@@ -1182,7 +1200,7 @@
         </div>
       </div>
       <div class="shot">
-        <img src="assets/report/thumb_mixed.jpg" alt="브링그린 징크테카 트러블 세럼 썸네일" loading="lazy">
+        <img src="assets/report/thumb_mixed.jpg" width="400" height="400" alt="브링그린 징크테카 트러블 세럼 썸네일" loading="lazy">
         <div class="s-body">
           <div class="s-tag">혼합형</div>
           <h4>브링그린 트러블 세럼</h4>
@@ -1190,7 +1208,7 @@
         </div>
       </div>
       <div class="shot">
-        <img src="assets/report/thumb_plain.jpg" alt="올리브영 정교한 족집게 썸네일" loading="lazy">
+        <img src="assets/report/thumb_plain.jpg" width="400" height="400" alt="올리브영 정교한 족집게 썸네일" loading="lazy">
         <div class="s-body">
           <div class="s-tag alt">대조 · 복잡도 低</div>
           <h4>올리브영 정교한 족집게</h4>
@@ -1219,7 +1237,7 @@
         <div class="fig-sub">유형별 10장 표본 추출</div>
       </div>
       <div class="fig-img plain">
-        <img src="assets/report/fig13_thumbgrid.jpg" alt="마케팅 소구 속성별 대표 썸네일 40장을 유형별로 배열한 컨택트 시트" loading="lazy">
+        <img src="assets/report/fig13_thumbgrid.jpg" width="1600" height="559" alt="마케팅 소구 속성별 대표 썸네일 40장을 유형별로 배열한 컨택트 시트" loading="lazy">
       </div>
     </div>
 

@@ -876,6 +876,22 @@
     });
   }
 
+  /* 목차 — 분석 결과 하위 절 펼치기/접기 */
+  function initTocToggle() {
+    const btn = document.getElementById("tocToggle");
+    const panel = document.getElementById("tocSub");
+    if (!btn || !panel) return;
+    const label = btn.querySelector(".tt-text");
+    const set = (open) => {
+      panel.hidden = !open;
+      btn.setAttribute("aria-expanded", String(open));
+      if (label) label.textContent = open ? "접기" : "10개 절 펼치기";
+    };
+    btn.addEventListener("click", () => set(panel.hidden));
+    /* 하위 절 링크로 들어온 경우 펼친 상태로 시작한다 */
+    if (/^#r5\d+$/.test(location.hash)) set(true);
+  }
+
   /* 스크롤 스파이 — 현재 섹션 표시 */
   function initSpy() {
     const links = [...document.querySelectorAll(".nav-links a")];
@@ -901,6 +917,7 @@
   function boot() {
     drawAll();
     initControls();
+    initTocToggle();
     initSpy();
   }
 
