@@ -183,13 +183,17 @@ a:hover { text-decoration: underline; }
 .toc-toggle[aria-expanded="true"] .caret { transform: rotate(180deg); }
 
 .toc-sub {
-  margin-top: 10px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
+  /* 목차 그리드 안에서 한 줄을 통째로 차지한다.
+     2열(데스크톱)에서는 order 로 마지막 행에 두고, 1열(모바일)에서는
+     DOM 순서 그대로 05 셀 바로 아래에 붙는다. */
+  grid-column: 1 / -1; order: 99;
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
   border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
   border-radius: 12px; padding: 14px 16px;
   background: color-mix(in srgb, var(--accent) 5%, var(--surface));
 }
 .toc-sub[hidden] { display: none; }
-@media (max-width: 720px) { .toc-sub { grid-template-columns: 1fr; } }
+@media (max-width: 720px) { .toc-sub { grid-template-columns: 1fr; order: 0; } }
 .toc-sub a {
   display: flex; align-items: baseline; gap: 10px;
   font-size: 13.5px; font-weight: 600; color: var(--ink-2);
