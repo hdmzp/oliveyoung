@@ -147,21 +147,59 @@ a:hover { text-decoration: underline; }
 }
 .toc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 @media (max-width: 720px) { .toc-grid { grid-template-columns: 1fr; } }
-.toc-grid a {
+.toc-grid > a, .toc-grid > .toc-cell {
   display: flex; align-items: baseline; gap: 14px;
   background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
   padding: 13px 18px; color: var(--ink); font-size: 14.5px; font-weight: 650;
   transition: border-color .12s;
 }
-.toc-grid a:hover { text-decoration: none; border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
-.toc-grid a .no {
+.toc-grid > a:hover, .toc-grid > .toc-cell:hover {
+  text-decoration: none; border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.toc-grid .no {
   font-size: 12.5px; font-weight: 800; color: var(--accent);
   font-variant-numeric: tabular-nums; flex: none;
 }
-.toc-grid a .desc {
+.toc-grid .desc {
   margin-left: auto; font-size: 12.5px; font-weight: 400; color: var(--muted); text-align: right;
 }
-@media (max-width: 560px) { .toc-grid a .desc { display: none; } }
+@media (max-width: 560px) { .toc-grid .desc { display: none; } }
+
+/* 05 분석 결과 — 하위 절 펼치기 */
+.toc-cell .toc-main {
+  display: flex; align-items: baseline; gap: 14px;
+  color: inherit; font: inherit; flex: 1; min-width: 0;
+}
+.toc-cell .toc-main:hover { text-decoration: none; }
+.toc-toggle {
+  display: inline-flex; align-items: center; gap: 6px; flex: none;
+  font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer;
+  color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  border-radius: 999px; padding: 4px 11px;
+}
+.toc-toggle:hover { background: color-mix(in srgb, var(--accent) 18%, transparent); }
+.toc-toggle .caret { font-size: 10px; transition: transform .16s ease; }
+.toc-toggle[aria-expanded="true"] .caret { transform: rotate(180deg); }
+
+.toc-sub {
+  margin-top: 10px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  border-radius: 12px; padding: 14px 16px;
+  background: color-mix(in srgb, var(--accent) 5%, var(--surface));
+}
+.toc-sub[hidden] { display: none; }
+@media (max-width: 720px) { .toc-sub { grid-template-columns: 1fr; } }
+.toc-sub a {
+  display: flex; align-items: baseline; gap: 10px;
+  font-size: 13.5px; font-weight: 600; color: var(--ink-2);
+  padding: 6px 8px; border-radius: 8px;
+}
+.toc-sub a:hover { text-decoration: none; color: var(--ink); background: var(--surface); }
+.toc-sub a .sn {
+  font-size: 12px; font-weight: 800; color: var(--accent);
+  font-variant-numeric: tabular-nums; flex: none; min-width: 26px;
+}
 
 /* ---------- sections ---------- */
 section { padding: 56px 0 8px; }
@@ -380,6 +418,7 @@ table.data th.sep, table.data td.sep { border-left: 1px solid var(--grid); }
   background: var(--surface); padding: 12px; text-align: center;
 }
 .fig-img img { max-width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 6px; }
+.brandshot img, .shot img { max-width: 100%; }
 .fig-img.plain { background: #fff; }
 
 /* 썸네일 갤러리 */
