@@ -221,18 +221,30 @@
     ["편하고", 1583], ["머리", 1564], ["기획", 1540], ["세정력", 1537],
   ];
 
-  /* 그림 12. 소구 속성별 언급률 (%) — 상위권 1–25위 / 하위권 76–100위 */
-  const attrMentions = [
-    ["보습·수분", 19.3, 21.4],
-    ["발림·제형", 19.3, 18.3],
-    ["자극·순함", 17.4, 17.0],
-    ["가격·가성비", 15.2, 14.9],
-    ["재구매 의사", 13.8, 11.6],
-    ["향", 12.4, 13.7],
-    ["끈적임·마무리", 13.2, 13.3],
-    ["커버·발색", 10.0, 11.0],
-    ["트러블·진정", 10.0, 10.0],
-    ["지속력", 9.7, 9.8],
+  /* 그림 12. 소구 속성 언급률 — 전체 및 카테고리별 (%) */
+  const attrNames = ["보습·수분", "발림·제형", "자극·순함", "가격·가성비", "향", "끈적임·마무리", "재구매 의사", "지속력", "트러블·진정", "커버·발색"];
+  const attrOverall = [19.3, 18.1, 16.5, 15.1, 14.3, 12.7, 12.4, 9.4, 9.3, 8.9];
+  const attrProfile = [
+    ["메이크업", 6065, [18.9, 19.4, 3.3, 9.5, 3.0, 16.3, 10.0, 27.3, 6.3, 31.3]],
+    ["스킨케어", 5400, [44.0, 35.7, 32.0, 14.9, 5.8, 27.9, 15.3, 6.9, 26.1, 5.9]],
+    ["선케어", 4353, [31.5, 34.7, 17.7, 12.8, 4.6, 35.7, 11.1, 6.7, 10.2, 25.5]],
+    ["클렌징", 4285, [25.9, 20.1, 47.7, 13.2, 7.9, 8.2, 14.2, 2.6, 13.1, 1.5]],
+    ["마스크팩", 4230, [42.0, 15.6, 26.6, 16.0, 3.7, 12.5, 17.6, 6.3, 24.8, 18.9]],
+    ["헤어케어", 3731, [9.1, 20.5, 10.0, 14.8, 34.8, 12.3, 13.3, 10.5, 2.9, 3.3]],
+    ["푸드", 3206, [1.4, 3.5, 3.2, 17.4, 5.9, 0.6, 14.6, 2.0, 0.5, 0.2]],
+    ["바디케어", 3198, [28.0, 19.3, 19.5, 12.0, 45.1, 18.0, 11.1, 8.9, 6.9, 3.7]],
+    ["위생용품", 3004, [9.8, 21.8, 26.6, 21.5, 17.5, 7.6, 15.3, 5.8, 1.6, 4.7]],
+    ["건강식품", 2901, [2.1, 4.0, 2.2, 20.4, 4.1, 0.4, 14.0, 3.0, 0.7, 0.1]],
+    ["뷰티소품", 2735, [4.8, 16.2, 13.2, 20.7, 1.2, 3.1, 12.7, 5.0, 2.3, 9.0]],
+    ["네일", 2716, [14.2, 20.4, 4.5, 14.5, 16.4, 8.5, 8.3, 14.8, 0.5, 6.0]],
+    ["맨즈에딧", 2682, [21.2, 17.6, 13.1, 13.3, 19.2, 19.5, 10.7, 10.7, 7.8, 8.7]],
+    ["헬스/건강용품", 2561, [4.9, 4.8, 9.8, 16.3, 7.7, 2.6, 11.1, 4.4, 20.1, 8.1]],
+    ["향수/디퓨저", 2488, [2.3, 4.3, 3.7, 17.0, 80.1, 4.4, 9.4, 32.6, 0.5, 0.4]],
+    ["구강용품", 2443, [1.8, 4.9, 13.7, 17.8, 16.3, 1.3, 14.2, 7.2, 0.1, 0.5]],
+    ["더모 코스메틱", 1978, [47.0, 33.3, 34.2, 12.8, 10.0, 22.5, 11.6, 7.0, 28.5, 5.9]],
+    ["패션", 1686, [1.0, 5.1, 5.4, 16.1, 0.4, 1.2, 8.2, 1.8, 0.4, 6.5]],
+    ["홈리빙/가전", 1124, [4.8, 3.6, 6.3, 14.7, 30.0, 1.3, 10.1, 6.9, 0.4, 0.4]],
+    ["취미/팬시", 844, [0.5, 4.4, 1.2, 19.5, 0.7, 0.7, 6.0, 2.7, 0.0, 0.4]],
   ];
 
   /* 표 12. 썸네일 마케팅 소구 속성 (160장 수기 분류) */
@@ -730,41 +742,62 @@
     });
   }
 
-  /* --- 그림 12. 소구 속성 언급률 (덤벨) --- */
+  /* --- 그림 12. 카테고리 × 소구 속성 언급률 히트맵 --- */
   function drawAttr() {
-    const col = C(), W = 980, H = 380;
+    const col = C(), W = 980, rows = attrProfile.length;
+    const L = 118, R = 16, T = 62, B = 34, ch = 24;
+    const H = T + rows * ch + B;
     const svg = makeSvg("chAttr", W, H);
     if (!svg) return;
-    const L = 150, R = 110, T = 22, B = 48;
-    const x0 = L, x1 = W - R, maxX = 25;
-    const xS = (v) => x0 + (v / maxX) * (x1 - x0);
-    const rowH = (H - T - B) / attrMentions.length;
+    const cw = (W - L - R) / attrNames.length;
 
-    [0, 5, 10, 15, 20, 25].forEach((v) => {
-      const x = xS(v);
-      el("line", { x1: x, y1: T, x2: x, y2: H - B, stroke: col.grid, "stroke-width": 1 }, svg);
-      txt(svg, x, H - B + 17, `${v}%`, { "text-anchor": "middle", "font-size": 11, fill: col.muted });
-    });
+    const ramp = (v) => {
+      const steps = [[0, 0], [5, 1], [10, 2], [18, 3], [28, 4], [42, 5]];
+      let idx = 0;
+      for (const [th, i] of steps) if (v >= th) idx = i;
+      return col.seq[idx];
+    };
 
-    attrMentions.forEach(([name, top, bot], i) => {
-      const y = T + i * rowH + rowH / 2;
-      const lo = Math.min(top, bot), hi = Math.max(top, bot);
-      el("line", {
-        x1: xS(lo), y1: y, x2: xS(hi), y2: y,
-        stroke: col.axis, "stroke-width": 3, "stroke-linecap": "round",
-      }, svg);
-      const dTop = el("circle", { cx: xS(top), cy: y, r: 6, fill: col.s1, stroke: col.surface, "stroke-width": 2 }, svg);
-      const dBot = el("circle", { cx: xS(bot), cy: y, r: 6, fill: col.s2, stroke: col.surface, "stroke-width": 2 }, svg);
-      const gap = Math.abs(top - bot);
-      hover(dTop, `${name} — 상위권 (1–25위)`, [["언급률", `${top.toFixed(1)}%`, col.s1], ["구간 차이", `${gap.toFixed(1)}%p`]]);
-      hover(dBot, `${name} — 하위권 (76–100위)`, [["언급률", `${bot.toFixed(1)}%`, col.s2], ["구간 차이", `${gap.toFixed(1)}%p`]]);
-      txt(svg, x0 - 12, y + 4, name, { "text-anchor": "end", "font-size": 12.5, fill: col.ink, "font-weight": 650 });
-      txt(svg, xS(hi) + 12, y + 4, `차이 ${gap.toFixed(1)}%p`, {
-        "font-size": 11.5, fill: col.muted, "font-weight": 650,
+    attrNames.forEach((name, j) => {
+      const cx = L + j * cw + cw / 2;
+      const parts = name.split("·");
+      /* 한 줄짜리 이름도 '전체 n%' 와 같은 베이스라인에 맞춰 헤더가 들쭉날쭉하지 않게 한다 */
+      if (parts[1]) {
+        txt(svg, cx, T - 32, parts[0], { "text-anchor": "middle", "font-size": 11.5, fill: col.ink, "font-weight": 700 });
+        txt(svg, cx, T - 19, parts[1], { "text-anchor": "middle", "font-size": 11.5, fill: col.ink, "font-weight": 700 });
+      } else {
+        txt(svg, cx, T - 19, parts[0], { "text-anchor": "middle", "font-size": 11.5, fill: col.ink, "font-weight": 700 });
+      }
+      txt(svg, cx, T - 5, `전체 ${attrOverall[j]}%`, {
+        "text-anchor": "middle", "font-size": 10, fill: col.muted,
       });
     });
 
-    txt(svg, (x0 + x1) / 2, H - 8, "해당 속성을 언급한 리뷰의 비율 · 두 점의 간격이 순위 구간 간 차이", {
+    attrProfile.forEach(([cat, n, rates], i) => {
+      const y = T + i * ch;
+      txt(svg, L - 10, y + ch / 2 + 4, cat, { "text-anchor": "end", "font-size": 11.5, fill: col.ink2 });
+      const best = Math.max(...rates);
+      rates.forEach((v, j) => {
+        const x = L + j * cw;
+        const fill = ramp(v);
+        const cell = el("rect", {
+          x: x + 1, y: y + 1, width: cw - 2, height: ch - 2, rx: 3, fill,
+          stroke: v === best ? col.s3 : "transparent", "stroke-width": v === best ? 1.6 : 0,
+        }, svg);
+        txt(svg, x + cw / 2, y + ch / 2 + 4, v.toFixed(1), {
+          "text-anchor": "middle", "font-size": 11,
+          "font-weight": v >= 28 ? 800 : 600,
+          fill: v >= 10 ? readable(fill) : col.ink2,
+        });
+        hover(cell, `${cat} — ${attrNames[j]}`, [
+          ["언급률", `${v.toFixed(1)}%`, fill],
+          ["전체 평균", `${attrOverall[j]}%`],
+          ["리뷰 수", `${fmt(n, 0)}건`],
+        ]);
+      });
+    });
+
+    txt(svg, L + (W - L - R) / 2, H - 10, "카테고리별 리뷰에서 각 속성을 언급한 비율 · 코랄 테두리는 그 카테고리에서 가장 많이 언급된 속성", {
       "text-anchor": "middle", "font-size": 11.5, fill: col.muted,
     });
   }
@@ -825,7 +858,6 @@
     legend("lgVariance", [["리뷰 총량", col.neutral], ["리뷰 증가 속도 포함", col.s1]]);
     legend("lgElasticity", [["리뷰 증가 속도 (판매량 대리)", col.s1], ["실제 판매가격", col.s2]]);
     legend("lgPromo", [["순위 개선", col.s1], ["순위 악화", col.s3]]);
-    legend("lgAttr", [["상위권 (1–25위)", col.s1], ["하위권 (76–100위)", col.s2]]);
   }
 
   function initControls() {
