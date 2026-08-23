@@ -205,6 +205,36 @@
     ["흰 배경 비율", 2.35, 1.7], ["채도", 1.7, 0.2], ["밝기", 0.1, 0.65],
   ];
 
+  /* 그림 11. 리뷰 본문 문서빈도 상위 어휘 (analysis/review_text.py 산출) */
+  const cloudWords = [
+    ["피부", 12199], ["느낌", 11336], ["향", 6800], ["꾸준히", 5507],
+    ["자극", 4676], ["여름", 4607], ["효과", 4343], ["촉촉", 4309],
+    ["부담", 3958], ["재구매", 3639], ["얼굴", 3521], ["가격", 3409],
+    ["제형", 3381], ["데일리", 3350], ["아침", 2986], ["부드럽게", 2820],
+    ["메이크업", 2791], ["끈적임", 2698], ["매일", 2590], ["화장", 2482],
+    ["지속력", 2436], ["만족", 2347], ["시간", 2310], ["거품", 2306],
+    ["선크림", 2280], ["성분", 2270], ["자연스럽게", 2185], ["트러블", 2137],
+    ["가성비", 2125], ["크림", 2119], ["깔끔하게", 1993], ["가볍게", 1939],
+    ["발림성", 1925], ["타입", 1889], ["도움", 1857], ["구성", 1813],
+    ["관리", 1765], ["냄새", 1721], ["흡수", 1690], ["세안", 1662],
+    ["부드럽고", 1621], ["진정", 1619], ["용량", 1610], ["나면", 1595],
+    ["편하고", 1583], ["머리", 1564], ["기획", 1540], ["세정력", 1537],
+  ];
+
+  /* 그림 12. 소구 속성별 언급률 (%) — 상위권 1–25위 / 하위권 76–100위 */
+  const attrMentions = [
+    ["보습·수분", 19.3, 21.4],
+    ["발림·제형", 19.3, 18.3],
+    ["자극·순함", 17.4, 17.0],
+    ["가격·가성비", 15.2, 14.9],
+    ["재구매 의사", 13.8, 11.6],
+    ["향", 12.4, 13.7],
+    ["끈적임·마무리", 13.2, 13.3],
+    ["커버·발색", 10.0, 11.0],
+    ["트러블·진정", 10.0, 10.0],
+    ["지속력", 9.7, 9.8],
+  ];
+
   /* 표 12. 썸네일 마케팅 소구 속성 (160장 수기 분류) */
   const thumbAttr = [
     ["순위 · 수상 클레임", 61, 38.1], ["증정 · 기획 구성", 53, 33.1],
@@ -652,6 +682,93 @@
     });
   }
 
+  /* --- 그림 11. 리뷰 어휘 워드클라우드 --- */
+  function drawCloud() {
+    const col = C(), W = 980, H = 420;
+    const svg = makeSvg("chCloud", W, H);
+    if (!svg) return;
+
+    const max = cloudWords[0][1], min = cloudWords[cloudWords.length - 1][1];
+    const size = (n) => 15 + 40 * Math.sqrt((n - min) / (max - min));
+    /* 크기가 주 인코딩, 색은 3단계 보조 — 작은 글자도 읽히는 명도만 사용한다 */
+    const shade = (n) => {
+      const r = (n - min) / (max - min);
+      if (r > 0.34) return col.seq[5];
+      if (r > 0.12) return col.seq[4];
+      return col.ink2;
+    };
+
+    const placed = [];
+    const cx = W / 2, cy = H / 2;
+    const hits = (b) => placed.some((p) =>
+      !(b.x + b.w < p.x || p.x + p.w < b.x || b.y + b.h < p.y || p.y + p.h < b.y));
+
+    cloudWords.forEach(([word, n], i) => {
+      const fs = size(n);
+      const w = word.length * fs * 1.02 + 10;
+      const h = fs * 1.25;
+      /* 아르키메데스 나선을 따라 겹치지 않는 자리를 찾는다 */
+      let x = cx, y = cy, ok = false;
+      for (let t = 0; t < 3200; t++) {
+        const a = t * 0.32;
+        const rad = 4 + a * 2.6;
+        x = cx + rad * Math.cos(a) * 1.55 - w / 2;
+        y = cy + rad * Math.sin(a) * 0.72 - h / 2;
+        if (x < 4 || y < 4 || x + w > W - 4 || y + h > H - 4) continue;
+        if (!hits({ x, y, w, h })) { ok = true; break; }
+      }
+      if (!ok) return;
+      placed.push({ x, y, w, h });
+      const t = txt(svg, x + w / 2, y + h * 0.78, word, {
+        "text-anchor": "middle", "font-size": fs.toFixed(1),
+        "font-weight": i < 8 ? 800 : 700, fill: shade(n),
+      });
+      hover(t, word, [
+        ["언급 리뷰", `${fmt(n, 0)}건`, shade(n)],
+        ["전체 대비", `${(n / 67212 * 100).toFixed(1)}%`],
+      ]);
+    });
+  }
+
+  /* --- 그림 12. 소구 속성 언급률 (덤벨) --- */
+  function drawAttr() {
+    const col = C(), W = 980, H = 380;
+    const svg = makeSvg("chAttr", W, H);
+    if (!svg) return;
+    const L = 150, R = 110, T = 22, B = 48;
+    const x0 = L, x1 = W - R, maxX = 25;
+    const xS = (v) => x0 + (v / maxX) * (x1 - x0);
+    const rowH = (H - T - B) / attrMentions.length;
+
+    [0, 5, 10, 15, 20, 25].forEach((v) => {
+      const x = xS(v);
+      el("line", { x1: x, y1: T, x2: x, y2: H - B, stroke: col.grid, "stroke-width": 1 }, svg);
+      txt(svg, x, H - B + 17, `${v}%`, { "text-anchor": "middle", "font-size": 11, fill: col.muted });
+    });
+
+    attrMentions.forEach(([name, top, bot], i) => {
+      const y = T + i * rowH + rowH / 2;
+      const lo = Math.min(top, bot), hi = Math.max(top, bot);
+      el("line", {
+        x1: xS(lo), y1: y, x2: xS(hi), y2: y,
+        stroke: col.axis, "stroke-width": 3, "stroke-linecap": "round",
+      }, svg);
+      const dTop = el("circle", { cx: xS(top), cy: y, r: 6, fill: col.s1, stroke: col.surface, "stroke-width": 2 }, svg);
+      const dBot = el("circle", { cx: xS(bot), cy: y, r: 6, fill: col.s2, stroke: col.surface, "stroke-width": 2 }, svg);
+      const gap = Math.abs(top - bot);
+      hover(dTop, `${name} — 상위권 (1–25위)`, [["언급률", `${top.toFixed(1)}%`, col.s1], ["구간 차이", `${gap.toFixed(1)}%p`]]);
+      hover(dBot, `${name} — 하위권 (76–100위)`, [["언급률", `${bot.toFixed(1)}%`, col.s2], ["구간 차이", `${gap.toFixed(1)}%p`]]);
+      txt(svg, x0 - 12, y + 4, name, { "text-anchor": "end", "font-size": 12.5, fill: col.ink, "font-weight": 650 });
+      txt(svg, xS(hi) + 12, y + 4, `차이 ${gap.toFixed(1)}%p`, {
+        "font-size": 11.5, fill: col.muted, "font-weight": 650,
+      });
+    });
+
+    txt(svg, (x0 + x1) / 2, H - 8, "해당 속성을 언급한 리뷰의 비율 · 두 점의 간격이 순위 구간 간 차이", {
+      "text-anchor": "middle", "font-size": 11.5, fill: col.muted,
+    });
+  }
+
   /* --- 표 12. 썸네일 마케팅 속성 --- */
   function drawThumbAttr() {
     const col = C(), W = 980, H = 250;
@@ -699,6 +816,8 @@
     drawLag();
     drawThumbSignal();
     drawThumbAttr();
+    drawCloud();
+    drawAttr();
 
     const col = C();
     legend("lgEvent", [["쿠폰 부착 (705건)", col.s1, "line"], ["세일 부착 (124건)", col.s3, "line"]]);
@@ -706,6 +825,7 @@
     legend("lgVariance", [["리뷰 총량", col.neutral], ["리뷰 증가 속도 포함", col.s1]]);
     legend("lgElasticity", [["리뷰 증가 속도 (판매량 대리)", col.s1], ["실제 판매가격", col.s2]]);
     legend("lgPromo", [["순위 개선", col.s1], ["순위 악화", col.s3]]);
+    legend("lgAttr", [["상위권 (1–25위)", col.s1], ["하위권 (76–100위)", col.s2]]);
   }
 
   function initControls() {
