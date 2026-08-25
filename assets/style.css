@@ -525,5 +525,3 @@ b.wine {
   color: var(--wine);
   font-weight: 700;
 }
-b.wine b, b.wine strong { color: inherit; }
-b.wine .term { color: inherit; }
