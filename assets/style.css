@@ -30,6 +30,9 @@
   --seq-3: #58b48d; --seq-4: #17845f; --seq-5: #0a5238;
 
   --card-shadow: 0 1px 2px rgba(16,18,15,.04), 0 8px 24px rgba(16,18,15,.05);
+
+  /* 본문 핵심 문장 강조 — 와인 */
+  --wine: #8c2438;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -57,6 +60,8 @@
     --seq-2: #1a4f3b; --seq-3: #1c7455; --seq-4: #2a9a73; --seq-5: #56bd97;
 
     --card-shadow: none;
+
+    --wine: #f0959f;
   }
 }
 
@@ -534,4 +539,11 @@ footer .foot-note { margin-top: 18px; font-size: 12.5px; color: var(--muted); }
   section { padding-top: 44px; }
   .card { padding: 18px; }
   .finale { padding: 24px 20px; }
+}
+
+
+/* ── 본문 핵심 문장 강조 (와인 BOLD) ───────────────────── */
+b.wine {
+  color: var(--wine);
+  font-weight: 700;
 }
