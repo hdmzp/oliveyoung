@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>올리브영 랭킹 분석</title>
-<meta name="description" content="올리브영 판매 랭킹을 21일간 직접 수집해 리뷰·가격·프로모션·썸네일이 순위에 미치는 영향을 상품 단위 패널 데이터로 검증한 실증 분석 보고서">
+<meta name="description" content="올리브영 판매 랭킹을 26일간 직접 수집해 리뷰·가격·프로모션·썸네일이 순위에 미치는 영향을 상품 단위 패널 데이터로 검증한 실증 분석 보고서">
 <meta name="theme-color" content="#0f7a58">
 <link rel="icon" type="image/png" href="./favicon.png">
 <link rel="apple-touch-icon" href="./favicon.png">
@@ -32,44 +32,44 @@
     <div class="kicker">데이터 분석 · 개인 프로젝트</div>
     <h1>올리브영 <em>랭킹 분석</em></h1>
     <p class="lede">
-      올리브영 판매 랭킹을 21일간 매일 직접 수집해, 무엇이 상품을 상위권에 올리고 그 자리를 유지시키는지
+      올리브영 판매 랭킹을 26일간 매일 직접 수집해, 무엇이 상품을 상위권에 올리고 그 자리를 유지시키는지
       상품 단위 시계열 패널 데이터로 검증했습니다. 집계 기준이 공개되지 않은 이 랭킹을
       <b>리뷰 · 가격 · 프로모션 · 브랜드 · 썸네일</b> 다섯 갈래로 나누어 실증하고,
       랭킹과 리뷰의 <b>시차 선후 관계</b>까지 판별한 결과보고서입니다.
     </p>
     <div class="hero-meta">
-      분석 기간 2026-07-23 – 08-22 (21일) · 작성일 2026-08-22 · 자체 수집 데이터 기반 ·
-      상품 5,694개 / 랭킹 관측 36,100건 / 리뷰 본문 65,068건 / 썸네일 7,082장
+      분석 기간 2026-07-23 – 08-27 (26일) · 작성일 2026-08-28 · 자체 수집 데이터 기반 ·
+      상품 6,303개 / 랭킹 관측 46,600건 / 리뷰 본문 67,030건 / 썸네일 8,097장
     </div>
 
     <div class="dl-row">
-      <a class="dlbtn" href="./report_v3.docx" download>
+      <a class="dlbtn" href="./report_v5.docx" download>
         <span class="ico" aria-hidden="true">⤓</span>결과보고서 원문 내려받기 (DOCX)
       </a>
-      <a class="dlbtn ghost" href="./report_v2.docx" download>이전 버전 (v2)</a>
-      <span class="dl-note">2026-08-22 최종본 · 약 2.9MB</span>
+      <a class="dlbtn ghost" href="./report_v3.docx" download>이전 버전 (v3)</a>
+      <span class="dl-note">2026-08-28 최종본 · 약 2.9MB</span>
     </div>
 
     <div class="tiles">
       <div class="tile key">
         <div class="t-label">가격 : 판매량 영향력 비율</div>
-        <div class="t-value">0.87</div>
+        <div class="t-value">0.88</div>
         <div class="t-note">판매량이 아닌 <b>매출액</b> 기준으로 산정되는 랭킹</div>
       </div>
       <div class="tile">
         <div class="t-label">TOP 100 일평균 교체 상품</div>
         <div class="t-value">35<span class="unit">개</span></div>
-        <div class="t-note">1–10위 잔류율 92% vs 76–100위 50%</div>
+        <div class="t-note">1–10위 잔류율 92.6% vs 76–100위 49.4%</div>
       </div>
       <div class="tile key">
         <div class="t-label">전일 랭킹 상위 → 당일 리뷰 증가</div>
-        <div class="t-value">23.8<span class="unit">|t|</span></div>
+        <div class="t-value">24.6<span class="unit">|t|</span></div>
         <div class="t-note">1·3·7일 전 시차에서 일관되게 강력 검출</div>
       </div>
       <div class="tile bad">
         <div class="t-label">전일 리뷰 증가 → 당일 순위 상승</div>
         <div class="t-value">미검출</div>
-        <div class="t-note">1일 시차 |t| = 0.4 · 3일 0.5 — 판정선(2) 미달</div>
+        <div class="t-note">1일 시차 |t| = 0.2 · 3일 0.8 — 판정선(2) 미달</div>
       </div>
     </div>
 
@@ -218,7 +218,7 @@
   <div class="wrap">
     <div class="sec-head">
       <div class="sec-no">02 — 분석 대상 데이터</div>
-      <h2>4개 영역, 21일간의 일간 패널</h2>
+      <h2>4개 영역, 26일간의 일간 패널</h2>
       <p class="sub">공개 API가 없는 환경에서 웹·모바일 클라이언트의 네트워크 엔드포인트를 역설계해
         랭킹·리뷰 통계·리뷰 본문·대표 이미지를 매일 축적했다.</p>
     </div>
@@ -250,7 +250,7 @@
 
     <h3 class="sub-head"><span class="n">2.2</span>데이터 수집 범위</h3>
     <p class="prose">
-      수집 기간은 2026년 7월 23일부터 8월 22일까지 총 21일간이며, 관측 도중 표본 편향을 최소화하기 위해 수집
+      수집 기간은 2026년 7월 23일부터 8월 27일까지 총 26일간이며, 관측 도중 표본 편향을 최소화하기 위해 수집
       범위를 대폭 확장했다. 초기에는 전체 판매 랭킹 100위만을 대상으로 하였으나, 100개 상품 표본으로는 상위권
       내 순위 변동 요인을 규명하기에 대조군이 협소했다. 이에 8월 3일부터 20개 카테고리별 100위 목록을
       파이프라인에 추가하였으며, 8월 5일부터 결측 없이 <b class="wine">일간 2,000개 상품을 안정적으로 관측하여 카테고리 내
@@ -260,11 +260,11 @@
       <table class="data">
         <thead><tr><th>구분</th><th>내용</th></tr></thead>
         <tbody>
-          <tr><td>수집 기간</td><td class="wrap-cell">2026-07-23 ~ 08-22 (21일). 전체 랭킹 21일, 카테고리 랭킹 17일</td></tr>
+          <tr><td>수집 기간</td><td class="wrap-cell">2026-07-23 ~ 08-27 (26일). 전체 랭킹 26일, 카테고리 랭킹 22일</td></tr>
           <tr><td>범위 변경</td><td class="wrap-cell">8/3부터 카테고리별 100위 추가. 8/5 이후 매일 안정 수집</td></tr>
           <tr><td>수집 시각</td><td class="wrap-cell">매일 22:00 ~ 24:00 기준 일 1회 정기 실행</td></tr>
-          <tr><td>누적 규모</td><td class="wrap-cell">상품 5,694개 / 랭킹 36,100건 / 리뷰 본문 65,068건 / 썸네일 7,082장</td></tr>
-          <tr class="hl"><td>결측 구간</td><td class="wrap-cell">7/24~26 및 8/2는 수집 실패. 8/10·8/11은 전체 랭킹만 수집</td></tr>
+          <tr><td>누적 규모</td><td class="wrap-cell">상품 6,303개 / 랭킹 46,600건 / 리뷰 본문 67,030건 / 썸네일 8,097장</td></tr>
+          <tr class="hl"><td>결측 구간</td><td class="wrap-cell">7/24~8/2는 수집 실패. 8/4·8/10·8/11은 전체 랭킹만 수집</td></tr>
         </tbody>
       </table>
     </div>
@@ -426,7 +426,7 @@
       <div class="aim alt">
         <h4>패널 오차항 군집 보정 (Cluster-Robust SE)</h4>
         <ul>
-          <li>동일 상품의 21일 반복 관측에서 발생하는 오차항 자기상관 처리</li>
+          <li>동일 상품의 26일 반복 관측에서 발생하는 오차항 자기상관 처리</li>
           <li>독립 관측치로 가정할 경우 표준오차가 과소추정되어 유의성이 과대평가</li>
           <li>개별 상품 단위를 하나의 군집으로 묶어 검정통계량을 엄격하게 보정</li>
         </ul>
@@ -500,7 +500,7 @@
     <div class="fig">
       <div class="fig-head">
         <div class="fig-title">그림 1. 전체 랭킹 100위의 일별 신규 진입 상품 수</div>
-        <div class="fig-sub">직전 수집일 대비 · 2026-08-04 ~ 08-22</div>
+        <div class="fig-sub">직전 수집일 대비 · 2026-08-04 ~ 08-27</div>
       </div>
       <div class="chart-box chart-scroll" id="chChurn"></div>
       <div class="fig-note">막대에 마우스를 올리면 일자별 신규 진입 수와 평균 대비 편차를 확인할 수 있다.</div>
@@ -519,12 +519,12 @@
     <div class="grid-3" style="margin-top:22px">
       <div class="card zone">
         <div class="z-tag">1–10위 · 안정 고착 구간</div>
-        <div class="z-big">92.0<span class="unit">%</span></div>
-        <p>익일 100위 내 잔류율. 같은 구간 유지 비율도 59.0%에 달해 최상위권은 사실상 고정 슬롯에 가깝다.</p>
+        <div class="z-big">92.6<span class="unit">%</span></div>
+        <p>익일 100위 내 잔류율. 같은 구간 유지 비율도 59.1%에 달해 최상위권은 사실상 고정 슬롯에 가깝다.</p>
       </div>
       <div class="card zone hot">
         <div class="z-tag">76–100위 · 고회전 구간</div>
-        <div class="z-big">50.0<span class="unit">%</span></div>
+        <div class="z-big">49.4<span class="unit">%</span></div>
         <p>익일 이탈률. 절반이 하루 만에 TOP 100 밖으로 사라지는 회전문 구간이다.</p>
       </div>
       <div class="card zone">
@@ -538,8 +538,8 @@
       <span class="lab">시사점</span>
       <p class="prose">
         모든 순위 구간이 동일하게 변동하는 것은 아니었으며, <b class="wine">상위권과 하위권의 성격이 뚜렷하게 구분</b>되고 있었다.
-        <b class="wine">1–10위 최상위권은 익일 100위 내 잔류율이 92.0%, 동일 구간 잔류율이 59.0%에 달하는 안정 고착 구간</b>인 반면,
-        76–100위 <b class="wine">하위권은 익일 이탈률이 50.0%에 달하는 고회전 구간</b>으로 나타났다. 따라서 이후 분석에서는 순위 상승을
+        <b class="wine">1–10위 최상위권은 익일 100위 내 잔류율이 92.6%, 동일 구간 잔류율이 59.1%에 달하는 안정 고착 구간</b>인 반면,
+        76–100위 <b class="wine">하위권은 익일 이탈률이 49.4%에 달하는 고회전 구간</b>으로 나타났다. 따라서 이후 분석에서는 순위 상승을
         이끄는 <b>진입 요인</b>과 순위를 지탱하는 <b>잔류 요인</b>을 분리하여 검증한다(5.6절).
       </p>
     </div>
@@ -647,9 +647,9 @@
       <p class="prose">
         소비자 대중성을 지향하는 플랫폼 특성상 단순 판매 수량 기준일 것으로 예상했으나, 실측 결과 가격 변수는
         판매량 대리지표와 사실상 대등한 통계적 가중치로 순위에 반영되고 있었다. <b class="wine">표준화 영향력 비율은
-        0.87로 도출되어 두 변수가 거의 동일한 비중으로 순위를 결정</b>하고 있음이 확인되었다. 판매량과 가격을
+        0.88로 도출되어 두 변수가 거의 동일한 비중으로 순위를 결정</b>하고 있음이 확인되었다. 판매량과 가격을
         곱한 단일 매출액 복합변수로 치환하더라도 모형의 설명력 감소는 거의 관측되지 않았으며, 20개 카테고리 중
-        18개에서 동일한 패턴이 반복 검증되었다.
+        19개에서 동일한 패턴이 반복 검증되었다.
       </p>
     </div>
 
@@ -668,7 +668,7 @@
         <div class="fig-sub">등매출선(Iso-revenue curve) 대비 · 상품 단위 산점도</div>
       </div>
       <div class="fig-img plain">
-        <img src="assets/report/fig7_scatter.png" width="1035" height="600" alt="가격(로그)과 리뷰 증가 속도(로그)의 산점도. 순위 구간별로 점 크기와 색이 다르며, 상위권 상품이 등매출선 외곽을 따라 분포한다." loading="lazy">
+        <img src="assets/report/fig7_scatter.png" width="1036" height="591" alt="가격(로그)과 리뷰 증가 속도(로그)의 산점도. 순위 구간별로 점 크기와 색이 다르며, 상위권 상품이 등매출선 외곽을 따라 분포한다." loading="lazy">
       </div>
       <div class="fig-note">
         저가 다판매 상품군에 상위 랭킹이 편중되는 현상은 나타나지 않았다. 상위권 상품들은 가격축이나 판매량축
@@ -734,10 +734,10 @@
       <table class="data">
         <thead><tr><th>프로모션 유형</th><th class="num">순위 변화율</th><th class="num">신호 강도 |t|</th><th>실무적 통계 해석</th></tr></thead>
         <tbody>
-          <tr><td>할인율 (1%p당)</td><td class="num">2.9% 개선</td><td class="num">9.3</td><td class="wrap-cell">순위 상승 견인 (높은 안정성)</td></tr>
-          <tr><td>증정 배지</td><td class="num">9.9% 개선</td><td class="num">4.8</td><td class="wrap-cell">단기 순위 부스팅 효과 확인</td></tr>
-          <tr><td>쿠폰 배지</td><td class="num">10.9% 개선</td><td class="num">4.0</td><td class="wrap-cell">부착 당일 순위 뚜렷하게 상승</td></tr>
-          <tr class="hl"><td>세일 배지</td><td class="num">28.7% 악화</td><td class="num">3.6</td><td class="wrap-cell">역인과성 관측 (사후 투입 편향)</td></tr>
+          <tr><td>할인율 (1%p당)</td><td class="num">2.7% 개선</td><td class="num">10.1</td><td class="wrap-cell">순위 상승 견인 (높은 안정성)</td></tr>
+          <tr><td>증정 배지</td><td class="num">10.0% 개선</td><td class="num">5.7</td><td class="wrap-cell">단기 순위 부스팅 효과 확인</td></tr>
+          <tr><td>쿠폰 배지</td><td class="num">12.9% 개선</td><td class="num">5.5</td><td class="wrap-cell">부착 당일 순위 뚜렷하게 상승</td></tr>
+          <tr class="hl"><td>세일 배지</td><td class="num">19.5% 악화</td><td class="num">2.9</td><td class="wrap-cell">역인과성 관측 (사후 투입 편향)</td></tr>
         </tbody>
       </table>
     </div>
@@ -795,8 +795,8 @@
       <p class="prose">
         동일 브랜드 내부에서도 상품별 판매 편차가 존재하므로 개별 상품 특성의 영향력이 더 클 것으로 예상했으나,
         실측 결과는 브랜드 자체의 설명력이 압도적인 것으로 나타났다. 브랜드 고정효과를 투입하자 모형의 순위 설명력은
-        <b>22.0%에서 37.0%로</b> 대폭 상승했다. 특히 전체 21일의 관측 기간 중 80% 이상 랭킹에 노출된
-        <b>39개 핵심 브랜드가 전체 TOP 100 슬롯의 58.0%</b>를 독점하고 있었다.
+        <b>22.0%에서 37.0%로</b> 대폭 상승했다. 특히 전체 26일의 관측 기간 중 80% 이상 랭킹에 노출된
+        <b>37개 핵심 브랜드가 전체 TOP 100 슬롯의 56.7%</b>를 독점하고 있었다.
       </p>
     </div>
 
@@ -804,11 +804,11 @@
       <table class="data">
         <thead><tr><th>브랜드명</th><th class="num">등장 일수</th><th class="num">점유 슬롯 수</th><th class="num">진입 품목 수</th><th class="num">평균 순위</th><th class="num">최고 순위</th></tr></thead>
         <tbody>
-          <tr><td>메디힐</td><td class="num">21일</td><td class="num">140개</td><td class="num">11개</td><td class="num">34.1위</td><td class="num">1위</td></tr>
-          <tr><td>셀리맥스</td><td class="num">21일</td><td class="num">61개</td><td class="num">5개</td><td class="num">44.5위</td><td class="num">2위</td></tr>
-          <tr><td>바닐라코</td><td class="num">21일</td><td class="num">55개</td><td class="num">4개</td><td class="num">55.3위</td><td class="num">13위</td></tr>
-          <tr><td>아누아</td><td class="num">20일</td><td class="num">53개</td><td class="num">10개</td><td class="num">53.2위</td><td class="num">1위</td></tr>
-          <tr><td>넘버즈인</td><td class="num">17일</td><td class="num">49개</td><td class="num">13개</td><td class="num">50.7위</td><td class="num">3위</td></tr>
+          <tr><td>메디힐</td><td class="num">26일</td><td class="num">180개</td><td class="num">14개</td><td class="num">34.9위</td><td class="num">1위</td></tr>
+          <tr><td>셀리맥스</td><td class="num">26일</td><td class="num">81개</td><td class="num">5개</td><td class="num">45.3위</td><td class="num">2위</td></tr>
+          <tr><td>아누아</td><td class="num">25일</td><td class="num">69개</td><td class="num">11개</td><td class="num">49.0위</td><td class="num">1위</td></tr>
+          <tr><td>바닐라코</td><td class="num">26일</td><td class="num">66개</td><td class="num">4개</td><td class="num">56.2위</td><td class="num">13위</td></tr>
+          <tr><td>넘버즈인</td><td class="num">21일</td><td class="num">59개</td><td class="num">16개</td><td class="num">51.0위</td><td class="num">3위</td></tr>
         </tbody>
       </table>
     </div>
@@ -821,7 +821,7 @@
           <div class="b-tag">실적 소구형</div>
           <h4>메디힐 — 에센셜 마스크팩 10/10+1매 기획</h4>
           <p>"15년 연속 1위" 문구와 올리브영 어워즈 수상 배지를 전면에 배치하고 10+1 증정 구성을 함께 표기했다.
-            11개 품목을 교대로 투입해 슬롯을 점유한다.</p>
+            14개 품목을 교대로 투입해 슬롯을 점유한다.</p>
         </div>
       </div>
       <div class="brandshot">
@@ -830,7 +830,7 @@
           <div class="b-tag">모델 소구형</div>
           <h4>아누아 — 피디알엔 히알루론산 수분 캡슐 미스트</h4>
           <p>연예인 모델 컷을 화면 절반에 배치하고 한정 기획 구성을 표시했다. 최고 1위까지 상승하나 평균 순위는
-            53.2위로 변동성이 크다.</p>
+            49.0위로 변동성이 크다.</p>
         </div>
       </div>
     </div>
@@ -842,7 +842,7 @@
         브랜드 요인을 고정효과로 제거하자 5.2절에서 설명력이 사라졌던 리뷰 총량의 유의성이 다시 회복되는 양상이
         관측되었다. 이종 브랜드 간 비교 시에는 리뷰 총량이 사실상 <b>브랜드 인지도를 대리하는 표지</b>로 기능했으나,
         동일 브랜드 내부에서 비교할 경우 누적 리뷰가 많은 품목이 더 높은 순위에 위치했기 때문이다. 다만 그 영향력의
-        크기는 리뷰 증가 속도의 3분의 1 수준에 머물렀으며, 일자별 방향성도 일정하지 않았다.
+        크기는 리뷰 증가 속도의 5분의 2 수준에 머물렀으며, 일자별 방향성도 일정하지 않았다.
       </p>
     </div>
 
@@ -953,9 +953,9 @@
       <table class="data">
         <thead><tr><th>분석 시차 (k)</th><th>전일 리뷰 증가 → 당일 순위 상승</th><th>전일 랭킹 상위 → 당일 리뷰 증가</th></tr></thead>
         <tbody>
-          <tr><td>1일 시차</td><td class="wrap-cell">미검출 (|t| = 0.4, p ≥ 0.05)</td><td class="wrap-cell">강력 검출 (|t| = 23.8, p &lt; 0.001)</td></tr>
-          <tr><td>3일 시차</td><td class="wrap-cell">미검출 (|t| = 0.5, p ≥ 0.05)</td><td class="wrap-cell">강력 검출 (|t| = 21.8, p &lt; 0.001)</td></tr>
-          <tr><td>7일 시차</td><td class="wrap-cell">역방향 유의 (|t| = 2.9, 순위 하락)</td><td class="wrap-cell">강력 검출 (|t| = 18.7, p &lt; 0.001)</td></tr>
+          <tr><td>1일 시차</td><td class="wrap-cell">미검출 (|t| = 0.2, p ≥ 0.05)</td><td class="wrap-cell">강력 검출 (|t| = 24.6, p &lt; 0.001)</td></tr>
+          <tr><td>3일 시차</td><td class="wrap-cell">미검출 (|t| = 0.8, p ≥ 0.05)</td><td class="wrap-cell">강력 검출 (|t| = 22.2, p &lt; 0.001)</td></tr>
+          <tr><td>7일 시차</td><td class="wrap-cell">역방향 유의 (|t| = 3.8, 순위 하락)</td><td class="wrap-cell">강력 검출 (|t| = 20.2, p &lt; 0.001)</td></tr>
         </tbody>
       </table>
     </div>
@@ -980,7 +980,7 @@
     </div>
     <div class="callout warn">
       <span class="c-tag">잠정 판정</span>
-      카테고리 랭킹의 완전 관측 구간이 17일로 제한되어 시차 분석의 장기 검정력을 감안해 본 결론을
+      카테고리 랭킹의 완전 관측 구간이 22일로 제한되어 시차 분석의 장기 검정력을 감안해 본 결론을
       <b>잠정 판정</b>으로 설정한다. 그러나 1일·3일·7일 어느 시차에서도 '리뷰가 순위를 끌어올리는' 선행 경로는
       관측되지 않았으며, 이는 가설 1을 기각하는 통계적 근거가 된다.
     </div>
@@ -999,7 +999,7 @@
       <span class="lab m">분석 방법</span>
       <p class="prose">
         <span class="method-name">정규표현식 기반 텍스트 마이닝 및 캠페인 식별.</span>
-        수집된 65,068건의 리뷰 본문 데이터를 대상으로 법적 공시 문구를 탐지하는 정규표현식 규칙 체계를 설계했다.
+        수집된 67,030건의 리뷰 본문 데이터를 대상으로 법적 공시 문구를 탐지하는 정규표현식 규칙 체계를 설계했다.
         실제 후기 문장을 전수 검토하여 4단계 판정 규칙으로 정련하였으며, 무작위 표본 200건에 대한 수기 교차 검증을
         병행해 탐지 정확도를 확보했다.
       </p>
@@ -1008,7 +1008,7 @@
       <span class="lab r">분석 결과 및 가설 대조</span>
       <p class="prose">
         체험단 마케팅의 보편성을 고려할 때 전체 리뷰의 수 퍼센트 수준이 탐지될 것으로 예상했다. 그러나 실제 탐지된
-        대가성 리뷰는 전체의 <b>0.79%(512건)</b>에 불과했다. 탐지 키워드를 8개에서 37종으로 대폭 확장했음에도
+        대가성 리뷰는 전체의 <b>0.82%(551건)</b>에 불과했다. 탐지 키워드를 8개에서 37종으로 대폭 확장했음에도
         절대적인 탐지량은 미미한 수준에 머물렀다.
       </p>
     </div>
@@ -1017,14 +1017,14 @@
       <table class="data">
         <thead><tr><th>판정 규칙 범주</th><th>적용 패턴 및 예시 문맥</th><th class="num">추출 건수</th></tr></thead>
         <tbody>
-          <tr><td>명시적 공시 표현</td><td class="wrap-cell">체험단, 제공받아, 업체로부터, 광고주 등 37종</td><td class="num">466건</td></tr>
+          <tr><td>명시적 공시 표현</td><td class="wrap-cell">체험단, 제공받아, 업체로부터, 광고주 등 37종</td><td class="num">500건</td></tr>
           <tr><td>해시태그 및 특수문자</td><td class="wrap-cell">#제품제공, #협찬, #리뷰의무x, [제품제공사용리뷰]</td><td class="num">5건</td></tr>
-          <tr><td>조건부 인접 문맥</td><td class="wrap-cell">보상 표현과 주관적 후기 표현의 n-gram 인접 매칭</td><td class="num">36건</td></tr>
+          <tr><td>조건부 인접 문맥</td><td class="wrap-cell">보상 표현과 주관적 후기 표현의 n-gram 인접 매칭</td><td class="num">41건</td></tr>
           <tr><td>문두 제약 규칙</td><td class="wrap-cell">문장 첫머리 한정 할인 구매 공시 탐지</td><td class="num">5건</td></tr>
         </tbody>
       </table>
     </div>
-    <p class="tbl-cap">표 11. 대가성 리뷰 판정 규칙 체계 및 추출 건수 (총 512건 · 전체 리뷰의 0.79%)</p>
+    <p class="tbl-cap">표 11. 대가성 리뷰 판정 규칙 체계 및 추출 건수 (총 551건 · 전체 리뷰의 0.82%)</p>
 
     <p class="prose" style="margin-top:16px">
       탐지 규칙 정련 과정에서 오탐을 방지하기 위한 배제 기준이 중요하게 작용했다. 예컨대 "광고"라는 단어는 410건
@@ -1032,7 +1032,7 @@
       빈번했으나 상투적 표현에 불과하므로 보상 단어가 인접한 경우에만 조건부 인정했다.
     </p>
     <p class="prose">
-      수집 대상 상품 2,008개 중 대가성 리뷰가 1건이라도 존재하는 상품은 <b>156개(7.8%)</b>에 그쳐 상품별 비중의
+      수집 대상 상품 2,047개 중 대가성 리뷰가 1건이라도 존재하는 상품은 <b>162개(7.9%)</b>에 그쳐 상품별 비중의
       중앙값이 0으로 수렴함에 따라 상품 단위 비교는 불가능했다. 이에 분석 단위를 브랜드로 전환하여 특정 시점의
       대가성 리뷰 집중도를 '캠페인'으로 정의하고 전후 성과를 비교하고자 했다. 그러나 탐지된 대가성 리뷰의 작성
       시점은 2023년까지 넓게 분산되어 있는 반면 랭킹 관측 기간은 최근 1개월에 한정되어 시점 매칭이 성립하지 않았다.
@@ -1069,7 +1069,7 @@
       <span class="lab m">분석 방법</span>
       <p class="prose">
         <span class="method-name">어휘 빈도 집계 및 소구 속성 사전 매칭.</span>
-        수집된 리뷰 본문 67,212건에서 조사·어미를 제거해 어간에 가까운 형태로 토큰화하고, 부사·용언 활용형 등
+        수집된 리뷰 본문 67,212건(2026-08-22 수집분 기준)에서 조사·어미를 제거해 어간에 가까운 형태로 토큰화하고, 부사·용언 활용형 등
         내용어가 아닌 어휘를 불용어로 걸러냈다. 어휘 빈도는 한 리뷰에 같은 단어가 여러 번 나와도 1회로 세는
         문서빈도 기준이다. 이어 보습·자극·제형·향·가격 등 <b>10개 소구 속성</b>을 키워드 묶음으로 정의해
         리뷰별로 해당 속성의 언급 여부를 판정하고, 전체와 카테고리 단위로 언급률을 집계했다.
@@ -1164,7 +1164,7 @@
       <span class="lab m">분석 방법</span>
       <p class="prose">
         <span class="method-name">이미지 피처 엔지니어링 및 엣지 검출(Edge Density).</span>
-        수집된 썸네일 7,082장을 대상으로 색공간 변환을 거쳐 밝기, 채도, 색 다양성, 단색 배경 비율을 수치화했다.
+        수집된 썸네일 8,097장을 대상으로 색공간 변환을 거쳐 밝기, 채도, 색 다양성, 단색 배경 비율을 수치화했다.
         아울러 이미지 내 텍스트, 배지, 프로모션 문구 등의 중첩도를 포착하기 위해 엣지 검출 알고리즘을 적용하여
         경계선 밀도로 정의되는 <b>'구성 복잡도'</b> 지표를 산출했다. 이에 더해 무작위 표본 160장을 추출하여 인물
         등장, 기간 한정 소구, 증정·기획 구성, 순위·수상 클레임 등 4개 정성적 마케팅 속성을 수기 판독 및 라벨링했다.
@@ -1175,8 +1175,8 @@
       <p class="prose">
         단순 관측 단계에서는 상위권일수록 배경이 어둡고 채도가 높은 경향을 보여 이 패턴이 유효할 것으로 예상했으나,
         카테고리와 일자 고정효과를 적용하고 패널 오차를 보정한 다중회귀 모형에서는 <b class="wine">밝기와 채도의 통계적 유의성이
-        완전히 소멸</b>했다. 반면 리뷰 증가 속도, 누적 리뷰 수, 실제 판매가격, 할인율을 모두 통제한 이후에도 유일하게
-        유의미한 영향력을 유지한 시각 변수는 <b>'구성 복잡도'</b>였다.
+        완전히 소멸</b>했다. 반면 리뷰 증가 속도, 누적 리뷰 수, 실제 판매가격, 할인율을 모두 통제한 이후에도 가장 강한
+        영향력을 유지한 시각 변수는 <b>'구성 복잡도'</b>였다.
       </p>
     </div>
 
@@ -1211,7 +1211,7 @@
         <div class="s-body">
           <div class="s-tag">혼합형</div>
           <h4>브링그린 트러블 세럼</h4>
-          <p>"트러블 1등 세럼" 문구와 용량 구성 표기에 인플루언서 PICK 배지를 함께 배치했다.</p>
+          <p>"단 3일! 올리브데이 특가" 기간 한정 문구와 증정 구성 표기에 올영픽·인플루언서 PICK 배지를 함께 배치했다.</p>
         </div>
       </div>
       <div class="shot">
@@ -1249,9 +1249,9 @@
     </div>
 
     <p class="prose" style="margin-top:16px">
-      아울러 관측 기간 중 발생한 <b>1,078건</b>의 <b class="wine">대표 이미지 교체 사건을 시계열로 추적</b>했다. 썸네일 교체 당일에는
-      쿠폰이 신규 부착된 비율이 평시 대비 <b>7.5배</b>에 달해 프로모션 기획과 동반 진행되는 경향이 뚜렷했다.
-      프로모션 간섭을 배제하기 위해 배지 변동이 없는 624건만 분리하여 이벤트 스터디를 수행한 결과, <b class="wine">교체 직전일에
+      아울러 관측 기간 중 발생한 <b>1,424건</b>의 <b class="wine">대표 이미지 교체 사건을 시계열로 추적</b>했다. 썸네일 교체 당일에는
+      쿠폰이 신규 부착된 비율이 평시 대비 <b>7.4배</b>에 달해 프로모션 기획과 동반 진행되는 경향이 뚜렷했다.
+      프로모션 간섭을 배제하기 위해 배지 변동이 없는 836건만 분리하여 이벤트 스터디를 수행한 결과, <b class="wine">교체 직전일에
       순위가 가장 높았고 교체 이후에는 원래 수준으로 점진적 회귀하는 패턴이 유지</b>되었다.
     </p>
 
@@ -1283,9 +1283,9 @@
         <thead><tr><th>구분</th><th>연구 가설</th><th>실증 검증 결과</th><th>핵심 검증 사유</th></tr></thead>
         <tbody>
           <tr><td>가설 1</td><td class="wrap-cell">리뷰 증가 속도의 판매 랭킹 견인 선행 관계</td><td><span class="verdict-pill reject">기각 〔잠정〕</span></td><td class="wrap-cell">순위 상승이 리뷰 증가를 견인하는 역방향 인과성 확인 (후행 지표 판정)</td></tr>
-          <tr><td>가설 2</td><td class="wrap-cell">대가성(체험단) 리뷰 비중의 랭킹 우위 관계</td><td><span class="verdict-pill na">검증 불가</span></td><td class="wrap-cell">본문 공시 탐지율 한계(0.79%) 및 캠페인-관측 시점 불일치</td></tr>
+          <tr><td>가설 2</td><td class="wrap-cell">대가성(체험단) 리뷰 비중의 랭킹 우위 관계</td><td><span class="verdict-pill na">검증 불가</span></td><td class="wrap-cell">본문 공시 탐지율 한계(0.82%) 및 캠페인-관측 시점 불일치</td></tr>
           <tr><td>가설 3</td><td class="wrap-cell">리뷰 누적 총량과 평균 별점의 순위 설명력</td><td><span class="verdict-pill partial">일부 지지</span></td><td class="wrap-cell">최근 리뷰 증가 속도 단독 우위, 별점은 천장 효과로 변별력 상실</td></tr>
-          <tr><td>가설 4</td><td class="wrap-cell">썸네일 시각 구성 요소의 상위 랭킹 연관성</td><td><span class="verdict-pill partial">부분 지지</span></td><td class="wrap-cell">밝기·채도 신호 소멸, 구성 복잡도만 유의미하게 잔존</td></tr>
+          <tr><td>가설 4</td><td class="wrap-cell">썸네일 시각 구성 요소의 상위 랭킹 연관성</td><td><span class="verdict-pill partial">부분 지지</span></td><td class="wrap-cell">밝기·채도 신호 소멸, 구성 복잡도가 최강 신호로 잔존</td></tr>
         </tbody>
       </table>
     </div>
@@ -1294,15 +1294,15 @@
     <p class="prose" style="margin-top:20px">가설 검증 과정에서 실측 데이터를 통해 규명된 올리브영 판매 랭킹의 구조적 특성은 다음과 같다.</p>
     <ol class="numbered">
       <li><b>매출액 기준 랭킹.</b> 판매량 대리지표를 통제한 다중회귀 모형에서도 가격 변수는 판매량과 거의 대등한
-        가중치(영향력 비율 0.87)로 순위에 반영되었다.</li>
+        가중치(영향력 비율 0.88)로 순위에 반영되었다.</li>
       <li><b>총량이 아닌 속도.</b> 리뷰 변수 중 순위를 유의미하게 설명하는 것은 누적 총량이 아닌 최근의 일간 증가
         속도였다. 이는 단기 급등 요인이 아니라 상품군 간 평균 수준 차이(Between Effect)를 대변한다.</li>
       <li><b>별점의 천장 효과.</b> 대다수 상품의 별점이 5.0 만점 부근에 집중되어 랭킹 변별을 위한 유효 분산이
         형성되지 않았다.</li>
       <li><b>프로모션의 방향성 분화.</b> 할인율·쿠폰·증정 배지는 즉각적인 순위 상승을 견인했으나, 세일 배지는
         부진 상품에 방어 목적으로 사후 투입되는 역인과성을 보였다.</li>
-      <li><b>브랜드 자산의 지배력.</b> 관측일의 80% 이상 상위권에 노출된 39개 핵심 브랜드가 전체 TOP 100 슬롯의
-        58%를 과점하고 있었다.</li>
+      <li><b>브랜드 자산의 지배력.</b> 관측일의 80% 이상 상위권에 노출된 37개 핵심 브랜드가 전체 TOP 100 슬롯의
+        57%를 과점하고 있었다.</li>
       <li><b>상승 요인과 잔류 요인의 분리.</b> 누적 리뷰 총량은 순위 상승에는 직접 기여하지 못했으나 익일 100위 내
         잔류 확률을 유의미하게 높이는 안전장치로 기능했다.</li>
       <li><b>썸네일은 색이 아니라 정보량.</b> 상위권 썸네일의 공통점은 감성적 색상이나 밝기가 아닌, 화면 전면에
@@ -1336,7 +1336,7 @@
         <div class="r-no">ACTION 04</div>
         <h3>진입 국면과 유지 국면의 차별화 운영</h3>
         <p>진입 국면에서는 단기 리뷰 증가 속도와 가격 프로모션이 핵심 동력으로 작용하는 반면, 유지 국면에서는 누적
-          리뷰 총량과 쿠폰·증정 혜택이 안전장치 역할을 수행한다. 특히 하위 25개 슬롯은 매일 50%가 교체되는 고회전
+          리뷰 총량과 쿠폰·증정 혜택이 안전장치 역할을 수행한다. 특히 하위 25개 슬롯은 매일 49%가 교체되는 고회전
           구간이므로, 이 구간의 상품은 순위 자체보다 <b>익일 잔류율을 핵심 성과 지표(KPI)</b>로 설정하는 것이
           안정적이다.</p>
       </div>
@@ -1365,7 +1365,7 @@
         완전한 궤적과 하락폭을 추적하지 못했다.</li>
       <li>플랫폼이 제공하는 리뷰 목록이 <b>도움순으로 고정 정렬</b>되어 있어 확보된 본문 표본이 전체 리뷰 모집단을
         완벽히 대변하지 못하며, 이로 인해 대가성 리뷰가 과소 탐지되었을 가능성이 존재한다.</li>
-      <li>카테고리 비교가 가능한 관측 기간이 <b>17일</b>로 제한되어 시차 교차지연 패널 모형의 장기 검정력을
+      <li>카테고리 비교가 가능한 관측 기간이 <b>22일</b>로 제한되어 시차 교차지연 패널 모형의 장기 검정력을
         확정하기에 다소 제약이 따랐다.</li>
       <li>리뷰 본문 텍스트 공시에만 의존하는 탐지 방식의 한계로 인해 <b>이미지 내 공시나 미공시 체험단 리뷰</b>는
         식별하지 못했다.</li>
@@ -1382,14 +1382,14 @@
       <h3>올리브영 랭킹은 <em>결제 매출액 순위</em>다.<br>
         순위를 움직이는 것은 리뷰 수가 아니라 &lsquo;가격 &times; 판매량&rsquo;이다.</h3>
       <p>
-        판매량 대리지표를 통제한 뒤에도 가격은 판매량과 거의 대등한 무게(영향력 비율 <b>0.87</b>)로 순위에
-        반영됐고, 20개 카테고리 중 18개에서 같은 패턴이 반복됐다. 상위권 상품은 저가 다판매 쪽에 몰리지 않고
+        판매량 대리지표를 통제한 뒤에도 가격은 판매량과 거의 대등한 무게(영향력 비율 <b>0.88</b>)로 순위에
+        반영됐고, 20개 카테고리 중 19개에서 같은 패턴이 반복됐다. 상위권 상품은 저가 다판매 쪽에 몰리지 않고
         <b>가격 &times; 판매량이 일정한 등매출선의 외곽</b>을 따라 분포한다.
       </p>
       <p>
         리뷰 증가 속도가 순위를 잘 설명했던 이유도 여기에 있다. 리뷰가 순위를 만든 것이 아니라,
         리뷰 증가가 <b>판매량을 비추는 관측 가능한 그림자</b>였기 때문이다. 실제로 전일 순위는 당일 리뷰를
-        강하게 예측했지만(|t| = 23.8) 그 반대 방향은 1일·3일·7일 어느 시차에서도 검출되지 않았다(|t| = 0.4).
+        강하게 예측했지만(|t| = 24.6) 그 반대 방향은 1일·3일·7일 어느 시차에서도 검출되지 않았다(|t| = 0.2).
       </p>
       <p>
         따라서 랭킹 전략의 출발점은 리뷰 수 확보가 아니라 <b>적정 가격선과 안정적 판매량의 조합</b>이며,
@@ -1404,13 +1404,13 @@
 <footer>
   <div class="wrap">
     <div class="refs">
-      <b>데이터 출처</b> — 올리브영 웹·모바일 공개 랭킹 및 리뷰 페이지 (자체 수집, 2026-07-23 ~ 08-22)<br>
+      <b>데이터 출처</b> — 올리브영 웹·모바일 공개 랭킹 및 리뷰 페이지 (자체 수집, 2026-07-23 ~ 08-27)<br>
       <b>분석 단위</b> — 카테고리 패널 (20개 카테고리 × 100위 × 일자) · 종속변수 ln(순위) 및 익일 잔류 여부<br>
       <b>검정 기준</b> — 카테고리 × 일자 이원 고정효과 · 상품 단위 클러스터 로버스트 표준오차 · 판정선 |t| = 2
     </div>
     <div class="src-links">
       <a href="./ranking.html">랭킹 조회 페이지</a>
-      <a href="./report_v3.docx">결과보고서 원문 (DOCX)</a>
+      <a href="./report_v5.docx">결과보고서 원문 (DOCX)</a>
       <a href="https://github.com/hdmzp/oliveyoung" target="_blank" rel="noopener">GitHub 저장소</a>
     </div>
     <div class="foot-note">
