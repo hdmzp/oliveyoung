@@ -492,7 +492,7 @@
     <div class="hstep">
       <span class="lab m">분석 방법</span>
       <p class="prose">
-        <span class="method-name">전이 행렬(Transition Matrix) 구축.</span>
+        <span class="method-name"><span data-gl="transition">전이 행렬(Transition Matrix)</span> 구축.</span>
         <b class="wine">전체 100위 목록을 날짜별로 비교해 전일에 없던 상품의 신규 진입 수를 산출</b>했다. 또한 당일 순위 구간별로
         다음 날 순위 구간의 분포를 집계해 마르코프 전이 행렬을 구성했다.
       </p>
@@ -566,7 +566,7 @@
     <div class="hstep">
       <span class="lab m">분석 방법</span>
       <p class="prose">
-        <span class="method-name">분산 분해 및 회귀모형 증분 기여도 검정.</span>
+        <span class="method-name"><span data-gl="variance-decomp">분산 분해</span> 및 회귀모형 증분 기여도 검정.</span>
         상품별 리뷰 수의 날짜 간 차분을 통해 일 단위 증가량을 산출하고 대수 변환을 적용했다. 이어 리뷰 총량 단독
         모형, 리뷰 증가 속도 단독 모형, 두 변수를 결합한 다중회귀 모형을 순차 추정하여 변수별 증분 설명력을 비교했다.
       </p>
@@ -714,8 +714,7 @@
       <span class="lab m">분석 방법</span>
       <p class="prose">
         <span class="method-name">개체 고정효과 및 이벤트 스터디(Event Study).</span>
-        동일 상품 내에서 배지가 부착된 시점과 미부착 시점의 순위 편차를 직접 비교하는 개체 고정효과(Within-Product
-        FE) 모형을 적용했다. 이 접근법은 상품 고유의 브랜드 자산이나 내재적 인기도 등 시불변 외생 요인을 모형
+        동일 상품 내에서 배지가 부착된 시점과 미부착 시점의 순위 편차를 직접 비교하는 <span data-gl="fe">개체 고정효과(Within-Product FE) 모형</span>을 적용했다. 이 접근법은 상품 고유의 브랜드 자산이나 내재적 인기도 등 시불변 외생 요인을 모형
         내부에서 상쇄하여 순수한 프로모션의 증분 효과를 격리한다. 아울러 배지 신규 부착 시점을 기점으로 전후 순위
         궤적을 시계열로 추적하는 이벤트 스터디 분석을 병행했다.
       </p>
@@ -793,7 +792,7 @@
     <div class="hstep">
       <span class="lab m">분석 방법</span>
       <p class="prose">
-        <span class="method-name">구간 더미 반응곡선 추정 후 형태 기반 군집화(Shape k-means).</span>
+        <span class="method-name">구간 더미 반응곡선 추정 후 <span data-gl="shape-kmeans">형태 기반 군집화(Shape k-means)</span>.</span>
         판매 수량은 공개되지 않으므로 5.3절에서 판매량 대리지표로 확립한 <b>리뷰 유입 속도</b>를 종속변수로 삼았다
         (금액 반응은 유입 속도 × 혜택가로 별도 산출). 할인율을 6개 구간(0 / 1–10 / 10–20 / 20–30 / 30–40 / 40%+)으로
         끊고, <b>카테고리 × 가격 3분위</b> 56개 셀마다 날짜 고정효과와 리뷰 재고를 통제한 반응 곡선을 추정했다.
@@ -810,7 +809,7 @@
     <div class="hstep">
       <span class="lab r">분석 결과 및 가설 대조</span>
       <p class="prose">
-        사전 가설은 고가 상품은 지수함수형, 중저가는 선형, 기능성은 데스밸리형이라는 3분류였다. 실측 결과
+        사전 가설은 고가 상품은 지수함수형, 중저가는 선형, 기능성은 <span data-gl="death-valley">데스밸리형</span>이라는 3분류였다. 실측 결과
         <b class="wine">유형은 3개가 아니라 4개로 갈라졌고, 유형을 가르는 것은 가격대가 아니라 '그 상품이 이미
         얼마나 큰가'였다</b>. 깔끔한 선형형은 독립된 군집으로 나타나지 않았으며, 가속형의 완만한 구간이 그에
         가장 가깝다.
@@ -902,7 +901,7 @@
     <div class="hstep">
       <span class="lab m">분석 방법</span>
       <p class="prose">
-        <span class="method-name">반사실(Counterfactual) 예측 모형 5종의 경합과 홀드아웃 검증.</span>
+        <span class="method-name">반사실(Counterfactual) 예측 모형 5종의 경합과 <span data-gl="holdout">홀드아웃 검증</span>.</span>
         배지(쿠폰·세일·증정)가 직전 2개 관측에서 부착되지 않았다가 새로 붙은 시점을 <b>온셋</b>으로 정의하고,
         사전 7관측 · 사후 5관측의 창을 잘라 505건의 처치 이벤트(상품 453개)를 구성했다. 반사실은
         <b>사전평균(무보정) · 시장대조(DiD) · ARIMA(1,0,0) · EARTH(MARS 근사, 스플라인 기저) · 신경망(MLP)</b>
@@ -935,11 +934,11 @@
       <table class="data">
         <thead><tr><th>반사실 모형</th><th class="num">홀드아웃 RMSE</th><th class="num">MAE</th><th class="num">편향</th><th class="num">추정 증분 효과</th><th>판정</th></tr></thead>
         <tbody>
-          <tr class="hl"><td>신경망 (MLP)</td><td class="num">0.4738</td><td class="num">0.3338</td><td class="num">−0.002</td><td class="num">+1.9%</td><td class="wrap-cell">예측 정확도 1위 · 편향 최소</td></tr>
-          <tr><td>EARTH (MARS 근사)</td><td class="num">0.4809</td><td class="num">0.3378</td><td class="num">−0.004</td><td class="num">+2.5%</td><td class="wrap-cell">비선형 굴곡을 잡아 2위</td></tr>
-          <tr><td>시장대조 (DiD)</td><td class="num">0.4906</td><td class="num">0.3438</td><td class="num">−0.061</td><td class="num">+8.6%</td><td class="wrap-cell">시장 변동은 잡지만 개체 반등은 놓침</td></tr>
+          <tr class="hl"><td><span data-gl="mlp">신경망 (MLP)</span></td><td class="num">0.4738</td><td class="num">0.3338</td><td class="num">−0.002</td><td class="num">+1.9%</td><td class="wrap-cell">예측 정확도 1위 · 편향 최소</td></tr>
+          <tr><td><span data-gl="earth">EARTH (MARS 근사)</span></td><td class="num">0.4809</td><td class="num">0.3378</td><td class="num">−0.004</td><td class="num">+2.5%</td><td class="wrap-cell">비선형 굴곡을 잡아 2위</td></tr>
+          <tr><td><span data-gl="did">시장대조 (DiD)</span></td><td class="num">0.4906</td><td class="num">0.3438</td><td class="num">−0.061</td><td class="num">+8.6%</td><td class="wrap-cell">시장 변동은 잡지만 개체 반등은 놓침</td></tr>
           <tr><td>사전평균 (무보정)</td><td class="num">0.5159</td><td class="num">0.3694</td><td class="num">−0.038</td><td class="num">+9.5%</td><td class="wrap-cell">실무 관행 · 예측력 최하위권</td></tr>
-          <tr><td>ARIMA (1,0,0)</td><td class="num">0.5258</td><td class="num">0.3814</td><td class="num">−0.031</td><td class="num">+7.4%</td><td class="wrap-cell">사전 7관측으로는 차수 추정이 불안정</td></tr>
+          <tr><td><span data-gl="arima">ARIMA (1,0,0)</span></td><td class="num">0.5258</td><td class="num">0.3814</td><td class="num">−0.031</td><td class="num">+7.4%</td><td class="wrap-cell">사전 7관측으로는 차수 추정이 불안정</td></tr>
         </tbody>
       </table>
     </div>
@@ -1075,7 +1074,7 @@
     <div class="hstep">
       <span class="lab m">분석 방법</span>
       <p class="prose">
-        <span class="method-name">이항 잔류 모형(Retention Modeling).</span>
+        <span class="method-name"><span data-gl="binary-retention">이항 잔류 모형(Retention Modeling)</span>.</span>
         일간 20계단 이상 변동하는 연속형 순위 대신, 익일 동일 카테고리 100위 내 잔류 여부(0/1)를 종속변수로 설정한
         이항 패널 회귀모형을 추정했다. 이산형 종속변수는 일간 순위 변동의 노이즈에 영향을 받지 않아 유지 메커니즘을
         안정적으로 식별한다.
@@ -1126,7 +1125,7 @@
     <div class="hstep">
       <span class="lab m">분석 방법</span>
       <p class="prose">
-        <span class="method-name">교차지연 패널 회귀모형(Cross-Lagged Panel Model).</span>
+        <span class="method-name"><span data-gl="clpm">교차지연 패널 회귀모형(Cross-Lagged Panel Model)</span>.</span>
         한 방향은 당일의 순위 변화량(순위 로그의 1차 차분)을 전일의 리뷰 증가 속도에 회귀하고, 다른 방향은 당일의
         리뷰 증가 속도를 전일의 순위에 회귀하는 구조다. 두 모형 모두 전일의 누적 리뷰 총량, 할인율, 판매가격을
         공변량으로 통제하고 카테고리-일자 상호작용 고정효과를 적용했으며, 검정은 상품 단위 클러스터 로버스트
