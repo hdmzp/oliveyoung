@@ -36,6 +36,7 @@
   const tip = document.getElementById("tip");
   function showTip(evt, title, rows) {
     tip.innerHTML = "";
+    tip.className = "";                 /* 용어 메모 스타일이 남아 있을 수 있다 */
     const t = document.createElement("div");
     t.className = "tp-t";
     t.textContent = title;
@@ -1106,6 +1107,95 @@
     });
   }
 
+
+  /* ==========================================================
+     용어집 — 본문 형광펜에 마우스를 올리면 뜨는 메모
+     data-gl 키로 연결한다. 새 용어는 여기에만 추가하면 된다.
+     ========================================================== */
+  const GLOSSARY = {
+    "transition": ["전이 행렬(Transition Matrix)이란?",
+      "오늘 어느 상태에 있던 대상이 내일 어느 상태로 옮겨가는지를 상태 × 상태 표에 비율로 적어 넣은 것이다. 여기서 '상태'는 순위 구간(1–10위, 11–25위 …)이고, 각 칸은 '오늘 이 구간에 있던 상품 중 내일 저 구간에 있는 비율'이다. 대각선이 높으면 고착, 낮으면 고회전 구조다."],
+    "variance-decomp": ["분산 분해란?",
+      "결과값이 흩어진 정도(분산)를 '어떤 변수가 얼마만큼 설명하는가'로 쪼개는 작업이다. 변수를 하나씩 넣어 설명된 분산(R²)이 얼마나 늘어나는지 보면 그 변수가 다른 변수에 없는 정보를 얼마나 더하는지 알 수 있다. 넣으나 빼나 R²가 같다면 그 변수의 고유 기여는 0이다."],
+    "fe": ["개체 고정효과 모형이란?",
+      "개체(여기서는 상품)마다 고유한 상수를 따로 두어, 기간 내내 변하지 않는 개체 특성을 통째로 걷어내는 회귀 모형이다. 브랜드력·가격대처럼 고정된 요인이 자동으로 상쇄되므로 남는 것은 '같은 상품이 시점에 따라 달라진 부분'뿐이다. 상품 간 비교가 아니라 상품 안 비교가 된다."],
+    "shape-kmeans": ["형태 기반 군집화란?",
+      "곡선을 진폭(크기)으로 나눠 모양만 남긴 뒤 비슷한 모양끼리 묶는 군집화다. '반응이 큰가 작은가'가 아니라 '어떻게 생겼는가'로 묶이므로, 반응 폭이 서로 다른 상품군도 곡선의 생김새가 같으면 한 유형으로 모인다."],
+    "death-valley": ["데스밸리(Death Valley)형이란?",
+      "얕은 할인 구간에서는 반응이 오히려 죽어 있다가, 일정 임계점을 넘어야 (+)로 살아나는 곡선 모양이다. 골짜기를 건너기 전까지는 할인 예산이 매출로 돌아오지 않는다는 뜻이라, 어중간한 상시 할인이 가장 비효율적인 구간이 된다."],
+    "holdout": ["홀드아웃 검증이란?",
+      "가진 데이터의 일부를 학습에서 빼두었다가, 학습이 끝난 모형으로 그 떼어 둔 몫을 예측시켜 성능을 재는 방법이다. 모형이 외운 답을 다시 채점하는 게 아니라 처음 보는 자료로 채점하므로 과적합된 모형이 걸러진다. 여기서는 통제군 상품의 4분의 1을 떼어 냈다."],
+    "did": ["시장대조(이중차분, DiD)란?",
+      "처치를 받은 쪽의 전후 변화에서, 처치를 받지 않은 대조군의 같은 기간 변화를 빼는 방법이다. 시장 전체가 오르내린 몫이 상쇄되므로 프로모션 고유의 몫만 남는다. 다만 개체 자신의 반등까지는 걷어내지 못한다."],
+    "arima": ["ARIMA란?",
+      "시계열을 자기 과거값(AR) · 차분(I) · 과거 예측오차(MA) 세 부품으로 설명하는 고전 예측 모형이다. ARIMA(1,0,0)은 '바로 직전 값 하나로 다음 값을 설명한다'는 뜻이다. 과거 관측이 적으면 차수 추정이 흔들려 예측이 불안정해진다."],
+    "earth": ["EARTH(MARS 근사)란?",
+      "변수 구간마다 기울기가 꺾이는 조각별 직선을 이어 붙여 비선형 관계를 잡는 회귀 기법이다(MARS = Multivariate Adaptive Regression Splines). 여기서는 스플라인 기저를 선형회귀에 넣어 같은 성질을 구현했다. 직선 하나로는 못 잡는 굴곡을 잡으면서도 신경망보다 형태를 읽기 쉽다."],
+    "mlp": ["신경망(MLP)이란?",
+      "입력을 여러 층의 은닉 노드에 통과시키며 비선형 조합을 학습하는 모형이다(MLP = Multi-Layer Perceptron, 다층 퍼셉트론). 관계의 모양을 미리 정하지 않아 유연하지만 계수를 해석할 수 없어, 여기서는 '왜'가 아니라 '얼마나 정확히 맞히는가'에만 쓴다."],
+    "binary-retention": ["이항 잔류 모형이란?",
+      "결과를 '남았다 / 이탈했다' 두 값으로만 두고 잔류 확률을 추정하는 모형이다. 순위 숫자 자체가 아니라 100위 안에 살아남았는지만 보므로, 하루하루 순위가 몇 계단씩 흔들리는 잡음에 휘둘리지 않는다."],
+    "clpm": ["교차지연 패널 회귀모형이란?",
+      "두 변수를 서로의 과거값으로 예측해 어느 쪽이 앞서는지 가르는 모형이다. '어제 리뷰 → 오늘 순위'와 '어제 순위 → 오늘 리뷰' 두 방향을 같은 자료로 함께 추정한 뒤, 신호가 큰 쪽을 선행 관계로 읽는다."],
+  };
+
+  /* 형광펜 용어에 메모를 붙인다 — 마우스 · 키보드 · 터치 모두 지원 */
+  function initGlossary() {
+    let open = null;
+    const show = (node) => {
+      const def = GLOSSARY[node.dataset.gl];
+      if (!def || !tip) return;
+      tip.innerHTML = "";
+      tip.className = "tip-gl";
+      const q = document.createElement("div");
+      q.className = "tp-q";
+      q.textContent = "Q. " + def[0];
+      const a = document.createElement("div");
+      a.className = "tp-a";
+      a.textContent = def[1];
+      tip.appendChild(q);
+      tip.appendChild(a);
+      tip.style.display = "block";
+      /* 커서를 따라다니면 읽기 어려우므로 용어 아래에 고정한다 */
+      const r = node.getBoundingClientRect(), t = tip.getBoundingClientRect();
+      let x = r.left, y = r.bottom + 8;
+      if (x + t.width > innerWidth - 10) x = Math.max(10, innerWidth - t.width - 10);
+      if (y + t.height > innerHeight - 10) y = Math.max(10, r.top - t.height - 8);
+      tip.style.left = x + "px";
+      tip.style.top = y + "px";
+      open = node;
+    };
+    const hide = () => {
+      if (!tip) return;
+      tip.style.display = "none";
+      tip.className = "";
+      open = null;
+    };
+    document.querySelectorAll("[data-gl]").forEach((node) => {
+      node.classList.add("gl");
+      node.tabIndex = 0;
+      node.setAttribute("role", "button");
+      const def = GLOSSARY[node.dataset.gl];
+      if (def) node.setAttribute("aria-label", node.textContent + " — 용어 설명 보기");
+      node.addEventListener("mouseenter", () => show(node));
+      node.addEventListener("mouseleave", hide);
+      node.addEventListener("focus", () => show(node));
+      node.addEventListener("blur", hide);
+      /* 클릭은 열기 전용 — 토글로 두면 데스크톱에서 mouseenter 로 뜬 메모가
+         곧바로 닫힌다. 닫기는 마우스를 떼거나 바깥을 누를 때 처리한다. */
+      node.addEventListener("click", (e) => {
+        e.preventDefault();
+        show(node);
+      });
+    });
+    /* 터치에서 바깥을 누르면 닫힌다 */
+    document.addEventListener("click", (e) => {
+      if (open && !e.target.closest("[data-gl]")) hide();
+    });
+    addEventListener("scroll", () => { if (open) hide(); }, { passive: true });
+    addEventListener("keydown", (e) => { if (e.key === "Escape") hide(); });
+  }
+
   function drawAll() {
     drawChurn();
     drawCohort();
@@ -1205,6 +1295,7 @@
     drawAll();
     initControls();
     initTocToggle();
+    initGlossary();
     initSpy();
   }
 
