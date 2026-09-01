@@ -5,7 +5,7 @@ name: Deploy Pages
 on:
   push:
     branches: ["claude/oliveyoung-data-collection-w9odk3"]
-    paths: ["index.html", "ranking.html", "report_v1.docx", "report_v2.docx", "report_v3.docx", "report_v5.docx", "favicon.png", "assets/**", "data/**", "scraper/build_site.py", ".github/workflows/pages.yml"]
+    paths: ["index.html", "ranking.html", "report_v*.docx", "favicon.png", "assets/**", "data/**", "scraper/build_site.py", ".github/workflows/pages.yml"]
   workflow_dispatch:
 
 permissions:
