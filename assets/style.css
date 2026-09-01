@@ -35,8 +35,8 @@
   --wine: #8c2438;
 
   /* 용어 형광펜 */
-  --hl: rgba(255, 209, 84, .52);
-  --hl-ink: #8a6a16;
+  --hl: rgba(16, 18, 15, .11);
+  --hl-ink: #6f7168;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -66,8 +66,8 @@
     --card-shadow: none;
 
     --wine: #f0959f;
-    --hl: rgba(236, 186, 74, .30);
-    --hl-ink: #d8b45f;
+    --hl: rgba(255, 255, 255, .13);
+    --hl-ink: #a7a99e;
   }
 }
 
