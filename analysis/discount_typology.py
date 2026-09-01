@@ -102,21 +102,27 @@ def shapes(C: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
     return V, V / amp
 
 
-def name_types(S: np.ndarray, labels: np.ndarray) -> dict[int, str]:
-    """형태 평균으로 유형 이름을 자동 부여한다 (해석은 리포트에서)."""
-    names = {}
+def name_types(V: np.ndarray, labels: np.ndarray) -> dict[int, str]:
+    """클러스터 평균 곡선의 실제 모양을 보고 이름을 붙인다.
+
+    얕은 구간(1~20%)과 깊은 구간(30%+)의 평균을 비교해 네 갈래로 나눈다.
+      · 얕은 곳이 (−)인데 깊은 곳에서 살아나면          → 데스밸리형
+      · 처음부터 (+)이고 깊어질수록 더 커지면            → 가속형
+      · 얕은 구간에서 이미 (+)지만 더 깊어져도 안 커지면  → 포화형
+      · 어느 구간에서도 (−)를 벗어나지 못하면            → 무반응·역행형
+    """
+    names: dict[int, str] = {}
     for k in sorted(set(labels)):
-        m = S[labels == k].mean(axis=0)
+        m = V[labels == k].mean(axis=0)
         shallow, deep = m[1:3].mean(), m[4:].mean()
-        if deep > 0.3 and shallow >= -0.1:
-            names[k] = "가속형"
-        elif deep > 0.2 and shallow < -0.1:
+        if shallow < -0.10 and deep - shallow > 0.20:
             names[k] = "데스밸리형"
-        elif shallow > 0.3 and deep <= 0.2:
-            names[k] = "소액반응형"
-        else:
+        elif deep < 0 and shallow < 0:
             names[k] = "무반응·역행형"
-    # 이름이 겹치면 뒤에 번호를 붙여 구분 가능하게
+        elif deep - shallow > 0.15:
+            names[k] = "가속형"
+        else:
+            names[k] = "포화형"
     seen: dict[str, int] = {}
     for k in sorted(names):
         base = names[k]
@@ -150,7 +156,7 @@ def main() -> None:
     V, S = shapes(C)
     km = KMeans(K, n_init=200, random_state=1).fit(S)
     C["cluster"] = km.labels_
-    names = name_types(S, km.labels_)
+    names = name_types(V, km.labels_)
     C["type"] = [names[k] for k in km.labels_]
 
     R: list[str] = []

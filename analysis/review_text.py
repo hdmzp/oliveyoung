@@ -27,7 +27,7 @@ OUT = os.path.join(ROOT, "analysis", "output", "review_text.json")
 # 카테고리 수집이 안정된 이후 구간만 순위 결합에 사용 (2.2절과 동일 기준)
 PANEL_FROM = "2026-08-05"
 # 보고서 관측 종료일. 이후 수집분은 보고서 기간(2.2절)과 어긋나므로 제외한다
-PANEL_TO = "2026-08-27"
+PANEL_TO = "2026-09-01"
 
 HANGUL = re.compile(r"[가-힣]+")
 # 조사·어미 꼬리를 벗겨 어간에 가깝게 만든다 (형태소 분석기 없이 근사)
