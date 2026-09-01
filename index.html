@@ -83,7 +83,7 @@
         <div class="toc-cell">
           <a class="toc-main" href="#results"><span class="no">05</span>분석 결과</a>
           <button class="toc-toggle" id="tocToggle" type="button" aria-expanded="false" aria-controls="tocSub">
-            <span class="tt-text">10개 절 펼치기</span><span class="caret" aria-hidden="true">▾</span>
+            <span class="tt-text">13개 절 펼치기</span><span class="caret" aria-hidden="true">▾</span>
           </button>
         </div>
         <div class="toc-sub" id="tocSub" hidden>
@@ -91,12 +91,15 @@
           <a href="#r52"><span class="sn">5.2</span>리뷰 총량과 리뷰 증가 속도의 영향력 비교</a>
           <a href="#r53"><span class="sn">5.3</span>랭킹 산정 기준 판별 — 판매량 vs 매출액</a>
           <a href="#r54"><span class="sn">5.4</span>프로모션 유형별 효과와 역인과 구조</a>
-          <a href="#r55"><span class="sn">5.5</span>브랜드 요인의 기여도</a>
-          <a href="#r56"><span class="sn">5.6</span>순위 상승 요인과 잔류 요인의 분리</a>
-          <a href="#r57"><span class="sn">5.7</span>리뷰와 판매의 선후 관계 검정</a>
-          <a href="#r58"><span class="sn">5.8</span>대가성 리뷰의 영향 검증</a>
-          <a href="#r59"><span class="sn">5.9</span>리뷰 본문의 내용 구성</a>
-          <a href="#r510"><span class="sn">5.10</span>썸네일 시각 요소와 순위의 관계</a>
+          <a href="#r55"><span class="sn">5.5</span>할인율–판매 반응의 유형학</a>
+          <a href="#r56"><span class="sn">5.6</span>프로모션의 증분 효과 — 반사실 추정</a>
+          <a href="#r57"><span class="sn">5.7</span>브랜드 요인의 기여도</a>
+          <a href="#r58"><span class="sn">5.8</span>순위 상승 요인과 잔류 요인의 분리</a>
+          <a href="#r59"><span class="sn">5.9</span>리뷰와 판매의 선후 관계 검정</a>
+          <a href="#r510"><span class="sn">5.10</span>리뷰 평점의 구성 — 긍정·부정 비중</a>
+          <a href="#r511"><span class="sn">5.11</span>대가성 리뷰의 영향 검증</a>
+          <a href="#r512"><span class="sn">5.12</span>리뷰 본문의 내용 구성</a>
+          <a href="#r513"><span class="sn">5.13</span>썸네일 시각 요소와 순위의 관계</a>
         </div>
         <a href="#conclusion"><span class="no">06</span>결론 및 제언<span class="desc">결과 요약 · 실무 제언 · 한계</span></a>
       </div>
@@ -277,23 +280,27 @@
 
     <h3 class="sub-head"><span class="n">2.3</span>데이터 명세</h3>
     <p class="prose">
-      수집된 원시 데이터는 통계 검정을 거쳐 종속변수 2종, 독립변수 5개 군, 통제변수 1종으로 정제되었다.
+      수집된 원시 데이터는 통계 검정을 거쳐 종속변수 2종, 독립변수 6개 군, 통제변수 1종으로 정제되었다.
     </p>
     <div class="tbl-scroll tbl-max">
       <table class="data">
         <thead><tr><th>구분</th><th>변수</th><th>정의 및 산출 방식</th><th>활용 목적</th></tr></thead>
         <tbody>
           <tr><td class="grp">종속변수</td><td>판매 순위</td><td class="wrap-cell">카테고리별 판매 랭킹 순위(1~100). 회귀분석 시 ln(자연로그) 변환</td><td class="wrap-cell">상위권 진입 여부를 나타내는 성과 지표</td></tr>
-          <tr><td></td><td>익일 잔류 여부</td><td class="wrap-cell">다음 수집일(t+1)에도 동일 카테고리 100위 내 잔류 시 1, 이탈 시 0</td><td class="wrap-cell">순위 유지력을 판별하는 보조 성과 지표 (5.6절)</td></tr>
+          <tr><td></td><td>익일 잔류 여부</td><td class="wrap-cell">다음 수집일(t+1)에도 동일 카테고리 100위 내 잔류 시 1, 이탈 시 0</td><td class="wrap-cell">순위 유지력을 판별하는 보조 성과 지표 (5.8절)</td></tr>
           <tr><td class="grp">독립변수</td><td>리뷰 증가 속도</td><td class="wrap-cell">상품별 리뷰 수의 날짜 간 차분 ÷ 경과일수. log(1+x) 변환</td><td class="wrap-cell">가설 1의 핵심 설명변수, 판매량 대리지표</td></tr>
           <tr><td></td><td>리뷰 총량</td><td class="wrap-cell">상품별 누적 리뷰 수. log(1+x) 변환</td><td class="wrap-cell">누적 리뷰의 독립적 랭킹 기여도 검증</td></tr>
           <tr><td></td><td>평균 별점</td><td class="wrap-cell">상품별 평균 별점(1.0~5.0) 및 최하점(1.0) 비율</td><td class="wrap-cell">가설 3 검증 (품질 지표의 설명력 비교)</td></tr>
           <tr><td></td><td>실제 판매가격</td><td class="wrap-cell">최종 혜택가. 로그 변환 적용</td><td class="wrap-cell">랭킹 집계 기준 검증 (매출액 vs 판매량) (5.3절)</td></tr>
           <tr><td></td><td>할인율</td><td class="wrap-cell">정가 대비 할인율(%p)</td><td class="wrap-cell">가격 프로모션 강도 측정</td></tr>
           <tr><td></td><td>프로모션 배지</td><td class="wrap-cell">쿠폰·증정·세일 배지 부착 여부(0/1)</td><td class="wrap-cell">프로모션 유형별 효과 및 인과 구조 검증 (5.4절)</td></tr>
-          <tr><td></td><td>브랜드</td><td class="wrap-cell">상품의 브랜드명(범주형)</td><td class="wrap-cell">브랜드 고정효과 분해 (5.5절)</td></tr>
+          <tr><td></td><td>브랜드</td><td class="wrap-cell">상품의 브랜드명(범주형)</td><td class="wrap-cell">브랜드 고정효과 분해 (5.7절)</td></tr>
           <tr><td></td><td>썸네일 특성</td><td class="wrap-cell">대표 이미지의 밝기·채도·색 다양성·흰 배경 비율·구성 복잡도(경계선 밀도)</td><td class="wrap-cell">가설 4 검증 (시각 문법과 순위 연관성)</td></tr>
           <tr><td></td><td>대가성 리뷰 비중</td><td class="wrap-cell">리뷰 본문의 대가성 공시 문구 탐지 건수 ÷ 리뷰 수</td><td class="wrap-cell">가설 2 검증 (체험단 운영의 랭킹 영향도)</td></tr>
+          <tr><td></td><td>긍정 · 부정 리뷰 비중</td><td class="wrap-cell">긍정 = 별점 4점 이상 비율, 부정 = 2점 이하 비율. 3점은 별도 집계. 본문 길이는 제외</td><td class="wrap-cell">평점을 평균이 아닌 분포로 재구성해 설명력 재검증 (5.10절)</td></tr>
+          <tr><td></td><td>할인율 구간 더미</td><td class="wrap-cell">할인율을 0 / 1–10 / 10–20 / 20–30 / 30–40 / 40%+ 6구간으로 이산화</td><td class="wrap-cell">할인–판매 반응 곡선의 형태 추정 (5.5절)</td></tr>
+          <tr><td></td><td>판매금액 대리지표</td><td class="wrap-cell">리뷰 증가 속도 × 혜택가. log(1+x) 변환</td><td class="wrap-cell">할인 시 수량과 금액 반응의 분리 (5.5절)</td></tr>
+          <tr><td></td><td>프로모션 온셋</td><td class="wrap-cell">배지가 직전 2개 관측에서 0이었다가 1로 바뀐 시점(1/0)</td><td class="wrap-cell">반사실 증분 효과 추정의 처치 시점 정의 (5.6절)</td></tr>
           <tr><td class="grp">통제변수</td><td>카테고리 × 수집일자</td><td class="wrap-cell">카테고리와 날짜의 조합을 고정효과로 흡수</td><td class="wrap-cell">품목군별 모수 차이 및 요일 효과 통제</td></tr>
         </tbody>
       </table>
@@ -467,7 +474,8 @@
       <div class="sec-no">05 — 분석 결과</div>
       <h2>가설별 실증 검증</h2>
       <p class="sub">종속변수의 안정성 진단에서 출발해 리뷰·가격·프로모션·브랜드 순으로 검증하고,
-        리뷰와 판매의 선후 관계를 판별한 뒤 리뷰 본문과 썸네일까지 확장한다.</p>
+        할인 반응의 유형과 프로모션의 순수 증분 효과를 분리한 뒤, 리뷰와 판매의 선후 관계를 판별하고
+        리뷰 평점·본문·썸네일까지 확장한다.</p>
     </div>
 
     <!-- 5.1 -->
@@ -540,7 +548,7 @@
         모든 순위 구간이 동일하게 변동하는 것은 아니었으며, <b class="wine">상위권과 하위권의 성격이 뚜렷하게 구분</b>되고 있었다.
         <b class="wine">1–10위 최상위권은 익일 100위 내 잔류율이 92.6%, 동일 구간 잔류율이 59.1%에 달하는 안정 고착 구간</b>인 반면,
         76–100위 <b class="wine">하위권은 익일 이탈률이 49.4%에 달하는 고회전 구간</b>으로 나타났다. 따라서 이후 분석에서는 순위 상승을
-        이끄는 <b>진입 요인</b>과 순위를 지탱하는 <b>잔류 요인</b>을 분리하여 검증한다(5.6절).
+        이끄는 <b>진입 요인</b>과 순위를 지탱하는 <b>잔류 요인</b>을 분리하여 검증한다(5.8절).
       </p>
     </div>
 
@@ -772,7 +780,216 @@
     </div>
 
     <!-- 5.5 -->
-    <h3 class="sub-head" id="r55"><span class="n">5.5</span>브랜드 요인의 기여도</h3>
+    <h3 class="sub-head" id="r55"><span class="n">5.5</span>할인율–판매 반응의 유형학</h3>
+    <div class="hstep">
+      <span class="lab">검증 질문</span>
+      <p class="prose">
+        5.4절은 프로모션의 효과를 <b>평균 하나</b>로 요약했다. 그러나 실무에서 필요한 것은 평균이 아니라
+        <b class="wine">할인율을 얼마나 올렸을 때 판매가 어떤 모양으로 반응하는가</b>이다. 본 절은 할인율–판매
+        반응 곡선의 <b>형태(shape)</b>를 상품군별로 추정해 유형화하고, 각 유형에 속한 상품들이 공유하는
+        가격·브랜드·색채·배지 특성을 식별한다.
+      </p>
+    </div>
+    <div class="hstep">
+      <span class="lab m">분석 방법</span>
+      <p class="prose">
+        <span class="method-name">구간 더미 반응곡선 추정 후 형태 기반 군집화(Shape k-means).</span>
+        판매 수량은 공개되지 않으므로 5.3절에서 판매량 대리지표로 확립한 <b>리뷰 유입 속도</b>를 종속변수로 삼았다
+        (금액 반응은 유입 속도 × 혜택가로 별도 산출). 할인율을 6개 구간(0 / 1–10 / 10–20 / 20–30 / 30–40 / 40%+)으로
+        끊고, <b>카테고리 × 가격 3분위</b> 56개 셀마다 날짜 고정효과와 리뷰 재고를 통제한 반응 곡선을 추정했다.
+        이어 곡선을 진폭으로 나눠 <b>크기가 아닌 모양만</b> 남긴 뒤 k-means로 4개 유형을 도출했다.
+      </p>
+    </div>
+    <div class="callout">
+      <span class="c-tag">왜 상품 단위가 아니라 셀 단위인가</span>
+      26일 관측 창에서 <b>같은 상품이 할인율을 바꾸는 폭은 거의 없다</b> — 상품 내 할인율 표준편차의 중앙값은 0이고,
+      서로 다른 할인율을 3개 이상 경험한 상품은 332개(8.9%)에 불과하다. 실제로 상품별 반응 기울기를 개별 추정하면
+      639개 중 유의한 것이 10.4%뿐으로, 대부분이 잡음이다. 따라서 곡선은 <b>같은 카테고리·같은 가격대·같은 날
+      서로 다른 할인율에 놓인 상품들을 가로로 비교</b>해 얻었다.
+    </div>
+    <div class="hstep">
+      <span class="lab r">분석 결과 및 가설 대조</span>
+      <p class="prose">
+        사전 가설은 고가 상품은 지수함수형, 중저가는 선형, 기능성은 데스밸리형이라는 3분류였다. 실측 결과
+        <b class="wine">유형은 3개가 아니라 4개로 갈라졌고, 유형을 가르는 것은 가격대가 아니라 '그 상품이 이미
+        얼마나 큰가'였다</b>. 깔끔한 선형형은 독립된 군집으로 나타나지 않았으며, 가속형의 완만한 구간이 그에
+        가장 가깝다.
+      </p>
+    </div>
+
+    <div class="fig">
+      <div class="fig-head">
+        <div class="fig-title">그림 9. 할인율 구간별 판매 반응 곡선 — 4개 유형</div>
+        <div class="fig-sub">0% 구간을 기준선으로 둔 로그 차이 · 날짜 고정효과 · 리뷰 재고 통제</div>
+      </div>
+      <div class="ctl-bar">
+        <div class="seg" id="segDisc">
+          <button class="on" data-disc="qty">판매수량 기준</button>
+          <button data-disc="rev">판매금액 기준</button>
+        </div>
+        <span class="ctl-note" id="discNote">판매수량 기준 — 가속형만 할인율이 오를수록 반응이 커진다. 데스밸리형은 20%를 넘겨야 (+)로 돌아선다.</span>
+      </div>
+      <div class="legend" id="lgDiscCurve"></div>
+      <div class="chart-box chart-scroll" id="chDiscCurve"></div>
+      <div class="fig-note">
+        <b>가속형</b>은 할인율이 커질수록 기울기가 가팔라진다(40%+ 구간 +0.63, |t| = 6.2). <b>데스밸리형</b>은
+        얕은 할인 구간에서 오히려 판매가 낮고(1–10% 구간 −0.19), 20%를 넘겨야 (+)로 전환된다 — 골짜기를 건너야
+        효과가 시작되는 구조다. <b>무반응·역행형</b>은 어느 구간에서도 비할인 상품을 넘지 못한다.
+      </div>
+    </div>
+
+    <p class="prose" style="margin-top:20px">
+      판매<b>금액</b> 기준으로 다시 그리면 해석이 한 겹 더해진다. 할인은 단가를 깎으므로 수량이 늘어도 금액은
+      줄 수 있는데, 가속형(40%+ 구간 +1.09)과 데스밸리형(30–40% 구간 +0.78)은 <b>단가 하락을 수량 증가가
+      덮고도 남는다</b>. 반면 무반응·역행형은 금액 기준으로도 0 부근에 머문다 — 할인을 얹어도 매출이 늘지
+      않는다는 뜻이다.
+    </p>
+
+    <div class="tbl-scroll">
+      <table class="data">
+        <thead><tr><th>유형</th><th class="num">상품 수</th><th class="num">가격 중앙</th><th class="num">리뷰수 중앙</th><th class="num">세일 상시성</th><th class="num">쿠폰</th><th class="num">증정</th><th>대표 카테고리</th></tr></thead>
+        <tbody>
+          <tr><td>가속형</td><td class="num">1,129</td><td class="num">16,900원</td><td class="num">1,298건</td><td class="num">60%</td><td class="num">39%</td><td class="num">15%</td><td class="wrap-cell">위생용품 · 헤어케어 · 선케어 · 푸드 · 패션</td></tr>
+          <tr><td>데스밸리형</td><td class="num">862</td><td class="num">22,500원</td><td class="num">1,515건</td><td class="num">67%</td><td class="num">34%</td><td class="num">17%</td><td class="wrap-cell">마스크팩 · 건강식품 · 뷰티소품 · 바디케어</td></tr>
+          <tr class="hl"><td>무반응 · 역행형</td><td class="num">1,214</td><td class="num">17,900원</td><td class="num">3,224건</td><td class="num">67%</td><td class="num">38%</td><td class="num">27%</td><td class="wrap-cell">스킨케어 · 메이크업 · 마스크팩 · 향수/디퓨저</td></tr>
+          <tr><td>소액반응형</td><td class="num">469</td><td class="num">23,700원</td><td class="num">1,459건</td><td class="num">79%</td><td class="num">26%</td><td class="num">30%</td><td class="wrap-cell">향수/디퓨저 · 맨즈에딧 · 메이크업</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="tbl-cap">표 8. 할인 반응 유형별 상품 프로파일 (배지 상시성 = 관측일 중 배지가 붙어 있던 비율)</p>
+
+    <div class="hstep">
+      <span class="lab">유형을 가르는 것은 가격이 아니라 규모다</span>
+      <p class="prose">
+        네 유형의 가격 중앙값은 16,900 ~ 23,700원으로 크게 다르지 않고, 썸네일 채도(0.260 ~ 0.275)와 명도
+        (176 ~ 183)도 사실상 구분되지 않는다. <b class="wine">유형을 가장 뚜렷하게 가르는 변수는 리뷰 규모</b>다 —
+        무반응·역행형의 리뷰수 중앙값은 3,224건으로 나머지 세 유형(1,298 ~ 1,515건)의 2.1 ~ 2.5배다. 여기에
+        증정 배지 상시성도 27%로 가장 높다. 즉 <b>이미 크고, 이미 늘 할인·증정이 붙어 있는 상품</b>에서는
+        추가 할인의 한계효과가 소멸한다.
+      </p>
+    </div>
+    <div class="hstep">
+      <span class="lab">시사점</span>
+      <p class="prose">
+        할인율을 배분할 때의 규칙이 유형별로 갈린다. <b>가속형</b>은 할인율을 키울수록 수량·금액이 함께 늘어
+        투입 대비 회수가 가장 확실하다. <b>데스밸리형</b>은 <b class="wine">10 ~ 20% 구간이 가장 비효율적</b>이므로
+        어중간한 할인을 상시로 얹기보다 20%를 넘기는 집중 편성이 낫다. <b>무반응·역행형</b>은 할인이 아니라
+        쿠폰(+0.120, |t| = 2.1)으로만 반응하며, 세일 배지는 오히려 판매를 끌어내린다(−0.288, |t| = 3.7).
+        <b>소액반응형</b>은 프레스티지 가격대가 많아 1 ~ 10%의 소액 할인에만 반짝 반응하고 깊은 할인에서는
+        반응이 사라진다.
+      </p>
+    </div>
+    <div class="callout warn">
+      <span class="c-tag">군집의 성격</span>
+      실루엣 계수는 0.27로 높지 않다. 곡선이 뚜렷한 덩어리로 갈라진다기보다 연속적으로 변하기 때문이며,
+      유형 경계는 절단선이지 자연적 틈이 아니다. 다만 <b>난수 시드를 바꿔도 같은 분할이 재현된다</b>
+      (조정 랜드지수 0.95 ~ 1.00). 또한 할인 편성 자체가 상품의 기대 수요에 따라 정해지므로,
+      곡선은 인과가 아니라 <b>연관</b>으로 읽어야 한다.
+    </div>
+
+    <!-- 5.6 -->
+    <h3 class="sub-head" id="r56"><span class="n">5.6</span>프로모션의 증분 효과 — 반사실 추정</h3>
+    <div class="hstep">
+      <span class="lab">검증 질문</span>
+      <p class="prose">
+        &lsquo;프로모션을 걸었더니 매출이 늘었다&rsquo;는 문장은 거의 언제나 참이다. 프로모션은 팔릴 만한 시점에
+        편성되고, 그 직전에는 대개 판매가 한 번 꺼지기 때문이다. 본 절은
+        <b class="wine">프로모션이 없었다면 어떻게 됐을지를 명시적으로 예측한 뒤, 실제값에서 그 예측을 뺀
+        순수 증분 효과만을 분리</b>한다. 아울러 실무에서 관행적으로 쓰는 &lsquo;사전 대비 비교&rsquo;가 효과를
+        얼마나 부풀리는지 정량화한다.
+      </p>
+    </div>
+    <div class="hstep">
+      <span class="lab m">분석 방법</span>
+      <p class="prose">
+        <span class="method-name">반사실(Counterfactual) 예측 모형 5종의 경합과 홀드아웃 검증.</span>
+        배지(쿠폰·세일·증정)가 직전 2개 관측에서 부착되지 않았다가 새로 붙은 시점을 <b>온셋</b>으로 정의하고,
+        사전 7관측 · 사후 5관측의 창을 잘라 505건의 처치 이벤트(상품 453개)를 구성했다. 반사실은
+        <b>사전평균(무보정) · 시장대조(DiD) · ARIMA(1,0,0) · EARTH(MARS 근사, 스플라인 기저) · 신경망(MLP)</b>
+        5종으로 각각 예측했다. 뒤의 두 모형은 <b>프로모션 변화가 전혀 없는 관측 6,787건(통제군)만으로 학습</b>해,
+        평상시 판매가 어떻게 이어지는지만 배운 상태로 프로모션 구간을 예측한다.
+      </p>
+    </div>
+    <div class="callout">
+      <span class="c-tag">모형 선택을 취향이 아니라 검증으로 하는 이유</span>
+      증분 효과의 크기는 <b>어떤 반사실을 믿느냐에 따라 5배까지 달라진다</b>. 따라서 통제군 상품의 4분의 1을
+      떼어 홀드아웃으로 두고, 5관측 지평의 예측오차와 편향을 먼저 잰 뒤 그 순위에 따라 결과를 읽는다.
+    </div>
+
+    <div class="fig">
+      <div class="fig-head">
+        <div class="fig-title">그림 10. 프로모션 시작 전후의 실제 판매 경로와 반사실 경로</div>
+        <div class="fig-sub">처치 이벤트 505건 평균 · 사전 7관측 평균 = 100 · 음영 = 실제와 최우수 반사실의 간격</div>
+      </div>
+      <div class="legend" id="lgCfPath"></div>
+      <div class="chart-box chart-scroll" id="chCfPath"></div>
+      <div class="fig-note">
+        프로모션이 붙기 직전 1개 관측에서 판매지수가 <b>74.1</b>까지 떨어진다 — 직전 구간 평균 대비 −27.1%다.
+        <b class="wine">프로모션은 판매가 꺼진 뒤에 붙는다.</b> 따라서 사전 평균(점선, 100)을 반사실로 쓰면
+        그 뒤에 자연히 따라오는 반등까지 프로모션 성과로 계상된다. 통제군으로 학습한 신경망은 이 반등을
+        미리 예측해 122.2를 내놓고, 실제값 123.5와의 간격은 얇은 음영만 남는다.
+      </div>
+    </div>
+
+    <div class="tbl-scroll">
+      <table class="data">
+        <thead><tr><th>반사실 모형</th><th class="num">홀드아웃 RMSE</th><th class="num">MAE</th><th class="num">편향</th><th class="num">추정 증분 효과</th><th>판정</th></tr></thead>
+        <tbody>
+          <tr class="hl"><td>신경망 (MLP)</td><td class="num">0.4738</td><td class="num">0.3338</td><td class="num">−0.002</td><td class="num">+1.9%</td><td class="wrap-cell">예측 정확도 1위 · 편향 최소</td></tr>
+          <tr><td>EARTH (MARS 근사)</td><td class="num">0.4809</td><td class="num">0.3378</td><td class="num">−0.004</td><td class="num">+2.5%</td><td class="wrap-cell">비선형 굴곡을 잡아 2위</td></tr>
+          <tr><td>시장대조 (DiD)</td><td class="num">0.4906</td><td class="num">0.3438</td><td class="num">−0.061</td><td class="num">+8.6%</td><td class="wrap-cell">시장 변동은 잡지만 개체 반등은 놓침</td></tr>
+          <tr><td>사전평균 (무보정)</td><td class="num">0.5159</td><td class="num">0.3694</td><td class="num">−0.038</td><td class="num">+9.5%</td><td class="wrap-cell">실무 관행 · 예측력 최하위권</td></tr>
+          <tr><td>ARIMA (1,0,0)</td><td class="num">0.5258</td><td class="num">0.3814</td><td class="num">−0.031</td><td class="num">+7.4%</td><td class="wrap-cell">사전 7관측으로는 차수 추정이 불안정</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="tbl-cap">표 9. 반사실 모형별 예측 성능과 그에 따른 증분 효과 추정치 (종속변수 = ln 판매수량 대리지표)</p>
+
+    <div class="hstep">
+      <span class="lab r">분석 결과 및 가설 대조</span>
+      <p class="prose">
+        예측 성능 순위와 증분 효과 크기는 <b>정확히 반대로</b> 정렬된다. 가장 부정확한 사전평균이 가장 큰 효과
+        (+9.5%)를 내놓고, 가장 정확한 신경망이 가장 작은 효과(+1.9%)를 내놓는다.
+        <b class="wine">실무 관행인 사전 대비 비교는 프로모션의 실제 기여도를 약 5배 부풀린다.</b>
+        창 길이를 사전 5/사후 8, 사전 5/사후 10으로 바꿔도 무보정 +6.7 ~ +9.5% 대 모형기반 +1.4 ~ +3.0%의
+        구도는 유지된다.
+      </p>
+    </div>
+
+    <div class="tbl-scroll">
+      <table class="data">
+        <thead><tr><th>구분</th><th class="num">이벤트</th><th class="num">증분 효과</th><th>해석</th></tr></thead>
+        <tbody>
+          <tr><td>쿠폰 온셋</td><td class="num">245</td><td class="num">+2.5%</td><td class="wrap-cell">유일하게 일관되게 (+) — 5.4절의 순위 효과와 부호가 같다</td></tr>
+          <tr><td>증정 온셋</td><td class="num">221</td><td class="num">+2.0%</td><td class="wrap-cell">쿠폰과 비슷한 크기의 소폭 증분</td></tr>
+          <tr class="hl"><td>세일 온셋</td><td class="num">23</td><td class="num">−5.1%</td><td class="wrap-cell">반사실을 통제해도 (−) — 5.4절의 역인과 구조와 일치</td></tr>
+          <tr><td>D+0 (당일)</td><td class="num">—</td><td class="num">+1.0%</td><td class="wrap-cell">리뷰 작성 지연 때문에 즉시 효과는 작게 잡힌다</td></tr>
+          <tr><td>D+1</td><td class="num">—</td><td class="num">+3.7%</td><td class="wrap-cell">가장 큰 반응 시점</td></tr>
+          <tr><td>D+3 ~ D+4</td><td class="num">—</td><td class="num">+3.6 / +3.2%</td><td class="wrap-cell">지연 반응이 뒤로 밀려 다시 나타난다</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="tbl-cap">표 10. 프로모션 유형별 · 경과 시점별 증분 효과 (신경망 반사실 기준)</p>
+
+    <div class="hstep">
+      <span class="lab">시사점</span>
+      <p class="prose">
+        프로모션 성과 보고서에서 &lsquo;집행 전후 매출 비교&rsquo;는 <b class="wine">사후 편성 편향과 자연 반등을 모두
+        성과로 계상</b>한다. 최소한의 교정은 같은 카테고리의 비집행 상품을 대조군으로 두는 것이고(그것만으로도
+        +9.5% → +8.6%), 개체별 반등까지 잡으려면 통제군으로 학습한 예측 모형이 필요하다. 그렇게 남는 실제
+        증분은 <b>쿠폰·증정에서 +2% 남짓</b>이며, 세일 배지는 반사실을 통제해도 (−)를 벗어나지 못한다.
+      </p>
+    </div>
+    <div class="callout warn">
+      <span class="c-tag">해석의 한계</span>
+      ① 반사실 모형은 프로모션이 없던 관측만으로 학습했다. 프로모션이 붙는 상품이 애초에 다른 성격이라면
+      외삽 오차가 남는다. ② 판매 대리지표는 리뷰 유입이므로, 리뷰 작성 지연 탓에 즉시 효과는 과소, 지연
+      효과는 사후 창 밖으로 밀려 잡힐 수 있다. ③ 세일 온셋은 23건으로 표본이 작아 −5.1%의 크기 자체는
+      정밀하지 않다 — 부호만 읽어야 한다.
+    </div>
+
+    <!-- 5.7 -->
+    <h3 class="sub-head" id="r57"><span class="n">5.7</span>브랜드 요인의 기여도</h3>
     <div class="hstep">
       <span class="lab">검증 질문</span>
       <p class="prose">
@@ -812,7 +1029,7 @@
         </tbody>
       </table>
     </div>
-    <p class="tbl-cap">표 8. 상위 랭크 고착 브랜드 상위 5개사 현황 (전체 랭킹 기준)</p>
+    <p class="tbl-cap">표 11. 상위 랭크 고착 브랜드 상위 5개사 현황 (전체 랭킹 기준)</p>
 
     <div class="brandshots">
       <div class="brandshot">
@@ -834,7 +1051,7 @@
         </div>
       </div>
     </div>
-    <p class="tbl-cap">그림 9. 상위권 고착 브랜드의 마케팅 소구 전략 비교 (실적 소구 vs 모델 소구)</p>
+    <p class="tbl-cap">그림 11. 상위권 고착 브랜드의 마케팅 소구 전략 비교 (실적 소구 vs 모델 소구)</p>
 
     <div class="hstep">
       <span class="lab">시사점</span>
@@ -847,7 +1064,7 @@
     </div>
 
     <!-- 5.6 -->
-    <h3 class="sub-head" id="r56"><span class="n">5.6</span>순위 상승 요인과 잔류 요인의 분리</h3>
+    <h3 class="sub-head" id="r58"><span class="n">5.8</span>순위 상승 요인과 잔류 요인의 분리</h3>
     <div class="hstep">
       <span class="lab">검증 질문</span>
       <p class="prose">
@@ -884,7 +1101,7 @@
         </tbody>
       </table>
     </div>
-    <p class="tbl-cap">표 9. 순위 상승 견인 변수와 익일 잔류 기여 변수의 비교</p>
+    <p class="tbl-cap">표 12. 순위 상승 견인 변수와 익일 잔류 기여 변수의 비교</p>
 
     <div class="hstep">
       <span class="lab">시사점</span>
@@ -897,7 +1114,7 @@
     </div>
 
     <!-- 5.7 -->
-    <h3 class="sub-head" id="r57"><span class="n">5.7</span>리뷰와 판매의 선후 관계 검정</h3>
+    <h3 class="sub-head" id="r59"><span class="n">5.9</span>리뷰와 판매의 선후 관계 검정</h3>
     <div class="hstep">
       <span class="lab">검증 질문</span>
       <p class="prose">
@@ -934,7 +1151,7 @@
 
     <div class="fig">
       <div class="fig-head">
-        <div class="fig-title">그림 10. 리뷰와 판매 간 교차지연 선후 관계</div>
+        <div class="fig-title">그림 12. 리뷰와 판매 간 교차지연 선후 관계</div>
         <div class="fig-sub">시차를 바꿔가며 양방향 경로의 신호 강도를 비교</div>
       </div>
       <div class="ctl-bar">
@@ -959,7 +1176,7 @@
         </tbody>
       </table>
     </div>
-    <p class="tbl-cap">표 10. 시차(Lag) 확장에 따른 양방향 인과 관계 검정 결과</p>
+    <p class="tbl-cap">표 13. 시차(Lag) 확장에 따른 양방향 인과 관계 검정 결과</p>
 
     <p class="prose" style="margin-top:16px">
       1일 및 3일 시차 분석에서 전일 리뷰 증가가 당일 순위 상승을 예측하는 신호는 전혀 검출되지 않았다. 7일 시차에서는
@@ -986,7 +1203,137 @@
     </div>
 
     <!-- 5.8 -->
-    <h3 class="sub-head" id="r58"><span class="n">5.8</span>대가성 리뷰의 영향 검증</h3>
+    <!-- 5.10 -->
+    <h3 class="sub-head" id="r510"><span class="n">5.10</span>리뷰 평점의 구성 — 긍정·부정 비중</h3>
+    <div class="hstep">
+      <span class="lab">검증 질문</span>
+      <p class="prose">
+        5.2절은 <b>평균 별점</b>이 순위를 설명하지 못한다는 결론을 냈다. 그러나 평균 하나로 뭉뚱그리면
+        &lsquo;5점이 압도적인 상품&rsquo;과 &lsquo;4점과 2점이 섞인 상품&rsquo;이 같은 값으로 보인다. 본 절은 평점을
+        평균이 아닌 <b class="wine">분포로 다시 세어, 긍정 리뷰가 몇 %인지·부정 리뷰가 몇 %인지로 재구성해도
+        순위 설명력이 생기지 않는지 검증</b>하고, 그 비중이 카테고리와 브랜드에 따라 어떻게 갈리는지 기술한다.
+      </p>
+    </div>
+    <div class="hstep">
+      <span class="lab m">분석 방법</span>
+      <p class="prose">
+        <span class="method-name">평점 분포 재집계 및 두 표본 교차확인.</span>
+        <b>긍정 = 4점 이상</b>, <b>부정 = 2점 이하</b>로 정의하고 3점은 따로 집계했다. 3점은 실질적으로 부정에
+        가깝지만 비중이 작아 결과를 바꾸지 않으므로 별도 항목으로 남겼다. 리뷰 본문의 길이는 평가가 아니라
+        형식이므로 지표에서 제외했다. 표본은 두 갈래를 함께 쓴다 — <b>(A)</b> 작성일이 있어 기간을 자를 수 있는
+        수집 리뷰 본문, <b>(B)</b> 기간은 못 자르지만 상품의 전체 리뷰를 대표하는 랭킹 CSV의 별점 5~1 비율.
+        두 표본이 같은 값을 주는지 먼저 확인한 뒤 나머지 분석을 진행했다.
+      </p>
+    </div>
+    <div class="callout">
+      <span class="c-tag">분석 기간과 상품 필터</span>
+      수집 리뷰 69,621건의 작성일은 2017년까지 꼬리를 물지만, 실제로는 <b>최근 3개월(2026-06-01 ~ 08-29)에
+      87.6%인 60,964건이 몰려</b> 있다. 이 3개월을 분석 창으로 삼았다. 또한 사이트 표시 평점이 3.0 이하인
+      상품 519개를 제외했는데, <b>그중 508개는 리뷰가 0건이라 평점이 0으로 표기된 신상품</b>이고 실제로 낮은
+      평점을 받은 상품은 11개(리뷰 합계 16건)뿐이다. 제외 전후 긍정 비중은 95.70% → 95.73%로 사실상 동일하다.
+    </div>
+    <div class="hstep">
+      <span class="lab r">분석 결과 및 가설 대조</span>
+      <p class="prose">
+        표본 (A)의 긍정 비중은 <b>95.73%</b>, 표본 (B)의 리뷰수 가중 긍정 비중은 <b>95.68%</b>로 사실상 일치한다.
+        <b class="wine">도움순 상위로 치우친 (A) 표본의 편향이 긍정 비중에는 거의 영향을 주지 않는다</b>는 뜻이며,
+        기간을 자른 값을 그대로 신뢰할 근거가 된다. 그리고 예상대로 <b>긍정 비중도 부정 비중도 순위를 설명하지
+        못했다</b> — 평점을 어떻게 재구성해도 결론은 바뀌지 않는다.
+      </p>
+    </div>
+
+    <div class="tbl-scroll">
+      <table class="data">
+        <thead><tr><th>지표</th><th class="num">수집 리뷰 본문 (A)</th><th class="num">사이트 전체 리뷰 (B)</th><th>비고</th></tr></thead>
+        <tbody>
+          <tr class="hl"><td>긍정 (4점 이상)</td><td class="num">95.73%</td><td class="num">95.68%</td><td class="wrap-cell">두 표본이 0.05%p 차이로 일치</td></tr>
+          <tr><td>3점</td><td class="num">2.45%</td><td class="num">3.24%</td><td class="wrap-cell">실질 부정에 가깝지만 비중이 작다</td></tr>
+          <tr><td>부정 (2점 이하)</td><td class="num">1.82%</td><td class="num">0.98%</td><td class="wrap-cell">도움순 표본에서 다소 과대 표집</td></tr>
+          <tr><td>평균 별점</td><td class="num">4.807점</td><td class="num">—</td><td class="wrap-cell">3개월 창 · 상품 평점 3.0 이하 제외 후</td></tr>
+          <tr><td>표본 규모</td><td class="num">60,427건</td><td class="num">3,534개 상품</td><td class="wrap-cell">(A) 3개월 창 · (B) 리뷰 100건 이상 상품</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="tbl-cap">표 14. 두 표본으로 교차확인한 리뷰 평점 구성 (2026-06-01 ~ 08-29)</p>
+
+    <p class="prose" style="margin-top:20px">
+      상품 단위로 내려가면 긍정 비중의 중앙값은 96%, 하위 10%도 91%다. <b>긍정 비중이 90%에 못 미치는 상품은
+      6.0%, 80%에 못 미치는 상품은 0.3%</b>에 불과하다. 다만 평균 별점의 표준편차가 0.113점에 그치는 데 비해
+      긍정 비중의 표준편차는 3.19%p로, <b class="wine">같은 정보를 비중으로 바꾸면 상품 간 차이가 훨씬 넓게
+      펼쳐진다</b>. 천장 효과가 완전히 사라지지는 않지만, 평균보다는 식별력이 있는 지표다.
+    </p>
+
+    <div class="fig">
+      <div class="fig-head">
+        <div class="fig-title">그림 13. 카테고리별 비(非)긍정 리뷰 비중</div>
+        <div class="fig-sub">리뷰 100건 이상 상품 3,534개 · 상품 20개 이상 카테고리 20개</div>
+      </div>
+      <div class="legend" id="lgRevCat"></div>
+      <div class="chart-box chart-scroll" id="chRevCat"></div>
+      <div class="fig-note">
+        긍정 비중은 <b>취미/팬시 89.5%</b>에서 <b>위생용품 96.2%</b>까지 6.7%p 범위로 갈린다. 부정 비중이 높은
+        쪽은 취미/팬시(4.58%) · 패션(2.90%) · 네일(2.67%)로, 모두 <b>사진과 실물의 차이가 크고 기대가 갈리는
+        품목</b>이다. 반대로 위생용품 · 건강식품 · 맨즈에딧처럼 <b>기능이 규격화된 소모품</b>은 부정이 1%를 밑돈다.
+      </div>
+    </div>
+
+    <div class="fig">
+      <div class="fig-head">
+        <div class="fig-title">그림 14. 브랜드별 긍정 비중과 브랜드 내 산포</div>
+        <div class="fig-sub">상품 5개 이상 브랜드 213개 · 원 크기 = 브랜드가 보유한 상품 수</div>
+      </div>
+      <div class="chart-box chart-scroll" id="chRevBrand"></div>
+      <div class="fig-note">
+        브랜드 평균 긍정 비중이 높을수록 그 브랜드 <b>상품 간 편차도 함께 줄어든다</b>(ρ = −0.66, p &lt; 0.001).
+        평이 좋은 브랜드는 &lsquo;대표 상품 하나가 잘 받은&rsquo; 것이 아니라 <b class="wine">라인업 전체가 고르게
+        고평가</b>돼 있고, 평이 낮은 브랜드는 상품마다 반응이 들쭉날쭉하다.
+      </div>
+    </div>
+
+    <div class="hstep">
+      <span class="lab">브랜드가 설명하는 몫</span>
+      <p class="prose">
+        긍정 비중의 총분산 가운데 <b>브랜드 간 차이가 설명하는 몫은 32.5%</b>이고, 나머지 67.5%는 같은 브랜드
+        안 상품 간 차이다. 브랜드 평균은 88.6%(라이브오랄스)에서 98.3%(옵티프리)까지 벌어지는데,
+        <b>상위권은 정관장 · 시루콧토 · 오쏘몰 · 좋은느낌 · 크리넥스처럼 기능이 규격화된 생활·건강 브랜드</b>이고
+        하위권은 색조·스킨케어 신생 브랜드에 몰려 있다. <b class="wine">가격대는 긍정 비중을 전혀 가르지 못한다</b>
+        (ρ = +0.06, p = 0.40) — 비싸다고 평이 좋아지지 않는다.
+      </p>
+    </div>
+
+    <div class="tbl-scroll">
+      <table class="data">
+        <thead><tr><th>모형 (종속변수 = ln 순위)</th><th class="num">계수</th><th class="num">신호 강도 |t|</th><th class="num">within R²</th><th>판정</th></tr></thead>
+        <tbody>
+          <tr><td>긍정 비중 단독</td><td class="num">−0.013</td><td class="num">0.75</td><td class="num">0.0002</td><td class="wrap-cell">설명력 없음</td></tr>
+          <tr><td>부정 비중 단독</td><td class="num">+0.027</td><td class="num">1.46</td><td class="num">0.0008</td><td class="wrap-cell">설명력 없음</td></tr>
+          <tr><td>평균 별점 단독</td><td class="num">−0.031</td><td class="num">1.82</td><td class="num">0.0011</td><td class="wrap-cell">설명력 없음 (5.2절 재확인)</td></tr>
+          <tr><td>긍정 비중 + 리뷰 재고 + 증가 속도</td><td class="num">+0.020</td><td class="num">1.19</td><td class="num">0.1595</td><td class="wrap-cell">설명력의 전부가 증가 속도에서 나온다</td></tr>
+          <tr class="hl"><td>└ 같은 모형의 리뷰 증가 속도</td><td class="num">−0.389</td><td class="num">18.01</td><td class="num">—</td><td class="wrap-cell">유일하게 유의 (p &lt; 0.001)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="tbl-cap">표 15. 재구성한 평점 지표의 순위 설명력 (카테고리×일 고정효과 · 상품 클러스터 보정)</p>
+
+    <div class="hstep">
+      <span class="lab">시사점</span>
+      <p class="prose">
+        평점을 평균에서 <b>긍정·부정 비중으로 바꿔도 순위 설명력은 생기지 않는다</b>. 리뷰 평점은 랭킹을 움직이는
+        레버가 아니라 <b class="wine">품질 관리용 계기판</b>으로 보는 편이 옳다. 다만 계기판으로서는 평균보다
+        비중이 낫다 — 평균 4.78과 4.82의 차이는 읽히지 않지만, 부정 비중 0.9%와 2.9%의 차이는 바로 읽힌다.
+        카테고리 벤치마크(예: 색조는 부정 2% 안쪽, 위생용품은 1% 안쪽)를 기준선으로 두고 이탈 상품을 잡아내는
+        용도가 현실적이다.
+      </p>
+    </div>
+    <div class="callout warn">
+      <span class="c-tag">산포 해석의 유의점</span>
+      긍정 비중이 100%에 가까울수록 상품 간 편차가 줄어드는 것은 <b>상한이 있는 지표의 구조적 제약</b>이기도
+      하다. 따라서 그림 14의 음의 상관을 온전히 &lsquo;브랜드 품질 일관성&rsquo;으로만 읽어서는 안 되며,
+      &lsquo;평이 낮은 브랜드일수록 상품별 편차가 크다&rsquo;는 방향으로 읽는 것이 안전하다.
+    </div>
+
+    <!-- 5.11 -->
+    <h3 class="sub-head" id="r511"><span class="n">5.11</span>대가성 리뷰의 영향 검증</h3>
     <div class="hstep">
       <span class="lab">검증 질문</span>
       <p class="prose">
@@ -1024,7 +1371,7 @@
         </tbody>
       </table>
     </div>
-    <p class="tbl-cap">표 11. 대가성 리뷰 판정 규칙 체계 및 추출 건수 (총 551건 · 전체 리뷰의 0.82%)</p>
+    <p class="tbl-cap">표 16. 대가성 리뷰 판정 규칙 체계 및 추출 건수 (총 551건 · 전체 리뷰의 0.82%)</p>
 
     <p class="prose" style="margin-top:16px">
       탐지 규칙 정련 과정에서 오탐을 방지하기 위한 배제 기준이 중요하게 작용했다. 예컨대 "광고"라는 단어는 410건
@@ -1057,7 +1404,7 @@
     </div>
 
     <!-- 5.9 -->
-    <h3 class="sub-head" id="r59"><span class="n">5.9</span>리뷰 본문의 내용 구성</h3>
+    <h3 class="sub-head" id="r512"><span class="n">5.12</span>리뷰 본문의 내용 구성</h3>
     <div class="callout">
       <span class="c-tag">이 절의 성격</span>
       본 절은 가설 검증 절이 아니다. 앞선 분석에서 리뷰는 <b>얼마나 빠르게 쌓이는가</b>만이 순위와 연결되는
@@ -1078,7 +1425,7 @@
 
     <div class="fig">
       <div class="fig-head">
-        <div class="fig-title">그림 11. 리뷰 본문에 나타난 소비자 어휘</div>
+        <div class="fig-title">그림 15. 리뷰 본문에 나타난 소비자 어휘</div>
         <div class="fig-sub">문서빈도 상위 48개 어휘 · 리뷰 68,996건</div>
       </div>
       <div class="chart-box chart-scroll" id="chCloud"></div>
@@ -1097,7 +1444,7 @@
 
     <div class="fig">
       <div class="fig-head">
-        <div class="fig-title">그림 12. 카테고리별 소구 속성 언급률</div>
+        <div class="fig-title">그림 16. 카테고리별 소구 속성 언급률</div>
         <div class="fig-sub">리뷰 800건 이상 20개 카테고리 × 10개 속성</div>
       </div>
       <div class="chart-box chart-scroll"><div id="chAttr"></div></div>
@@ -1130,7 +1477,7 @@
         </tbody>
       </table>
     </div>
-    <p class="tbl-cap">표 12. 리뷰 본문 표본의 구조적 특성 (68,996건)</p>
+    <p class="tbl-cap">표 17. 리뷰 본문 표본의 구조적 특성 (68,996건)</p>
 
     <div class="hstep">
       <span class="lab">정리</span>
@@ -1150,7 +1497,7 @@
     </div>
 
     <!-- 5.10 -->
-    <h3 class="sub-head" id="r510"><span class="n">5.10</span>썸네일 시각 요소와 순위의 관계</h3>
+    <h3 class="sub-head" id="r513"><span class="n">5.13</span>썸네일 시각 요소와 순위의 관계</h3>
     <div class="hstep">
       <span class="lab">검증 질문</span>
       <p class="prose">
@@ -1182,7 +1529,7 @@
 
     <div class="fig">
       <div class="fig-head">
-        <div class="fig-title">그림 13. 썸네일 시각 특성별 신호 강도</div>
+        <div class="fig-title">그림 17. 썸네일 시각 특성별 신호 강도</div>
         <div class="fig-sub">외생 판매 요인 통제 전후 대조</div>
       </div>
       <div class="legend" id="lgThumb"></div>
@@ -1223,11 +1570,11 @@
         </div>
       </div>
     </div>
-    <p class="tbl-cap">그림 14. 구성 복잡도 고/저 썸네일 시각 비교</p>
+    <p class="tbl-cap">그림 18. 구성 복잡도 고/저 썸네일 시각 비교</p>
 
     <div class="fig">
       <div class="fig-head">
-        <div class="fig-title">표 13. 썸네일 마케팅 속성의 분포 및 순위 관계</div>
+        <div class="fig-title">표 18. 썸네일 마케팅 속성의 분포 및 순위 관계</div>
         <div class="fig-sub">160장 수기 분류 표본</div>
       </div>
       <div class="chart-box chart-scroll" id="chThumbAttr"></div>
@@ -1240,7 +1587,7 @@
 
     <div class="fig">
       <div class="fig-head">
-        <div class="fig-title">그림 15. 마케팅 소구 속성별 대표 썸네일 사례</div>
+        <div class="fig-title">그림 19. 마케팅 소구 속성별 대표 썸네일 사례</div>
         <div class="fig-sub">유형별 10장 표본 추출</div>
       </div>
       <div class="fig-img plain">
@@ -1289,7 +1636,7 @@
         </tbody>
       </table>
     </div>
-    <p class="tbl-cap">표 14. 핵심 연구 가설별 실증 검증 결과 요약</p>
+    <p class="tbl-cap">표 19. 핵심 연구 가설별 실증 검증 결과 요약</p>
 
     <p class="prose" style="margin-top:20px">가설 검증 과정에서 실측 데이터를 통해 규명된 올리브영 판매 랭킹의 구조적 특성은 다음과 같다.</p>
     <ol class="numbered">
@@ -1305,6 +1652,17 @@
         57%를 과점하고 있었다.</li>
       <li><b>상승 요인과 잔류 요인의 분리.</b> 누적 리뷰 총량은 순위 상승에는 직접 기여하지 못했으나 익일 100위 내
         잔류 확률을 유의미하게 높이는 안전장치로 기능했다.</li>
+      <li><b>할인 반응은 네 갈래로 갈린다.</b> 할인율–판매 반응 곡선의 형태를 군집화하면 가속형 · 데스밸리형 ·
+        무반응/역행형 · 소액반응형 네 유형이 나온다. 유형을 가르는 것은 가격대(중앙값 16,900~23,700원으로 차이
+        없음)나 썸네일 색채가 아니라 <b>이미 쌓인 리뷰 규모</b>였다 — 무반응/역행형의 리뷰수 중앙값은 3,224건으로
+        나머지 유형의 2.1~2.5배다.</li>
+      <li><b>프로모션 증분 효과는 관행적 추정치의 5분의 1.</b> 프로모션은 판매가 꺼진 직후(직전 관측 −27.1%)에
+        붙는다. 사전 대비 비교는 그 자연 반등까지 성과로 계상해 +9.5%를 내놓지만, 통제군으로 학습한 반사실
+        모형으로 교정하면 실제 증분은 <b>+1.9%</b>에 그친다. 남는 효과는 쿠폰(+2.5%)과 증정(+2.0%)에 집중되고,
+        세일은 반사실을 통제해도 (−)다.</li>
+      <li><b>평점은 평균이든 비중이든 순위를 설명하지 못한다.</b> 최근 3개월 리뷰의 긍정(4점 이상) 비중은 95.7%,
+        부정(2점 이하)은 1.8%다. 평균 별점을 긍정·부정 비중으로 재구성해도 순위 설명력은 within R² 0.001 미만으로
+        생기지 않았다. 다만 비중은 평균보다 상품 간 차이를 넓게 드러내 <b>품질 관리 지표로는 평균보다 낫다</b>.</li>
       <li><b>썸네일은 색이 아니라 정보량.</b> 상위권 썸네일의 공통점은 감성적 색상이나 밝기가 아닌, 화면 전면에
         다층적으로 배치된 텍스트·배지 중심의 실질 정보량(구성 복잡도)에 있었다.</li>
     </ol>
@@ -1330,7 +1688,8 @@
         <h3>단기 부양은 '세일'이 아닌 '쿠폰·증정'으로</h3>
         <p>세일 배지는 순위 하락 이후에 방어적으로 부착되는 경향이 뚜렷하여 부양 수단으로 기능하기 어렵다. 다만 쿠폰
           배지의 상승 효과는 <b>부착 당일에 집중되고 이후 빠르게 감쇄</b>하므로, 특정 시점의 단기 집중 노출이
-          필요한 경우에 한정하여 전략적으로 집행해야 한다.</p>
+          필요한 경우에 한정하여 전략적으로 집행해야 한다. 반사실 모형으로 자연 반등을 걷어낸 뒤에도 (+)로 남는
+          수단은 <b>쿠폰(+2.5%)과 증정(+2.0%)뿐</b>이다.</p>
       </div>
       <div class="card rec">
         <div class="r-no">ACTION 04</div>
@@ -1352,7 +1711,17 @@
         <h3>성과 측정 시 사전 추세 통제</h3>
         <p>프로모션 배지 부착과 썸네일 교체는 무작위로 집행되지 않고 상품의 판매 상태에 따라 기획 투입된다. 사후
           성과를 측정할 때는 집행 이전의 <b>사전 추세(Pre-trend)</b>를 반드시 확인하고 통제해야 한다. 이를 간과할
-          경우 세일 배지 분석에서 나타난 것처럼 마케팅 수단의 기여도를 정반대로 해석하는 오류를 범하게 된다.</p>
+          경우 세일 배지 분석에서 나타난 것처럼 마케팅 수단의 기여도를 정반대로 해석하는 오류를 범하게 된다.
+          최소 교정은 같은 카테고리의 비집행 상품을 대조군으로 두는 것이며(+9.5% → +8.6%), 개체별 반등까지
+          걷어내려면 <b>비집행 구간으로 학습한 반사실 예측 모형</b>이 필요하다(→ +1.9%).</p>
+      </div>
+      <div class="card rec">
+        <div class="r-no">ACTION 07</div>
+        <h3>할인율은 반응 유형별로 배분한다</h3>
+        <p>할인율을 전 상품에 균일하게 얹는 편성은 낭비를 만든다. <b>가속형</b>은 할인율을 키울수록 수량과 금액이
+          함께 늘어 투입 대비 회수가 가장 확실하고, <b>데스밸리형</b>은 10~20%가 가장 비효율적이므로 어중간한
+          상시 할인 대신 <b>20%를 넘기는 집중 편성</b>이 낫다. 리뷰가 이미 3,000건 이상 쌓인 <b>무반응·역행형</b>은
+          할인이 아니라 쿠폰으로만 반응하므로 할인 예산을 빼는 편이 합리적이다.</p>
       </div>
     </div>
 
