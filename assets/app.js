@@ -176,6 +176,10 @@
   ];
 
   /* 그림 3. 설명력 분해 (within R², %) */
+  /* --- 대형 세일(올영세일) 구간: 8/30 개시 --- */
+  const saleSeries = [["08-18",19.2,34.6],["08-19",19.0,32.6],["08-20",18.9,33.2],["08-21",18.7,32.2],["08-22",18.2,29.9],["08-24",17.9,29.9],["08-25",18.5,28.0],["08-26",18.4,27.9],["08-27",18.3,30.0],["08-28",17.4,26.8],["08-29",16.7,23.8],["08-30",27.0,90.6],["08-31",26.9,90.4],["09-01",26.7,89.4]];
+  const saleStart = "08-30";
+
   const variance = [
     ["리뷰 총량만", 5.8, "n"],
     ["리뷰 증가 속도만", 14.5, "s1"],
@@ -1243,6 +1247,55 @@
     addEventListener("keydown", (e) => { if (e.key === "Escape") hide(); });
   }
 
+  /* --- 그림 20. 대형 세일 구간의 프로모션 구조 전환 --- */
+  function drawSale() {
+    const col = C(), W = 980, H = 300;
+    const svg = makeSvg("chSale", W, H);
+    if (!svg) return;
+    const L = 54, R = 150, T = 22, B = 48;
+    const x0 = L, x1 = W - R, y0 = T, y1 = H - B;
+    const n = saleSeries.length;
+    const xS = (i) => x0 + (i / (n - 1)) * (x1 - x0);
+    const yS = (v) => y1 - (v / 100) * (y1 - y0);
+
+    [0, 25, 50, 75, 100].forEach((v) => {
+      const y = yS(v);
+      el("line", { x1: x0, y1: y, x2: x1, y2: y, stroke: v === 0 ? col.axis : col.grid, "stroke-width": v === 0 ? 1.5 : 1 }, svg);
+      txt(svg, x0 - 9, y + 4, `${v}%`, { "text-anchor": "end", "font-size": 11, fill: col.muted });
+    });
+
+    const si = saleSeries.findIndex((d) => d[0] === saleStart);
+    el("rect", { x: xS(si) - 3, y: y0, width: x1 - xS(si) + 3, height: y1 - y0, fill: col.s2, opacity: 0.07 }, svg);
+    el("line", { x1: xS(si), y1: y0, x2: xS(si), y2: y1, stroke: col.s2, "stroke-width": 1.6, "stroke-dasharray": "5 4" }, svg);
+    txt(svg, xS(si) + 7, y0 + 13, "세일 개시", { "font-size": 11.5, fill: col.s2, "font-weight": 750 });
+
+    saleSeries.forEach((d, i) => {
+      if (i % 2 === 0 || i === n - 1 || i === si) {
+        const on = i === si;
+        txt(svg, xS(i), y1 + 18, d[0], {
+          "text-anchor": "middle", "font-size": 10.5,
+          fill: on ? col.s2 : col.muted, "font-weight": on ? 750 : 400,
+        });
+      }
+    });
+
+    [[2, col.s1, "쿠폰 부착률"], [1, col.s3, "평균 할인율"]].forEach(([idx, color, label]) => {
+      const path = saleSeries.map((d, i) => `${i === 0 ? "M" : "L"}${xS(i)},${yS(d[idx])}`).join(" ");
+      el("path", { d: path, fill: "none", stroke: color, "stroke-width": 2.4, "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+      saleSeries.forEach((d, i) => {
+        const c = el("circle", { cx: xS(i), cy: yS(d[idx]), r: 4.2, fill: color, stroke: col.surface, "stroke-width": 2 }, svg);
+        hover(c, `${d[0]} · ${label}`, [[label, `${d[idx].toFixed(1)}%`, color],
+          ["구간", i >= si ? "세일" : "세일 전"]]);
+      });
+      const last = saleSeries[n - 1][idx];
+      txt(svg, x1 + 12, yS(last) + 4, label, { "font-size": 12, fill: color, "font-weight": 750 });
+    });
+
+    txt(svg, (x0 + x1) / 2, H - 8, "카테고리 랭킹 전 상품 평균 · 하루 만에 할인율과 쿠폰 부착률이 동시에 계단식으로 이동한다", {
+      "text-anchor": "middle", "font-size": 11.5, fill: col.muted,
+    });
+  }
+
   function drawAll() {
     drawChurn();
     drawCohort();
@@ -1261,12 +1314,14 @@
     drawCfPath();
     drawRevCat();
     drawRevBrand();
+    drawSale();
 
     const col = C();
     legend("lgEvent", [["쿠폰 부착 (937건)", col.s1, "line"], ["세일 부착 (148건)", col.s3, "line"]]);
     legend("lgThumb", [["판매 요인 통제 전", col.neutral], ["판매 요인 통제 후", col.s1]]);
     legend("lgVariance", [["리뷰 총량", col.neutral], ["리뷰 증가 속도 포함", col.s1]]);
     legend("lgElasticity", [["리뷰 증가 속도 (판매량 대리)", col.s1], ["실제 판매가격", col.s2]]);
+    legend("lgSale", [["쿠폰 부착률", col.s1, "line"], ["평균 할인율", col.s3, "line"]]);
     legend("lgPromo", [["순위 개선", col.s1], ["순위 악화", col.s3]]);
     legend("lgDiscCurve", discTypes.map(([n, k]) => [n, col[k], "line"]));
     legend("lgCfPath", cfStyles.map(([n, k]) => [n, col[k], "line"]));

@@ -42,7 +42,7 @@
     </div>
 
     <div class="dl-row">
-      <a class="dlbtn" href="./report_v6.docx" download>
+      <a class="dlbtn" href="./report_v7.docx" download="올리브영_랭킹_분석_보고서.docx">
         <span class="ico" aria-hidden="true">⤓</span>결과보고서 원문 내려받기 (DOCX)
       </a>
       
@@ -99,6 +99,7 @@
           <a href="#r511"><span class="sn">5.11</span>대가성 리뷰의 영향 검증</a>
           <a href="#r512"><span class="sn">5.12</span>리뷰 본문의 내용 구성</a>
           <a href="#r513"><span class="sn">5.13</span>썸네일 시각 요소와 순위의 관계</a>
+          <a href="#r514"><span class="sn">5.14</span>대형 세일 구간의 랭킹 구조 변화</a>
         </div>
         <a href="#conclusion"><span class="no">06</span>결론 및 제언<span class="desc">결과 요약 · 실무 제언 · 한계</span></a>
       </div>
@@ -1582,6 +1583,103 @@
         색채 요소는 기각되고 정보 배치 수준을 나타내는 '구성 복잡도'에 한하여 부분 지지된다.
       </p>
     </div>
+
+    <!-- 5.14 -->
+    <h3 class="sub-head" id="r514"><span class="n">5.14</span>대형 세일 구간의 랭킹 구조 변화</h3>
+    <div class="hstep">
+      <span class="lab">검증 질문</span>
+      <p class="prose">
+        올리브영은 약 3개월 주기로 전사 대형 세일을 진행한다. 수집 기간 말미인 <b>2026년 8월 30일</b>에 해당
+        세일이 개시되었다. 이 구간을 통해 <b class="wine">전사 프로모션이 랭킹의 결정 구조 자체를 바꾸는지</b>, 아니면 순위만
+        일시적으로 뒤섞고 결정 요인은 그대로인지 검증한다.
+      </p>
+    </div>
+    <div class="hstep">
+      <span class="lab m">분석 방법</span>
+      <p class="prose">
+        <span class="method-name">구간 분할 회귀(Split-sample Regression).</span>
+        일별 평균 할인율이 전일 대비 5%p 이상 상승한 날을 세일 개시일로 자동 탐지해 8월 30일을 식별했다.
+        세일은 같은 날 거의 모든 상품에 동시 적용되므로 <span data-gl="fe">카테고리×일 고정효과</span>에 그대로 흡수되어
+        효과가 소거된다. 따라서 세일 여부를 변수로 넣는 대신, <b>세일 전(8/5~8/29)과 세일 중(8/30~9/1) 구간에 동일한
+        회귀를 각각 적용</b>해 계수 자체가 어떻게 달라지는지 대조했다.
+      </p>
+    </div>
+    <div class="hstep">
+      <span class="lab r">분석 결과 및 가설 대조</span>
+      <p class="prose">
+        세일 개시와 함께 평균 할인율은 18.8%에서 26.9%로, 쿠폰 부착률은 34%에서 90%로 하루 만에 계단식으로
+        이동했다. 주목할 결과는 계수의 변화다. <b class="wine">세일 전까지 미미하게나마 순위와 연동되던 할인율은 세일 구간에서
+        신호가 완전히 소멸(|t| 0.92 → 0.01)</b>했다. 거의 모든 상품이 동시에 할인에 들어가면 할인율은 더 이상 상품
+        간 순위를 가르는 변별 요인으로 기능하지 못한다. 반면 <b>리뷰 증가 속도의 설명력은 오히려 강화</b>되었다.
+      </p>
+    </div>
+
+    <div class="fig">
+      <div class="fig-head">
+        <div class="fig-title">그림 20. 세일 개시 전후의 프로모션 구조 전환</div>
+        <div class="fig-sub">카테고리 랭킹 전 상품 평균 · 두 지표 모두 백분율</div>
+      </div>
+      <div class="legend" id="lgSale"></div>
+      <div class="chart-box chart-scroll" id="chSale"></div>
+      <div class="fig-note">
+        점진적 변화가 아니라 <b>하루 만의 계단식 이동</b>이다. 세일 전까지 완만히 하락하던 두 지표가 8월 30일을 기점으로
+        동시에 도약한다.
+      </div>
+    </div>
+
+    <div class="tbl-scroll">
+      <table class="data">
+        <thead><tr><th>지표</th><th class="num">세일 전</th><th class="num">세일 중</th><th class="num">변화</th><th>해석</th></tr></thead>
+        <tbody>
+          <tr><td>평균 할인율</td><td class="num">18.8%</td><td class="num">26.9%</td><td class="num">+8.0%p</td><td class="wrap-cell">전 카테고리 동시 할인 확대</td></tr>
+          <tr class="hl"><td>쿠폰 부착률</td><td class="num">34%</td><td class="num">90%</td><td class="num">+56%p</td><td class="wrap-cell">사실상 전 상품 적용 — 변별력 상실</td></tr>
+          <tr><td>세일 배지</td><td class="num">0.70</td><td class="num">0.85</td><td class="num">+0.15</td><td class="wrap-cell">부착 범위 확대</td></tr>
+          <tr><td>증정 배지</td><td class="num">0.21</td><td class="num">0.00</td><td class="num">−0.21</td><td class="wrap-cell">배지 자체가 노출면에서 소멸 (아래 경고 참조)</td></tr>
+          <tr><td>리뷰 증가 속도 (중위)</td><td class="num">7.0건/일</td><td class="num">13.0건/일</td><td class="num">1.86배</td><td class="wrap-cell">판매 증가에 따른 리뷰 동반 급증</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="tbl-cap">표 18. 세일 전후 프로모션·리뷰 지표 비교 (세일 전 8/5~8/29, 세일 중 8/30~9/1)</p>
+
+    <p class="prose">
+      랭킹 지형은 세일 첫날 한 차례 크게 뒤집힌 뒤 곧바로 고착되는 특이한 궤적을 보였다. 개시일인 8월 30일에는
+      TOP100 신규 진입이 <b>61개</b>로 평시(37개)의 1.6배까지 치솟고 전일 대비 순위 상관은 0.42로 급락했다.
+      그런데 <b class="wine">바로 다음 날에는 신규 진입이 6개에 그치고 순위 상관이 0.967까지 올라, 재편된 판이 그대로 굳었다</b>.
+      3일차인 9월 1일에는 다시 32개가 교체되었는데, 급상승 상품 대부분이 그날 지정된 '하루특가' 품목이었다.
+    </p>
+
+    <div class="tbl-scroll">
+      <table class="data">
+        <thead><tr><th>변수</th><th class="num">세일 전 계수</th><th class="num">세일 전 |t|</th><th class="num">세일 중 계수</th><th class="num">세일 중 |t|</th><th>변화 해석</th></tr></thead>
+        <tbody>
+          <tr><td>리뷰 증가 속도</td><td class="num">−10.97</td><td class="num">26.3</td><td class="num">−14.24</td><td class="num">23.9</td><td class="wrap-cell">설명력 강화 — 세일 중에도 가장 강한 요인</td></tr>
+          <tr><td>실제 판매가격</td><td class="num">−4.49</td><td class="num">10.8</td><td class="num">−7.26</td><td class="num">12.9</td><td class="wrap-cell">고가 상품의 상위 집중 심화</td></tr>
+          <tr class="hl"><td>할인율</td><td class="num">−0.37</td><td class="num">0.92</td><td class="num">+0.01</td><td class="num">0.01</td><td class="wrap-cell">신호 완전 소멸 — 모두가 할인하면 변별력이 없다</td></tr>
+          <tr><td>쿠폰 배지</td><td class="num">−3.47</td><td class="num">10.5</td><td class="num">−2.00</td><td class="num">3.9</td><td class="wrap-cell">부착률 90% 도달로 효과 희석</td></tr>
+          <tr><td>리뷰 총량</td><td class="num">−1.95</td><td class="num">4.0</td><td class="num">−1.49</td><td class="num">2.3</td><td class="wrap-cell">두 구간 모두 기여도 미미</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="tbl-cap">표 19. 구간별 동일 회귀 계수 비교 (카테고리×일 고정효과 · 상품 클러스터 보정 · 표준화 계수, 세일 전 N=38,054 / 세일 중 N=5,338)</p>
+
+    <div class="hstep">
+      <span class="lab">시사점</span>
+      <p class="prose">
+        대형 세일은 <b class="wine">랭킹의 결정 구조를 바꾸는 것이 아니라, 할인이라는 변수를 상수로 만들어 무력화한다</b>.
+        전 상품이 동시에 할인에 들어가는 순간 상시 할인율은 순위 경쟁에서 의미를 잃고, 순위를 가르는 것은
+        <b>'하루특가'처럼 특정 시점에 집중 배정되는 단기 딜</b>과 그로 인한 판매·리뷰 유입 속도로 좁혀진다.
+        세일 기간 판촉 예산은 전 기간에 균등히 펴 바르는 방식보다, 하루 단위로 집중하는 편이 순위 관점에서 유리하다.
+      </p>
+    </div>
+
+    <div class="callout warn">
+      <span class="c-tag">이 절의 결과는 잠정이다</span>
+      세일 구간 관측치가 <b>3일(8/30~9/1)</b>에 그치고 <b>세일 종료 후 반등 국면을 관측하지 못했다</b>. 따라서 위 계수 변화가
+      세일의 구조적 효과인지 개시 직후의 일시적 충격인지 아직 분리되지 않는다. 또한 <b>증정 배지는 8월 29일부터 노출면에서
+      완전히 사라져</b>(전 상품 0) 세일 구간에서는 관측 자체가 불가능하다. 배지 표기 영역을 쿠폰이 대체한 것으로 보이나
+      수집 시점에서 확인할 수 없어, 이 구간의 증정 변수는 분석에서 제외했다.
+    </div>
+
   </div>
 </section>
 
@@ -1606,7 +1704,7 @@
         </tbody>
       </table>
     </div>
-    <p class="tbl-cap">표 19. 핵심 연구 가설별 실증 검증 결과 요약</p>
+    <p class="tbl-cap">표 20. 핵심 연구 가설별 실증 검증 결과 요약</p>
 
     <p class="prose" style="margin-top:20px">가설 검증 과정에서 실측 데이터를 통해 규명된 올리브영 판매 랭킹의 구조적 특성은 다음과 같다.</p>
     <ol class="numbered">
@@ -1618,6 +1716,7 @@
         형성되지 않았다.</li>
       <li><b>프로모션의 방향성 분화.</b> 할인율·쿠폰·증정 배지는 즉각적인 순위 상승을 견인했으나, 세일 배지는
         부진 상품에 방어 목적으로 사후 투입되는 역인과성을 보였다.</li>
+      <li><b>대형 세일은 할인율을 상수로 만든다.</b> 8월 30일 개시된 전사 세일 구간에서 쿠폰 부착률이 90%에 도달하자 할인율의 순위 변별 신호가 완전히 소멸(|t| 0.92 → 0.01)했다. 세일 기간에는 상시 할인이 아니라 '하루특가'와 같은 단기 집중 딜이 순위를 가른다 〔잠정〕.</li>
       <li><b>브랜드 자산의 지배력.</b> 관측일의 80% 이상 상위권에 노출된 27개 핵심 브랜드가 전체 TOP 100 슬롯의 44%를 과점하고 있었다.</li>
       <li><b>상승 요인과 잔류 요인의 분리.</b> 누적 리뷰 총량은 순위 상승에는 직접 기여하지 못했으나 익일 100위 내
         잔류 확률을 유의미하게 높이는 안전장치로 기능했다.</li>
@@ -1739,7 +1838,7 @@
     </div>
     <div class="src-links">
       <a href="./ranking.html">랭킹 조회 페이지</a>
-      <a href="./report_v6.docx">결과보고서 원문 (DOCX)</a>
+      <a href="./report_v7.docx" download="올리브영_랭킹_분석_보고서.docx">결과보고서 원문 (DOCX)</a>
       <a href="https://github.com/hdmzp/oliveyoung" target="_blank" rel="noopener">GitHub 저장소</a>
     </div>
     <div class="foot-note">
