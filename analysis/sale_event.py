@@ -10,8 +10,9 @@
 같은 회귀를 각각 돌려 계수가 어떻게 달라지는지 비교하고, (b) 상품 단위 전후 변화를
 직접 추적한다.
 
-⚠ 한계: 수집 데이터가 세일 3일차(9/1)에서 끝나 세일 종료 후 반등을 관측하지 못했다.
-   모든 결과는 잠정이다.
+세일 구간은 할인율 급변으로 자동 탐지한다. 시작뿐 아니라 **종료**도 같은 규칙
+(전일 대비 jump_pp 이상 하락)으로 잡아 '세일 전 / 세일 / 세일 후' 세 구간을 나눈다.
+종료가 관측되지 않으면 세일 구간은 데이터 끝까지로 둔다.
 
 사용:  python -m analysis.sale_event
 출력:  analysis/output/sale_event_<date>.txt + stdout
@@ -35,8 +36,13 @@ BADGES = ["세일", "쿠폰", "증정", "오늘드림"]
 
 # ------------------------------------------------------------ 세일 구간 탐지
 
-def detect_sale(rank_all: pd.DataFrame, jump_pp: float = 5.0) -> tuple[pd.Timestamp, pd.DataFrame]:
-    """일별 평균 할인율이 전일 대비 jump_pp 이상 뛴 날을 세일 시작일로 본다."""
+def detect_sale(rank_all: pd.DataFrame, jump_pp: float = 5.0):
+    """할인율 급변으로 세일 구간을 잡는다.
+
+    시작: 일별 평균 할인율이 전일 대비 jump_pp 이상 **뛴** 첫날.
+    종료: 시작 이후 같은 폭으로 **떨어진** 첫날의 직전 수집일. 급락이 없으면
+          아직 세일 중이거나 종료가 관측되지 않은 것으로 보고 None 을 준다.
+    """
     daily = (rank_all[rank_all["카테고리"] != OVERALL]
              .groupby("수집일자")
              .agg(할인율=("할인율", "mean"), **{b: (b, "mean") for b in BADGES})
@@ -44,7 +50,25 @@ def detect_sale(rank_all: pd.DataFrame, jump_pp: float = 5.0) -> tuple[pd.Timest
     daily["할인율_증분"] = daily["할인율"].diff()
     jumps = daily[daily["할인율_증분"] >= jump_pp]
     start = jumps["수집일자"].iloc[0] if len(jumps) else None
-    return start, daily
+    end = None
+    if start is not None:
+        drops = daily[(daily["수집일자"] > start) & (daily["할인율_증분"] <= -jump_pp)]
+        if len(drops):
+            after = drops["수집일자"].iloc[0]
+            prior = daily[daily["수집일자"] < after]["수집일자"]
+            end = prior.iloc[-1]
+    return start, end, daily
+
+
+def segment(dates: pd.Series, start: pd.Timestamp, end: pd.Timestamp | None) -> np.ndarray:
+    """날짜 시리즈를 '세일 전 / 세일 / 세일 후' 로 라벨링한다."""
+    seg = np.where(dates < start, "세일 전", "세일")
+    if end is not None:
+        seg = np.where(dates > end, "세일 후", seg)
+    return seg
+
+
+SEGS = ["세일 전", "세일", "세일 후"]
 
 
 # ------------------------------------------------------------ 지표 비교 도구
@@ -61,7 +85,7 @@ def main() -> None:
     args = ap.parse_args()
 
     rank_all = load_rankings()
-    start, daily = detect_sale(rank_all, args.jump)
+    start, end, daily = detect_sale(rank_all, args.jump)
     if start is None:
         raise SystemExit("세일 구간을 탐지하지 못했습니다.")
     last = rank_all["수집일자"].max()
@@ -69,24 +93,34 @@ def main() -> None:
     def out(s=""):
         print(s); L.append(s)
 
+    sale_days = ((end or last) - start).days + 1
+    post_days = (last - end).days if end is not None else 0
     out(f"대형 세일 이벤트 분석 — 세일 시작 {start.date()} · 데이터 종료 {last.date()}")
-    out(f"(세일 구간 {(last - start).days + 1}일 관측 · 종료 후 미관측 → 잠정)")
+    if end is not None:
+        out(f"(세일 {start.date()}~{end.date()} {sale_days}일 · 종료 후 {post_days}일 관측)")
+    else:
+        out(f"(세일 구간 {sale_days}일 관측 · 종료 미관측 → 잠정)")
     out()
 
     # ---------------------------------------------------- 1. 프로모션 구조 전환
     out("■ 1. 프로모션 구조의 전환 (카테고리 랭킹 전체 평균)")
     d = daily.copy()
-    d["구간"] = np.where(d["수집일자"] >= start, "세일", "세일 전")
+    d["구간"] = segment(d["수집일자"], start, end)
     win = d[d["수집일자"] >= start - pd.Timedelta(days=7)]
     out(f"    {'날짜':<12}{'할인율':>8}{'세일':>7}{'쿠폰':>7}{'증정':>7}")
     for _, r in win.iterrows():
-        mark = " ◀ 세일 시작" if r["수집일자"] == start else ""
+        mark = (" ◀ 세일 시작" if r["수집일자"] == start else
+                " ◀ 세일 종료" if end is not None and r["수집일자"] == end else "")
         out(f"    {r['수집일자'].strftime('%m-%d'):<12}{r['할인율']:>7.1f}%"
             f"{r['세일']:>7.2f}{r['쿠폰']:>7.2f}{r['증정']:>7.2f}{mark}")
     pre, sal = d[d["구간"] == "세일 전"], d[d["구간"] == "세일"]
+    post = d[d["구간"] == "세일 후"]
     out()
     for c, f in [("할인율", "{:.1f}"), ("세일", "{:.2f}"), ("쿠폰", "{:.2f}"), ("증정", "{:.2f}")]:
-        out(f"    {c:<8} {compare(pre[c], sal[c], f)}")
+        line = f"    {c:<8} {compare(pre[c], sal[c], f)}"
+        if len(post):
+            line += f"   → 세일 후 {f.format(post[c].mean()):>8}"
+        out(line)
 
     # ---------------------------------------------------- 2. 랭킹 지형 변화
     out()
@@ -101,19 +135,20 @@ def main() -> None:
         prev, cur = set(rmap[p].index), set(rmap[c].index)
         common = list(prev & cur)
         rho = rmap[p][common].rank().corr(rmap[c][common].rank()) if len(common) > 5 else np.nan
-        rows.append({"날짜": c, "신규진입": len(cur - prev), "간격": gap, "rho": rho,
-                     "구간": "세일" if c >= start else "세일 전"})
+        rows.append({"날짜": c, "신규진입": len(cur - prev), "간격": gap, "rho": rho})
     tv = pd.DataFrame(rows)
+    tv["구간"] = segment(tv["날짜"], start, end)
     g = tv[tv["간격"] == 1].groupby("구간")
     out(f"    {'구간':<8}{'일평균 신규진입':>14}{'순위상관 ρ':>12}{'관측일':>8}")
-    for k in ["세일 전", "세일"]:
+    for k in SEGS:
         if k in g.groups:
             s = g.get_group(k)
             out(f"    {k:<8}{s['신규진입'].mean():>13.1f}개{s['rho'].mean():>12.3f}{len(s):>8}일")
     out()
     out("    세일 시작 전후 일별 상세:")
     for _, r in tv[tv["날짜"] >= start - pd.Timedelta(days=4)].iterrows():
-        mark = " ◀" if r["날짜"] == start else ""
+        mark = (" ◀ 개시" if r["날짜"] == start else
+                " ◀ 종료" if end is not None and r["날짜"] == end else "")
         rho = f"{r['rho']:.3f}" if pd.notna(r["rho"]) else "  –  "
         out(f"      {r['날짜'].strftime('%m-%d')}  신규 {int(r['신규진입']):>3}개  ρ={rho}{mark}")
 
@@ -125,27 +160,31 @@ def main() -> None:
                .set_index("상품번호")["카테고리"])
     ov2 = ov.copy()
     ov2["mc"] = ov2["상품번호"].map(gmap).fillna("(미매핑)")
-    ov2["구간"] = np.where(ov2["수집일자"] >= start, "세일", "세일 전")
+    ov2["구간"] = segment(ov2["수집일자"], start, end)
     share = (ov2.groupby(["구간", "mc"]).size()
                / ov2.groupby("구간").size() * 100).unstack(0).fillna(0)
     share["변화"] = share.get("세일", 0) - share.get("세일 전", 0)
     share = share.sort_values("변화", ascending=False)
-    out(f"    {'카테고리':<14}{'세일 전':>9}{'세일':>9}{'변화':>9}")
+    has_post = "세일 후" in share.columns
+    out(f"    {'카테고리':<14}{'세일 전':>9}{'세일':>9}{'변화':>9}" + (f"{'세일 후':>9}" if has_post else ""))
     for name, r in pd.concat([share.head(5), share.tail(4)]).iterrows():
-        out(f"    {name:<14}{r.get('세일 전', 0):>8.1f}%{r.get('세일', 0):>8.1f}%{r['변화']:>+8.1f}%p")
+        line = f"    {name:<14}{r.get('세일 전', 0):>8.1f}%{r.get('세일', 0):>8.1f}%{r['변화']:>+8.1f}%p"
+        if has_post:
+            line += f"{r.get('세일 후', 0):>8.1f}%"
+        out(line)
 
     # ---------------------------------------------------- 4. 리뷰 유입 반응
     out()
     out("■ 4. 리뷰 유입 속도의 반응 (카테고리 패널)")
     p = build_panel(end=None)
-    p["구간"] = np.where(p["수집일자"] >= start, "세일", "세일 전")
+    p["구간"] = segment(p["수집일자"], start, end)
     vv = p.dropna(subset=["velocity"])
     gv = vv.groupby("구간")["velocity"]
     out(f"    {'구간':<8}{'중위 유입/일':>13}{'평균':>10}{'관측':>9}")
-    for k in ["세일 전", "세일"]:
+    for k in SEGS:
         if k in gv.groups:
-            s = gv.get_group(k)
-            out(f"    {k:<8}{s.median():>12.1f}{s.mean():>10.1f}{len(s):>9,}")
+            sv = gv.get_group(k)
+            out(f"    {k:<8}{sv.median():>12.1f}{sv.mean():>10.1f}{len(sv):>9,}")
     med_pre = gv.get_group("세일 전").median() if "세일 전" in gv.groups else np.nan
     med_sal = gv.get_group("세일").median() if "세일" in gv.groups else np.nan
     if pd.notna(med_pre) and med_pre > 0:
@@ -156,33 +195,60 @@ def main() -> None:
     out("■ 5. 순위 결정 구조는 바뀌었나 — 구간별 동일 회귀 비교")
     out("    (카테고리×일 고정효과, 상품 단위 클러스터 SE, 표준화 계수)")
     xs = ["velocity_pct", "log_review_cnt", "할인율", "log_price", "쿠폰"]
-    for k, sub in [("세일 전", p[p["구간"] == "세일 전"]), ("세일", p[p["구간"] == "세일"])]:
-        s = sub.dropna(subset=[DV] + xs + ["cat_day", "상품번호"])
-        if len(s) < 200:
-            out(f"    [{k}] 관측 부족 (N={len(s)})"); continue
-        r = fe(s, xs, ["cat_day"], cluster="상품번호")
+    for k in SEGS:
+        sub = p[p["구간"] == k]
+        s2 = sub.dropna(subset=[DV] + xs + ["cat_day", "상품번호"])
+        if len(s2) < 200:
+            continue
+        r = fe(s2, xs, ["cat_day"], cluster="상품번호")
         out(f"    [{k}] N={r.n:,}  within R²={r.r2w:.3f}")
         for nm, b, t in zip(r.names, r.beta, r.t_clu):
             out(f"        {nm:<16} beta={b:+7.2f}  t={t:+6.2f}")
 
     # ---------------------------------------------------- 6. 세일 수혜 상품
     out()
-    out("■ 6. 세일 구간 순위 급상승 상품 (전체 TOP100, 세일 직전 대비)")
+    peak = end if end is not None else last
+    out("■ 6. 세일 구간 순위 급상승 상품 (전체 TOP100, 세일 직전 → 세일 마지막날)")
     before = start - pd.Timedelta(days=1)
-    if before in rmap and last in rmap:
-        b0, a0 = rmap[before], rmap[last]
+    if before in rmap and peak in rmap:
+        b0, a0 = rmap[before], rmap[peak]
         common = list(set(b0.index) & set(a0.index))
         mv = pd.DataFrame({"before": b0[common], "after": a0[common]})
         mv["상승"] = mv["before"] - mv["after"]
-        info = ov[ov["수집일자"] == last].set_index("상품번호")
+        info = ov[ov["수집일자"] == peak].set_index("상품번호")
+        now = rmap[last] if last in rmap else None
         top = mv.nlargest(8, "상승")
-        out(f"    {'상품':<44}{'세일 전':>7}{'현재':>6}{'상승':>7}{'할인율':>8}")
+        head = f"    {'상품':<44}{'세일 전':>7}{'세일 말':>7}{'상승':>7}{'할인율':>8}"
+        if now is not None and peak != last:
+            head += f"{'현재':>7}"
+        out(head)
         for gno, r in top.iterrows():
             nm = (info.loc[gno, "브랜드"] + " " + info.loc[gno, "상품명"])[:42].replace("\xa0", " ")
             dc = info.loc[gno, "할인율"]
-            out(f"    {nm:<44}{int(r['before']):>7}{int(r['after']):>6}{int(r['상승']):>+7}{dc:>7.0f}%")
+            line = (f"    {nm:<44}{int(r['before']):>7}{int(r['after']):>7}"
+                    f"{int(r['상승']):>+7}{dc:>7.0f}%")
+            if now is not None and peak != last:
+                line += f"{(str(int(now[gno])) if gno in now.index else '이탈'):>7}"
+            out(line)
         newly = set(a0.index) - set(b0.index)
         out(f"    세일 개시 후 신규 진입 누적: {len(newly)}개 / TOP100")
+
+        # 세일이 끝난 뒤 그 자리를 지켰는가 — 이전 판에서 관측 못 한 구간
+        if now is not None and peak != last:
+            gain = mv[mv["상승"] > 0]
+            held = [g for g in gain.index if g in now.index]
+            kept = [g for g in held if now[g] <= gain.loc[g, "after"] + 10]
+            out()
+            out(f"    세일 종료 후 되돌림 ({peak.strftime('%m-%d')} → {last.strftime('%m-%d')})")
+            out(f"      세일 중 순위가 오른 상품 {len(gain)}개 중 TOP100 잔류 {len(held)}개"
+                f" ({len(held)/len(gain)*100:.0f}%)")
+            if held:
+                back = pd.Series({g: now[g] - gain.loc[g, "after"] for g in held})
+                out(f"      잔류 상품의 평균 순위 변화 {back.mean():+.1f}계단"
+                    f" · 세일 말 수준(±10계단) 유지 {len(kept)}개 ({len(kept)/len(held)*100:.0f}%)")
+            newly_kept = [g for g in newly if now is not None and g in now.index]
+            out(f"      세일 중 신규 진입 {len(newly)}개 중 종료 후 잔류"
+                f" {len(newly_kept)}개 ({len(newly_kept)/max(len(newly),1)*100:.0f}%)")
 
     os.makedirs(OUT_DIR, exist_ok=True)
     path = os.path.join(OUT_DIR, f"sale_event_{last.date()}.txt")
