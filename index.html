@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>올리브영 랭킹 분석</title>
-<meta name="description" content="올리브영 판매 랭킹을 38일간 직접 수집해 리뷰·가격·프로모션·썸네일이 순위에 미치는 영향을 상품 단위 패널 데이터로 검증한 실증 분석 보고서">
+<meta name="description" content="올리브영 판매 랭킹을 47일간 직접 수집해 리뷰·가격·프로모션·썸네일이 순위에 미치는 영향을 상품 단위 패널 데이터로 검증한 실증 분석 보고서">
 <meta name="theme-color" content="#0f7a58">
 <link rel="icon" type="image/png" href="./favicon.png">
 <link rel="apple-touch-icon" href="./favicon.png">
@@ -32,21 +32,21 @@
     <div class="kicker">데이터 분석 · 개인 프로젝트</div>
     <h1>올리브영 <em>랭킹 분석</em></h1>
     <p class="lede">
-      올리브영 판매 랭킹을 38일간 매일 직접 수집해, 무엇이 상품을 상위권에 올리고 그 자리를 유지시키는지
+      올리브영 판매 랭킹을 47일간 매일 직접 수집해, 무엇이 상품을 상위권에 올리고 그 자리를 유지시키는지
       상품 단위 시계열 패널 데이터로 검증했습니다. 집계 기준이 공개되지 않은 이 랭킹을
       <b>리뷰 · 가격 · 프로모션 · 브랜드 · 썸네일</b> 다섯 갈래로 나누어 실증하고,
       랭킹과 리뷰의 <b>시차 선후 관계</b>까지 판별한 결과보고서입니다.
     </p>
     <div class="hero-meta">
-      분석 기간 2026-07-21 – 09-01 (38일) · 작성일 2026-09-01 · 자체 수집 데이터 기반 · 상품 6,929개 / 랭킹 관측 55,800건 / 리뷰 본문 70,979건 / 썸네일 10,229장
+      분석 기간 2026-07-21 – 09-10 (47일) · 작성일 2026-09-12 · 자체 수집 데이터 기반 · 상품 8,092개 / 랭킹 관측 74,700건 / 리뷰 본문 74,776건 / 썸네일 12,791장
     </div>
 
     <div class="dl-row">
-      <a class="dlbtn" href="./report_v7.docx" download="올리브영_랭킹_분석_보고서.docx">
+      <a class="dlbtn" href="./report_v8.docx" download="올리브영_랭킹_분석_보고서.docx">
         <span class="ico" aria-hidden="true">⤓</span>결과보고서 원문 내려받기 (DOCX)
       </a>
       
-      <span class="dl-note">2026-09-01 최종본 · 웹 리포트와 동일한 내용</span>
+      <span class="dl-note">2026-09-12 최종본 · 웹 리포트와 동일한 내용</span>
     </div>
 
     <div class="tiles">
@@ -58,17 +58,17 @@
       <div class="tile">
         <div class="t-label">TOP 100 일평균 교체 상품</div>
         <div class="t-value">35<span class="unit">개</span></div>
-        <div class="t-note">1–10위 잔류율 92.5% vs 76–100위 48.8%</div>
+        <div class="t-note">1–10위 잔류율 92.2% vs 76–100위 50.4%</div>
       </div>
       <div class="tile key">
         <div class="t-label">전일 랭킹 상위 → 당일 리뷰 증가</div>
-        <div class="t-value">26.5<span class="unit">|t|</span></div>
+        <div class="t-value">29.7<span class="unit">|t|</span></div>
         <div class="t-note">1·3·7일 전 시차에서 일관되게 강력 검출</div>
       </div>
       <div class="tile bad">
         <div class="t-label">전일 리뷰 증가 → 당일 순위 상승</div>
         <div class="t-value">미검출</div>
-        <div class="t-note">1일 시차 |t| = 0.4 · 3일 0.6 — 판정선(2) 미달</div>
+        <div class="t-note">1일 시차 |t| = 1.0 · 3일 1.9 — 판정선(2) 미달</div>
       </div>
     </div>
 
@@ -221,7 +221,7 @@
   <div class="wrap">
     <div class="sec-head">
       <div class="sec-no">02 — 분석 대상 데이터</div>
-      <h2>4개 영역, 38일간의 일간 패널</h2>
+      <h2>4개 영역, 47일간의 일간 패널</h2>
       <p class="sub">공개 API가 없는 환경에서 웹·모바일 클라이언트의 네트워크 엔드포인트를 역설계해
         랭킹·리뷰 통계·리뷰 본문·대표 이미지를 매일 축적했다.</p>
     </div>
@@ -253,7 +253,7 @@
 
     <h3 class="sub-head"><span class="n">2.2</span>데이터 수집 범위</h3>
     <p class="prose">
-      수집 기간은 2026년 7월 21일부터 9월 1일까지 총 38일간이며, 관측 도중 표본 편향을 최소화하기 위해 수집
+      수집 기간은 2026년 7월 21일부터 9월 10일까지 총 47일간이며, 관측 도중 표본 편향을 최소화하기 위해 수집
       범위를 대폭 확장했다. 초기에는 전체 판매 랭킹 100위만을 대상으로 하였으나, 100개 상품 표본으로는 상위권
       내 순위 변동 요인을 규명하기에 대조군이 협소했다. 이에 8월 3일부터 20개 카테고리별 100위 목록을
       파이프라인에 추가하였으며, 8월 5일부터 결측 없이 <b class="wine">일간 2,100개 상품을 안정적으로 관측하여 카테고리 내 비교 기반을 확보</b>했다.
@@ -262,10 +262,10 @@
       <table class="data">
         <thead><tr><th>구분</th><th>내용</th></tr></thead>
         <tbody>
-          <tr><td>수집 기간</td><td class="wrap-cell">2026-07-21 ~ 09-01 (38일). 전체 랭킹 38일, 카테고리 랭킹 26일</td></tr>
+          <tr><td>수집 기간</td><td class="wrap-cell">2026-07-21 ~ 09-10 (47일). 전체 랭킹 47일, 카테고리 랭킹 35일</td></tr>
           <tr><td>범위 변경</td><td class="wrap-cell">8/3부터 카테고리별 100위 추가. 8/5 이후 매일 안정 수집</td></tr>
           <tr><td>수집 시각</td><td class="wrap-cell">매일 22:00 ~ 24:00 기준 일 1회 정기 실행</td></tr>
-          <tr><td>누적 규모</td><td class="wrap-cell">상품 6,929개 / 랭킹 55,800건 / 리뷰 본문 70,979건 / 썸네일 10,229장</td></tr>
+          <tr><td>누적 규모</td><td class="wrap-cell">상품 8,092개 / 랭킹 74,700건 / 리뷰 본문 74,776건 / 썸네일 12,791장</td></tr>
           <tr class="hl"><td>결측 구간</td><td class="wrap-cell">7/24~7/26 · 8/2 · 8/23은 수집 실패. 7월분과 8/4·8/10·8/11은 전체 랭킹만 수집</td></tr>
         </tbody>
       </table>
@@ -432,7 +432,7 @@
       <div class="aim alt">
         <h4>패널 오차항 군집 보정 (Cluster-Robust SE)</h4>
         <ul>
-          <li>동일 상품의 38일 반복 관측에서 발생하는 오차항 자기상관 처리</li>
+          <li>동일 상품의 47일 반복 관측에서 발생하는 오차항 자기상관 처리</li>
           <li>독립 관측치로 가정할 경우 표준오차가 과소추정되어 유의성이 과대평가</li>
           <li>개별 상품 단위를 하나의 군집으로 묶어 검정통계량을 엄격하게 보정</li>
         </ul>
@@ -507,10 +507,10 @@
     <div class="fig">
       <div class="fig-head">
         <div class="fig-title">그림 1. 전체 랭킹 100위의 일별 신규 진입 상품 수</div>
-        <div class="fig-sub">직전 수집일 대비 · 2026-08-04 ~ 09-01</div>
+        <div class="fig-sub">직전 수집일 대비 · 2026-08-04 ~ 09-10</div>
       </div>
       <div class="chart-box chart-scroll" id="chChurn"></div>
-      <div class="fig-note">일평균 35개가 교체되며, 8월 30일에는 61개가 한꺼번에 바뀌었다. 막대에 마우스를 올리면 일자별 신규 진입 수와 평균 대비 편차를 확인할 수 있다.</div>
+      <div class="fig-note">일평균 35개가 교체되며, 대형 세일이 개시된 8월 30일에는 61개가 한꺼번에 바뀌었다. 반대로 세일 기간에는 교체가 20~30개로 줄었다가 세일이 끝난 9월 6~7일에 42·49개로 다시 뛴다(5.14절). 막대에 마우스를 올리면 일자별 신규 진입 수와 평균 대비 편차를 확인할 수 있다.</div>
     </div>
 
     <div class="fig">
@@ -520,18 +520,18 @@
       </div>
       <div class="chart-box chart-scroll" id="chCohort"></div>
       <div class="fig-note">색이 짙을수록 해당 경로로 이동하는 비율이 높다. 코랄 테두리는 대비되는 두 극단
-        — 최상위권의 고착(60%)과 하위권의 이탈(49%)을 표시한다.</div>
+        — 최상위권의 고착(60%)과 하위권의 이탈(50%)을 표시한다.</div>
     </div>
 
     <div class="grid-3" style="margin-top:22px">
       <div class="card zone">
         <div class="z-tag">1–10위 · 안정 고착 구간</div>
-        <div class="z-big">92.5<span class="unit">%</span></div>
-        <p>익일 100위 내 잔류율. 같은 구간 유지 비율도 59.9%에 달해 최상위권은 사실상 고정 슬롯에 가깝다.</p>
+        <div class="z-big">92.2<span class="unit">%</span></div>
+        <p>익일 100위 내 잔류율. 같은 구간 유지 비율도 59.7%에 달해 최상위권은 사실상 고정 슬롯에 가깝다.</p>
       </div>
       <div class="card zone hot">
         <div class="z-tag">76–100위 · 고회전 구간</div>
-        <div class="z-big">48.8<span class="unit">%</span></div>
+        <div class="z-big">49.6<span class="unit">%</span></div>
         <p>익일 이탈률. 절반이 하루 만에 TOP 100 밖으로 사라지는 회전문 구간이다.</p>
       </div>
       <div class="card zone">
@@ -545,8 +545,8 @@
       <span class="lab">시사점</span>
       <p class="prose">
         모든 순위 구간이 동일하게 변동하는 것은 아니었으며, <b class="wine">상위권과 하위권의 성격이 뚜렷하게 구분</b>되고 있었다.
-        <b class="wine">1–10위 최상위권은 익일 100위 내 잔류율이 92.5%, 동일 구간 잔류율이 59.9%에 달하는 안정 고착 구간</b>인 반면,
-        76–100위 <b class="wine">하위권은 익일 이탈률이 48.8%에 달하는 고회전 구간</b>으로 나타났다. 따라서 이후 분석에서는 순위 상승을
+        <b class="wine">1–10위 최상위권은 익일 100위 내 잔류율이 92.2%, 동일 구간 잔류율이 59.7%에 달하는 안정 고착 구간</b>인 반면,
+        76–100위 <b class="wine">하위권은 익일 이탈률이 49.6%에 달하는 고회전 구간</b>으로 나타났다. 따라서 이후 분석에서는 순위 상승을
         이끄는 <b>진입 요인</b>과 순위를 지탱하는 <b>잔류 요인</b>을 분리하여 검증한다(5.8절).
       </p>
     </div>
@@ -655,8 +655,8 @@
         소비자 대중성을 지향하는 플랫폼 특성상 단순 판매 수량 기준일 것으로 예상했으나, 실측 결과 가격 변수는
         판매량 대리지표와 사실상 대등한 통계적 가중치로 순위에 반영되고 있었다. <b class="wine">표준화 영향력 비율은
         0.90으로 도출되어 두 변수가 거의 동일한 비중으로 순위를 결정</b>하고 있음이 확인되었다. 판매량과 가격을
-        곱한 단일 매출액 복합변수로 치환하더라도 모형의 설명력 감소는 거의 관측되지 않았으며, 20개 카테고리 중
-        19개에서 동일한 패턴이 반복 검증되었다.
+        곱한 단일 매출액 복합변수로 치환하더라도 모형의 설명력 감소는 거의 관측되지 않았으며, 20개 카테고리
+        전부에서 동일한 패턴이 반복 검증되었다.
       </p>
     </div>
 
@@ -740,10 +740,10 @@
       <table class="data">
         <thead><tr><th>프로모션 유형</th><th class="num">순위 변화율</th><th class="num">신호 강도 |t|</th><th>실무적 통계 해석</th></tr></thead>
         <tbody>
-          <tr><td>할인율 (1%p당)</td><td class="num">2.2% 개선</td><td class="num">12.2</td><td class="wrap-cell">순위 상승 견인 (높은 안정성)</td></tr>
-          <tr><td>증정 배지</td><td class="num">9.3% 개선</td><td class="num">5.7</td><td class="wrap-cell">단기 순위 부스팅 효과 확인</td></tr>
-          <tr><td>쿠폰 배지</td><td class="num">13.7% 개선</td><td class="num">7.3</td><td class="wrap-cell">부착 당일 순위 뚜렷하게 상승</td></tr>
-          <tr class="hl"><td>세일 배지</td><td class="num">8.3% 악화</td><td class="num">1.9</td><td class="wrap-cell">역인과성 관측 (사후 투입 편향)</td></tr>
+          <tr><td>할인율 (1%p당)</td><td class="num">1.9% 개선</td><td class="num">13.4</td><td class="wrap-cell">순위 상승 견인 (높은 안정성)</td></tr>
+          <tr><td>증정 배지</td><td class="num">9.3% 개선</td><td class="num">5.8</td><td class="wrap-cell">단기 순위 부스팅 효과 확인</td></tr>
+          <tr><td>쿠폰 배지</td><td class="num">13.8% 개선</td><td class="num">8.8</td><td class="wrap-cell">부착 당일 순위 뚜렷하게 상승</td></tr>
+          <tr class="hl"><td>세일 배지</td><td class="num">4.4% 악화</td><td class="num">1.6</td><td class="wrap-cell">역인과성 관측 (사후 투입 편향)</td></tr>
         </tbody>
       </table>
     </div>
@@ -794,13 +794,13 @@
         <span class="method-name">구간 더미 반응곡선 추정 후 <span data-gl="shape-kmeans">형태 기반 군집화(Shape k-means)</span>.</span>
         판매 수량은 공개되지 않으므로 5.3절에서 판매량 대리지표로 확립한 <b>리뷰 유입 속도</b>를 종속변수로 삼았다
         (금액 반응은 유입 속도 × 혜택가로 별도 산출). 할인율을 6개 구간(0 / 1–10 / 10–20 / 20–30 / 30–40 / 40%+)으로
-        끊고, <b>카테고리 × 가격 3분위</b> 57개 셀마다 날짜 고정효과와 리뷰 재고를 통제한 반응 곡선을 추정했다.
+        끊고, <b>카테고리 × 가격 3분위</b> 60개 셀마다 날짜 고정효과와 리뷰 재고를 통제한 반응 곡선을 추정했다.
         이어 곡선을 진폭으로 나눠 <b>크기가 아닌 모양만</b> 남긴 뒤 k-means로 4개 유형을 도출했다.
       </p>
     </div>
     <div class="callout">
       <span class="c-tag">왜 상품 단위가 아니라 셀 단위인가</span>
-      관측 창을 늘려도 <b>같은 상품이 할인율을 바꾸는 폭은 여전히 작다</b> — 상품 내 할인율 표준편차의 중앙값은 1.6%p이고, 변동 폭이 아예 0인 상품이 48.1%다. 서로 다른 할인율을 3개 이상 경험한 상품은 753개(18.5%)에 그친다. 실제로 상품별 반응 기울기를 개별 추정하면 1,160개 중 유의한 것이 14.5%뿐으로, 대부분이 잡음이다. 따라서 곡선은 <b>같은 카테고리·같은 가격대·같은 날
+      관측 창을 늘려도 <b>같은 상품이 할인율을 바꾸는 폭은 여전히 작다</b> — 상품 내 할인율 표준편차의 중앙값은 2.6%p이고, 변동 폭이 아예 0인 상품이 41.3%다. 대형 세일로 할인 변동이 늘었는데도, 관측 8일 이상이면서 서로 다른 할인율을 3개 이상 경험한 상품은 1,347개(29.6%)에 그친다. 실제로 이 상품들의 반응 기울기를 개별 추정하면 |t|가 2를 넘는 것은 넷 중 하나(26%)뿐으로, 나머지는 잡음이다. 따라서 곡선은 <b>같은 카테고리·같은 가격대·같은 날
       서로 다른 할인율이 적용된 상품들을 상호 비교</b>해 얻었다.
     </div>
     <div class="hstep">
@@ -825,22 +825,22 @@
       <div class="legend" id="lgDiscCurve"></div>
       <div class="chart-box chart-scroll" id="chDiscCurve"></div>
       <div class="fig-note">
-        <b>가속형</b>은 할인율이 커질수록 기울기가 가팔라진다(40%+ 구간 +0.67, |t| = 6.5). <b>데스밸리형</b>은 얕은 할인 구간에서 오히려 판매가 크게 낮고(1–10% 구간 −0.44), 30%를 넘겨야 0 수준까지 올라온다 — 골짜기를 건너기 전에는 할인이 회수되지 않는 구조다. <b>포화형</b>은 20~40%까지 완만히 오르다 40%를 넘기면 도로 내려앉고(+0.42 → +0.29), <b>무반응·역행형</b>은 어느 구간에서도 비할인 상품의 판매량을 넘지 못한다.
+        <b>가속형</b>은 할인율이 커질수록 기울기가 가팔라진다(40%+ 구간 +0.53, |t| = 7.3). <b>데스밸리형</b>은 얕은 할인 구간에서 오히려 판매가 낮고(1–10% 구간 −0.25), 30%를 넘겨야 (+)로 돌아선다(30–40% +0.14, 40%+ +0.24) — 골짜기를 건너기 전에는 할인이 회수되지 않는 구조다. <b>포화형</b>은 얕은 구간에서만 반응하다 20%를 넘기면 도로 내려앉고(+0.12 → −0.17), <b>무반응·역행형</b>은 어느 구간에서도 비할인 상품의 판매량을 넘지 못한다.
       </div>
     </div>
 
     <p class="prose" style="margin-top:20px">
-      판매<b>금액</b> 기준으로 다시 그리면 해석이 한 겹 더해진다. 할인은 단가를 깎으므로 수량이 늘어도 금액은 줄 수 있는데, 가속형(40%+ 구간 +1.62)과 포화형(30–40% 구간 +0.69)은 <b>수량 증가폭이 단가 하락폭을 웃돈다</b>. 반면 데스밸리형과 무반응·역행형은 금액 기준으로도 0 이하에 머문다 — 할인을 얹어도 매출이 늘지 않는다는 뜻이다.
+      판매<b>금액</b> 기준으로 다시 그리면 해석이 한 겹 더해진다. 할인은 단가를 깎으므로 수량이 늘어도 금액은 줄 수 있는데, 가속형(30–40% 구간 +1.21, 40%+ +1.18)과 포화형(10–20% 구간 +0.55)은 <b>수량 증가폭이 단가 하락폭을 웃돈다</b>. 반면 데스밸리형과 무반응·역행형은 금액 기준으로도 0 이하에 머문다 — 할인을 얹어도 매출이 늘지 않는다는 뜻이다.
     </p>
 
     <div class="tbl-scroll">
       <table class="data">
         <thead><tr><th>유형</th><th class="num">상품 수</th><th class="num">가격 중앙</th><th class="num">리뷰수 중앙</th><th class="num">세일 상시성</th><th class="num">쿠폰</th><th class="num">증정</th><th>대표 카테고리</th></tr></thead>
         <tbody>
-          <tr><td>가속형</td><td class="num">1,004</td><td class="num">18,120원</td><td class="num">623건</td><td class="num">58%</td><td class="num">47%</td><td class="num">11%</td><td class="wrap-cell">위생용품 · 헤어케어 · 선케어 · 푸드 · 패션</td></tr>
-          <tr><td>포화형</td><td class="num">1,211</td><td class="num">18,700원</td><td class="num">1,429건</td><td class="num">71%</td><td class="num">42%</td><td class="num">18%</td><td class="wrap-cell">메이크업 · 클렌징 · 향수/디퓨저 · 맨즈에딧</td></tr>
-          <tr class="hl"><td>데스밸리형</td><td class="num">1,109</td><td class="num">20,900원</td><td class="num">3,300건</td><td class="num">73%</td><td class="num">51%</td><td class="num">23%</td><td class="wrap-cell">스킨케어 · 마스크팩 · 건강식품 · 구강용품</td></tr>
-          <tr><td>무반응 · 역행형</td><td class="num">796</td><td class="num">15,170원</td><td class="num">1,916건</td><td class="num">63%</td><td class="num">40%</td><td class="num">16%</td><td class="wrap-cell">바디케어 · 향수/디퓨저 · 뷰티소품 · 네일</td></tr>
+          <tr><td>가속형</td><td class="num">1,973</td><td class="num">16,500원</td><td class="num">1,007건</td><td class="num">61%</td><td class="num">46%</td><td class="num">11%</td><td class="wrap-cell">패션 · 위생용품 · 헤어케어 · 더모 코스메틱</td></tr>
+          <tr><td>포화형</td><td class="num">685</td><td class="num">29,600원</td><td class="num">570건</td><td class="num">68%</td><td class="num">43%</td><td class="num">18%</td><td class="wrap-cell">맨즈에딧 · 향수/디퓨저 · 네일 · 메이크업</td></tr>
+          <tr class="hl"><td>데스밸리형</td><td class="num">982</td><td class="num">18,900원</td><td class="num">2,912건</td><td class="num">80%</td><td class="num">49%</td><td class="num">18%</td><td class="wrap-cell">마스크팩 · 건강식품 · 스킨케어 · 구강용품</td></tr>
+          <tr><td>무반응 · 역행형</td><td class="num">1,071</td><td class="num">18,500원</td><td class="num">3,330건</td><td class="num">68%</td><td class="num">46%</td><td class="num">13%</td><td class="wrap-cell">바디케어 · 뷰티소품 · 건강식품 · 메이크업</td></tr>
         </tbody>
       </table>
     </div>
@@ -849,19 +849,19 @@
     <div class="hstep">
       <span class="lab">유형을 가르는 것은 가격이 아니라 규모다</span>
       <p class="prose">
-        네 유형의 가격 중앙값은 15,170 ~ 20,900원으로 크게 다르지 않고, 썸네일 채도(0.233 ~ 0.297)와 명도(179 ~ 185)도 뚜렷한 경계를 만들지 못한다. <b class="wine">유형을 가장 뚜렷하게 가르는 변수는 리뷰 규모</b>다 —
-        데스밸리형의 리뷰수 중앙값은 3,300건으로 가속형(623건)의 5.3배다. 리뷰 규모 순서가 곧 곡선 순서와 겹친다 — 가속형 623건 → 포화형 1,429건 → 무반응·역행형 1,916건 → 데스밸리형 3,300건. 여기에 데스밸리형은 세일 73% · 쿠폰 51% · 증정 23%로 배지 상시성도 가장 높다. 즉 <b>이미 규모가 크고 할인·증정이 늘 붙어 있는 상품일수록 얕은 할인이 듣지 않는다</b>.
+        가격 중앙값은 포화형(29,600원)만 뚜렷이 높고 나머지 셋은 16,500 ~ 18,900원으로 서로 붙어 있어, 가격만으로는 네 유형이 갈리지 않는다. 썸네일 채도(0.247 ~ 0.303)와 명도(175 ~ 186) 역시 경계를 만들지 못한다. <b class="wine">유형을 가장 뚜렷하게 가르는 변수는 리뷰 규모</b>다 —
+        할인이 듣는 두 유형은 리뷰 규모가 작고(포화형 570건 · 가속형 1,007건), 듣지 않는 두 유형은 크다(데스밸리형 2,912건 · 무반응·역행형 3,330건). 두 진영의 격차는 약 3배다. 여기에 데스밸리형은 세일 80% · 쿠폰 49%로 배지 상시성이 가장 높다. 즉 <b>이미 규모가 크고 할인·증정이 늘 붙어 있는 상품일수록 얕은 할인이 듣지 않는다</b>.
       </p>
     </div>
     <div class="hstep">
       <span class="lab">시사점</span>
       <p class="prose">
-        할인율을 배분할 때의 규칙이 유형별로 갈린다. <b>가속형</b>은 할인율을 높일수록 수량·금액이 함께 늘어 투입 대비 회수가 가장 확실하다(할인율 계수 +0.016, |t| = 6.7). <b>데스밸리형</b>은 <b class="wine">1 ~ 20% 구간이 가장 비효율적</b>이므로 어중간한 할인을 상시 적용하기보다 30%를 넘기는 집중 편성이 낫고, 세일 배지는 오히려 판매를 끌어내린다(−0.287, |t| = 3.4). <b>포화형</b>은 30 ~ 40%가 상한이며 그 이상은 마진만 깎인다. 대신 쿠폰 반응이 네 유형 중 가장 크다(+0.237, |t| = 4.8). <b>무반응·역행형</b>은 할인율 계수가 음(−0.009, |t| = 3.0)이라 할인 예산을 빼는 편이 합리적이다.
+        할인율을 배분할 때의 규칙이 유형별로 갈린다. <b>가속형</b>은 할인율을 높일수록 수량·금액이 함께 늘어 투입 대비 회수가 가장 확실하다(할인율 계수 +0.011, |t| = 6.0). <b>데스밸리형</b>은 <b class="wine">1 ~ 20% 구간이 가장 비효율적</b>이므로 어중간한 할인을 상시 적용하기보다 30%를 넘기는 집중 편성이 낫고, 세일 배지는 오히려 판매를 끌어내린다(−0.245, |t| = 3.4). <b>포화형</b>은 10 ~ 20%가 상한이며 그 이상은 마진만 깎인다. 대신 쿠폰 계수가 네 유형 중 가장 크다(+0.165, |t| = 3.0). <b>무반응·역행형</b>은 할인율 계수가 음이지만 판정선에 못 미쳐(−0.004, |t| = 1.8) 할인이 판매를 끌어올린다는 근거 자체가 없다 — 할인 예산을 빼는 편이 합리적이다.
       </p>
     </div>
     <div class="callout warn">
       <span class="c-tag">군집의 성격</span>
-      실루엣 계수는 0.23으로 높지 않다. 곡선이 뚜렷한 덩어리로 갈라진다기보다 연속적으로 변하기 때문이며,
+      실루엣 계수는 0.35로 높지 않다. 곡선이 뚜렷한 덩어리로 갈라진다기보다 연속적으로 변하기 때문이며,
       유형의 경계는 편의상 그은 선이지 자연적인 틈이 아니다. 다만 <b>난수 시드를 바꿔도 같은 분할이 재현된다</b>
       (조정 랜드지수 1.00). 또한 할인 편성 자체가 상품의 기대 수요에 따라 정해지므로,
       곡선은 인과가 아니라 <b>연관</b>으로 읽어야 한다.
@@ -883,8 +883,8 @@
       <span class="lab m">분석 방법</span>
       <p class="prose">
         <span class="method-name">비집행 구간으로 학습한 예측 모형을 이용한 증분 효과 추정.</span>
-        쿠폰·세일·증정 배지가 새로 부착된 날을 기준 시점으로 잡고, 직전 7개 관측과 직후 5개 관측을 분석 창으로 삼아 524건(상품 466개)을 구성했다. 비교 기준이 되는 &lsquo;프로모션을 집행하지 않았을 때의
-        판매량&rsquo;은 같은 기간 프로모션이 전혀 변하지 않은 구간 7,113건만으로 학습한 예측 모형이 산출한다.
+        쿠폰·세일·증정 배지가 새로 부착된 날을 기준 시점으로 잡고, 직전 7개 관측과 직후 5개 관측을 분석 창으로 삼아 1,315건(상품 964개)을 구성했다. 비교 기준이 되는 &lsquo;프로모션을 집행하지 않았을 때의
+        판매량&rsquo;은 같은 기간 프로모션이 전혀 변하지 않은 구간 8,517건만으로 학습한 예측 모형이 산출한다.
         프로모션을 한 번도 접하지 않은 모형이므로 그 예측값은 <b>평상시 판매 추이가 그대로 이어졌을 경우의
         판매량</b>에 해당하며, 실제 판매량에서 이를 빼면 프로모션으로 인해 늘어난 판매량만 남는다. 예측 방법은 다섯 가지를
         병행했고, 어느 값을 채택할지는 <span data-gl="holdout">홀드아웃 검증</span>으로 판정했다.
@@ -894,25 +894,25 @@
     <div class="fig">
       <div class="fig-head">
         <div class="fig-title">그림 10. 프로모션 부착 전후의 실제 판매 추이와 미집행 시 예측 추이</div>
-        <div class="fig-sub">기준 시점 524건 평균 · 직전 7개 관측 평균 = 100 · 음영 = 프로모션으로 인해 늘어난 판매량</div>
+        <div class="fig-sub">기준 시점 1,315건 평균 · 직전 7개 관측 평균 = 100 · 음영 = 프로모션으로 인해 늘어난 판매량</div>
       </div>
       <div class="legend" id="lgCfPath"></div>
       <div class="chart-box chart-scroll" id="chCfPath"></div>
       <div class="fig-note">
-        프로모션이 부착되기 직전 1개 관측에서 판매지수는 <b>76</b>까지 하락한다. 평상시의 4분의 3 수준으로,
+        프로모션이 부착되기 직전 1개 관측에서 판매지수는 <b>80</b>까지 하락한다. 평상시의 5분의 4 수준으로,
         <b class="wine">프로모션이 판매 호조기가 아니라 판매가 꺾인 뒤에 투입된다는 것을 보여준다.</b>
         이 상태에서 평상시 수준(100)을 비교 기준으로 삼으면(회색 점선) 프로모션이 없었더라도 회복되었을
-        몫까지 성과로 계산된다. 반면 평상시 추이만 학습한 EARTH 는 이 회복을 미리 반영해 117을 예측하며, 실제값 122.4와의 차이는 <b>음영으로 표시된 얇은 폭</b>에 그친다.
+        몫까지 성과로 계산된다. 반면 평상시 추이만 학습한 EARTH 는 이 회복을 미리 반영해 190을 예측하며, 실제값 213과의 차이는 <b>음영으로 표시된 얇은 폭</b>에 그친다.
       </div>
     </div>
 
     <div class="hstep">
       <span class="lab r">분석 결과 및 가설 대조</span>
       <p class="prose">
-        프로모션으로 인해 상승한 판매량은 <b>5개 관측 평균 +3.3%</b>로 추정되었다. 동일한 데이터를 집행 전후 단순 비교로 계산하면 +10.7%가 산출된다. <b class="wine">실무에서 통용되는 전후 비교가 프로모션의 기여도를 약 3배 부풀린다는 뜻이다.</b> 분석 창을 직전 5/직후 8, 직전 5/직후 10으로 바꾸어도 전후 비교 +10.7 ~ +13.2%, 모형 기반 +2.3 ~ +5.5%의 구도는 그대로 유지되었다.
+        프로모션으로 인해 상승한 판매량은 <b>5개 관측 평균 +3.9%</b>로 추정되었다. 동일한 데이터를 집행 전후 단순 비교로 계산하면 +43.7%가 산출된다. <b class="wine">실무에서 통용되는 전후 비교가 프로모션의 기여도를 11배 부풀린다는 뜻이다.</b> 이번 수집분에서 격차가 크게 벌어진 것은 대형 세일(5.14절)로 배지가 한꺼번에 붙은 구간이 분석 창에 들어왔기 때문이다 — 세일 개시일에는 판매도 함께 뛰므로, 전후 비교는 그 상승분을 통째로 배지의 성과로 계산한다. 분석 창을 직전 5/직후 8, 직전 5/직후 10으로 바꾸어도 <b>전후 비교는 +36.5 ~ +43.7%로 일관되게 크고, 모형 기반 추정은 +0.9 ~ +5.6%에 머문다</b>. 다만 직후 8관측 창에서는 EARTH 의 표준오차가 6배로 커지며 추정이 불안정해지므로, 창을 늘릴수록 세일 개시·종료가 함께 들어와 반사실 학습이 어려워진다는 점은 감안해야 한다.
       </p>
       <p class="prose">
-        증분 효과는 프로모션 종류에 따라 뚜렷하게 갈렸다. <b>쿠폰과 증정에서만 (+)가 남고, 세일은 회복분을 걷어낸 뒤에도 (−)에 머문다.</b> 5.4절에서 순위로 확인한 방향이 판매량에서도 동일하게 재현된 결과다.
+        증분 효과는 프로모션 종류에 따라 뚜렷하게 갈렸다. <b>회복분을 걷어내고 나면 쿠폰에만 (+)가 남고, 증정과 세일은 0 근방으로 수렴한다.</b> 5.4절에서 쿠폰이 가장 큰 순위 개선폭을 보인 것과 같은 방향이다. 다만 순위에서는 (+)였던 증정이 판매량 기준으로는 남지 않는데, 증정 배지가 8월 29일부터 노출면에서 사라져(5.14절) 관측 자체가 끊긴 영향을 배제할 수 없다.
       </p>
     </div>
 
@@ -920,13 +920,14 @@
       <table class="data">
         <thead><tr><th>구분</th><th class="num">기준 시점</th><th class="num">순수 증분 효과</th><th>해석</th></tr></thead>
         <tbody>
-          <tr class="hl"><td>전체 평균</td><td class="num">524건</td><td class="num">+3.3%</td><td class="wrap-cell">전후 단순 비교 시 +10.7% — 차이 3배는 프로모션이 없었어도 회복되었을 판매량이다</td></tr>
-          <tr><td>증정</td><td class="num">221건</td><td class="num">+4.0%</td><td class="wrap-cell">세 유형 중 상승 효과가 가장 크다</td></tr>
-          <tr><td>쿠폰</td><td class="num">258건</td><td class="num">+3.4%</td><td class="wrap-cell">증정과 비슷한 수준으로 안정적으로 (+)가 남는다</td></tr>
-          <tr><td>세일</td><td class="num">25건</td><td class="num">−3.7%</td><td class="wrap-cell">자연 회복분을 빼도 (−) — 부진한 상품에 뒤늦게 투입되는 구조가 반영된 결과다</td></tr>
-          <tr><td>부착 당일 (D+0)</td><td class="num">—</td><td class="num">+4.3%</td><td class="wrap-cell">배지 부착 당일부터 반응이 나타난다</td></tr>
-          <tr><td>익일 (D+1)</td><td class="num">—</td><td class="num">+5.3%</td><td class="wrap-cell">반응이 가장 크게 나타나는 시점</td></tr>
-          <tr><td>3~4일 경과</td><td class="num">—</td><td class="num">+4.6 / +3.2%</td><td class="wrap-cell">뒤늦게 작성된 리뷰가 다시 반영되는 구간</td></tr>
+          <tr class="hl"><td>전체 평균</td><td class="num">1,315건</td><td class="num">+3.9%</td><td class="wrap-cell">전후 단순 비교 시 +43.7% — 차이 11배는 프로모션이 없었어도 회복되었을 판매량이다</td></tr>
+          <tr><td>증정</td><td class="num">263건</td><td class="num">−0.2%</td><td class="wrap-cell">회복분을 걷어내면 0 근방 — 순위에서 보인 효과가 판매량으로는 남지 않는다</td></tr>
+          <tr><td>쿠폰</td><td class="num">770건</td><td class="num">+5.6%</td><td class="wrap-cell">세 유형 중 유일하게 뚜렷한 (+)가 남는다</td></tr>
+          <tr><td>세일</td><td class="num">104건</td><td class="num">+0.2%</td><td class="wrap-cell">대형 세일 구간이 포함되며 (−)에서 0 근방으로 올라왔으나 여전히 효과라 부를 수준은 아니다</td></tr>
+          <tr><td>부착 당일 (D+0)</td><td class="num">—</td><td class="num">+11.3%</td><td class="wrap-cell">배지 부착 당일부터 반응이 나타난다</td></tr>
+          <tr><td>익일 (D+1)</td><td class="num">—</td><td class="num">−8.7%</td><td class="wrap-cell">하루 쉬어 간다 — 리뷰 유입은 매일 고르게 발생하지 않는다</td></tr>
+          <tr><td>2일 경과 (D+2)</td><td class="num">—</td><td class="num">+11.7%</td><td class="wrap-cell">반응이 가장 크게 나타나는 시점</td></tr>
+          <tr><td>3~4일 경과</td><td class="num">—</td><td class="num">+3.9 / +2.7%</td><td class="wrap-cell">뒤늦게 작성된 리뷰가 다시 반영되는 구간</td></tr>
         </tbody>
       </table>
     </div>
@@ -937,7 +938,7 @@
       <p class="prose">
         다섯 가지 예측 방법이 서로 다른 값을 산출했으므로 어느 값을 채택할지 판정이 필요하다. 프로모션이
         없던 구간의 4분의 1을 학습에서 제외한 뒤, 나머지로 학습한 모형에 그 구간을 예측하게 하여 실제값과의
-        오차를 측정했다. 이미 실제값을 알고 있는 구간으로 예측력을 채점하는 방식이다. 그 결과 <b class="wine">예측이 정확한 방법일수록 증분 효과를 작게 추정하는 관계</b>가 뚜렷하게 나타났다. 가장 부정확한 전후 비교가 가장 큰 효과를 산출하고, 가장 정확한 EARTH 가 가장 작은 효과를 남긴다.
+        오차를 측정했다. 이미 실제값을 알고 있는 구간으로 예측력을 채점하는 방식이다. 그 결과 <b class="wine">예측이 정확한 방법과 부정확한 방법에서 추정치가 완전히 갈렸다</b>. 예측력이 떨어지는 두 방법(집행 전후 비교 · ARIMA)만 +40%대를 산출하고, 예측이 정확한 세 방법(EARTH · 시장대조 · 신경망)은 모두 +2 ~ 4% 대에 모인다. 큰 값은 예측 실패의 산물이지 프로모션의 성과가 아니다.
       </p>
     </div>
 
@@ -945,11 +946,11 @@
       <table class="data">
         <thead><tr><th>예측 방법</th><th class="num">예측 오차 (RMSE)</th><th class="num">치우침</th><th class="num">추정 증분 효과</th><th>판정</th></tr></thead>
         <tbody>
-          <tr class="hl"><td><span data-gl="earth">EARTH (MARS 근사)</span></td><td class="num">0.457</td><td class="num">−0.014</td><td class="num">+3.3%</td><td class="wrap-cell">예측 정확도 1위 · 치우침 최소 → 본문 기준값</td></tr>
-          <tr><td><span data-gl="did">시장대조 (DiD)</span></td><td class="num">0.464</td><td class="num">−0.055</td><td class="num">+8.1%</td><td class="wrap-cell">시장 변동은 제거하나 상품 자체의 회복분은 놓친다</td></tr>
-          <tr><td><span data-gl="mlp">신경망 (MLP)</span></td><td class="num">0.467</td><td class="num">−0.039</td><td class="num">+6.6%</td><td class="wrap-cell">정확도는 근소한 3위이나 치우침이 EARTH 보다 크다</td></tr>
-          <tr><td>집행 전후 비교</td><td class="num">0.504</td><td class="num">−0.043</td><td class="num">+10.7%</td><td class="wrap-cell">실무 관행 · 예측력은 최하위권</td></tr>
-          <tr><td><span data-gl="arima">ARIMA (1,0,0)</span></td><td class="num">0.522</td><td class="num">−0.039</td><td class="num">+8.6%</td><td class="wrap-cell">직전 관측이 7개뿐이라 추정이 불안정하다</td></tr>
+          <tr class="hl"><td><span data-gl="earth">EARTH (MARS 근사)</span></td><td class="num">0.472</td><td class="num">−0.003</td><td class="num">+3.9%</td><td class="wrap-cell">예측 정확도 1위 · 치우침 최소 → 본문 기준값</td></tr>
+          <tr><td><span data-gl="did">시장대조 (DiD)</span></td><td class="num">0.474</td><td class="num">−0.036</td><td class="num">+2.0%</td><td class="wrap-cell">시장 전체의 움직임을 걷어내는 방식 — EARTH 와 근접한 값에 도달한다</td></tr>
+          <tr><td><span data-gl="mlp">신경망 (MLP)</span></td><td class="num">0.483</td><td class="num">−0.007</td><td class="num">+2.2%</td><td class="wrap-cell">정확도는 근소한 3위이나 치우침이 EARTH 보다 크다</td></tr>
+          <tr><td>집행 전후 비교</td><td class="num">0.576</td><td class="num">−0.090</td><td class="num">+43.7%</td><td class="wrap-cell">실무 관행 · 예측력은 최하위권</td></tr>
+          <tr><td><span data-gl="arima">ARIMA (1,0,0)</span></td><td class="num">0.579</td><td class="num">−0.076</td><td class="num">+41.1%</td><td class="wrap-cell">직전 관측이 7개뿐이라 추정이 불안정하다</td></tr>
         </tbody>
       </table>
     </div>
@@ -960,14 +961,14 @@
       <p class="prose">
         프로모션 성과 보고에서 관행적으로 쓰이는 &lsquo;집행 전후 매출 비교&rsquo;는
         <b class="wine">부진했기 때문에 프로모션을 투입했다는 사실과, 그 이후 자연히 따라온 회복분을 모두
-        성과로 계산한다.</b> 최소한의 교정은 같은 카테고리의 비집행 상품을 대조군으로 두는 것이며, 이것만으로도 +10.7%가 +8.1%로 낮아진다. 상품 자체의 회복분까지 걷어내려면 비집행 구간으로 학습한 예측 모형이 필요하고, 그렇게 남는 순수 증분은 <b>쿠폰·증정에서 +3 ~ 4%</b>다. 이는 프로모션의 가치를 부정하는 결과가 아니라, <b>성과 목표와 예산을 +10%가 아닌 +3% 수준에 맞추어 설계해야 한다</b>는 뜻이다.
+        성과로 계산한다.</b> 최소한의 교정은 같은 카테고리의 비집행 상품을 대조군으로 두는 것이며, 이것만으로도 +43.7%가 +2.0%로 내려간다. 상품 자체의 회복분까지 반영하는 예측 모형 기준으로는 <b>+3.9%</b>가 남는다. 접근이 다른 두 방법이 모두 <b>+2 ~ 4% 대에서 만난다</b>는 점이 중요하다 — 유독 크게 나오는 것은 관행적 전후 비교뿐이다. 이는 프로모션의 가치를 부정하는 결과가 아니라, <b>성과 목표와 예산을 두 자릿수가 아닌 +3% 수준에 맞추어 설계해야 한다</b>는 뜻이다.
       </p>
     </div>
     <div class="callout warn">
       <span class="c-tag">해석의 한계</span>
       ① 예측 모형은 프로모션이 없던 구간만으로 학습했다. 프로모션이 부착되는 상품의 성격이 애초에 다르다면
       그만큼 오차가 남는다. ② 판매량 대신 리뷰 유입을 대리지표로 쓰므로, 구매 후 리뷰 작성까지의 시차만큼
-      당일 효과는 과소 측정되고 지연 효과는 분석 창 밖으로 밀려날 수 있다. ③ 세일은 기준 시점이 25건에 불과해 −3.7%라는 크기 자체는 정밀하지 않다. 방향만 읽어야 한다.
+      당일 효과는 과소 측정되고 지연 효과는 분석 창 밖으로 밀려날 수 있다. ③ 세일은 기준 시점이 104건으로 여전히 적은 데다 대형 세일 구간과 겹쳐, +0.2%라는 크기 자체는 정밀하지 않다. 방향만 읽어야 한다.
     </div>
 
     <!-- 5.7 -->
@@ -993,7 +994,7 @@
       <span class="lab r">분석 결과 및 가설 대조</span>
       <p class="prose">
         동일 브랜드 내부에서도 상품별 판매 편차가 존재하므로 개별 상품 특성의 영향력이 더 클 것으로 예상했으나,
-        실측 결과는 브랜드 자체의 설명력이 압도적인 것으로 나타났다. 브랜드 고정효과를 투입하자 모형의 순위 설명력은 <b>21.1%에서 35.7%로</b> 대폭 상승했다. 특히 전체 38일의 관측 기간 중 80% 이상 랭킹에 노출된 <b>27개 핵심 브랜드가 전체 TOP 100 슬롯의 43.6%</b>를 독점하고 있었다.
+        실측 결과는 브랜드 자체의 설명력이 압도적인 것으로 나타났다. 브랜드 고정효과를 투입하자 모형의 순위 설명력은 <b>22.2%에서 34.8%로</b> 대폭 상승했다. 특히 전체 47일의 관측 기간 중 80% 이상 랭킹에 노출된 <b>27개 핵심 브랜드가 전체 TOP 100 슬롯의 44.6%</b>를 독점하고 있었다.
       </p>
     </div>
 
@@ -1001,11 +1002,11 @@
       <table class="data">
         <thead><tr><th>브랜드명</th><th class="num">등장 일수</th><th class="num">점유 슬롯 수</th><th class="num">진입 품목 수</th><th class="num">평균 순위</th><th class="num">최고 순위</th></tr></thead>
         <tbody>
-          <tr><td>메디힐</td><td class="num">38일</td><td class="num">263개</td><td class="num">18개</td><td class="num">37.7위</td><td class="num">1위</td></tr>
-          <tr><td>셀리맥스</td><td class="num">38일</td><td class="num">109개</td><td class="num">5개</td><td class="num">48.1위</td><td class="num">2위</td></tr>
-          <tr><td>아누아</td><td class="num">35일</td><td class="num">98개</td><td class="num">17개</td><td class="num">46.7위</td><td class="num">1위</td></tr>
-          <tr><td>바닐라코</td><td class="num">38일</td><td class="num">90개</td><td class="num">5개</td><td class="num">54.6위</td><td class="num">8위</td></tr>
-          <tr><td>딜라이트 프로젝트</td><td class="num">38일</td><td class="num">78개</td><td class="num">14개</td><td class="num">37.9위</td><td class="num">1위</td></tr>
+          <tr><td>메디힐</td><td class="num">47일</td><td class="num">325개</td><td class="num">19개</td><td class="num">38.3위</td><td class="num">1위</td></tr>
+          <tr><td>아누아</td><td class="num">44일</td><td class="num">137개</td><td class="num">21개</td><td class="num">43.4위</td><td class="num">1위</td></tr>
+          <tr><td>셀리맥스</td><td class="num">47일</td><td class="num">133개</td><td class="num">5개</td><td class="num">48.5위</td><td class="num">2위</td></tr>
+          <tr><td>토리든</td><td class="num">44일</td><td class="num">103개</td><td class="num">24개</td><td class="num">51.6위</td><td class="num">1위</td></tr>
+          <tr><td>바닐라코</td><td class="num">43일</td><td class="num">95개</td><td class="num">5개</td><td class="num">55.6위</td><td class="num">8위</td></tr>
         </tbody>
       </table>
     </div>
@@ -1018,7 +1019,7 @@
           <div class="b-tag">실적 소구형</div>
           <h4>메디힐 — 에센셜 마스크팩 10/10+1매 기획</h4>
           <p>"15년 연속 1위" 문구와 올리브영 어워즈 수상 배지를 전면에 배치하고 10+1 증정 구성을 함께 표기했다.
-            14개 품목을 교대로 투입해 슬롯을 점유한다.</p>
+            19개 품목을 교대로 투입해 슬롯을 점유한다.</p>
         </div>
       </div>
       <div class="brandshot">
@@ -1026,8 +1027,8 @@
         <div>
           <div class="b-tag">모델 소구형</div>
           <h4>아누아 — 피디알엔 히알루론산 수분 캡슐 미스트</h4>
-          <p>연예인 모델 컷을 화면 절반에 배치하고 한정 기획 구성을 표시했다. 최고 1위까지 상승하나 평균 순위는
-            49.0위로 변동성이 크다.</p>
+          <p>연예인 모델 컷을 화면 절반에 배치하고 한정 기획 구성을 표시했다. 최고 1위까지 올랐지만 등장 10일의
+            평균은 32.1위로 진폭이 크다.</p>
         </div>
       </div>
     </div>
@@ -1076,7 +1077,8 @@
           <tr><td>리뷰 증가 속도</td><td><span class="badge b1">강력한 기여</span></td><td><span class="badge b1">유의미한 기여</span></td></tr>
           <tr><td>리뷰 누적 총량</td><td><span class="badge bn">조건부 기여 (브랜드 통제 시)</span></td><td><span class="badge b1">뚜렷한 기여 · 안전장치</span></td></tr>
           <tr class="hl"><td>할인율</td><td><span class="badge b1">기여 (순위 부양)</span></td><td><span class="badge b3">역방향 (잔류 확률 하락)</span></td></tr>
-          <tr><td>쿠폰 · 증정</td><td><span class="badge b1">기여</span></td><td><span class="badge b1">기여</span></td></tr>
+          <tr><td>쿠폰</td><td><span class="badge b1">기여</span></td><td><span class="badge b1">기여</span></td></tr>
+          <tr><td>증정</td><td><span class="badge b1">기여</span></td><td><span class="badge bn">기여 없음</span></td></tr>
           <tr><td>평균 별점</td><td><span class="badge bn">기여 없음</span></td><td><span class="badge bn">기여 없음</span></td></tr>
         </tbody>
       </table>
@@ -1140,7 +1142,7 @@
           <button data-lag="3일">3일 시차</button>
           <button data-lag="7일">7일 시차</button>
         </div>
-        <span class="ctl-note" id="lagNote">1일 시차 — 전일 리뷰 증가는 당일 순위를 전혀 예측하지 못한다 (|t| = 0.4).</span>
+        <span class="ctl-note" id="lagNote">1일 시차 — 전일 리뷰 증가는 당일 순위를 전혀 예측하지 못한다 (|t| = 1.0).</span>
       </div>
       <div class="legend" id="lgLag"></div>
       <div class="chart-box chart-scroll" id="chLag"></div>
@@ -1150,9 +1152,9 @@
       <table class="data">
         <thead><tr><th>분석 시차 (k)</th><th>전일 리뷰 증가 → 당일 순위 상승</th><th>전일 랭킹 상위 → 당일 리뷰 증가</th></tr></thead>
         <tbody>
-          <tr><td>1일 시차</td><td class="wrap-cell">미검출 (|t| = 0.4, p ≥ 0.05)</td><td class="wrap-cell">강력 검출 (|t| = 26.5, p &lt; 0.001)</td></tr>
-          <tr><td>3일 시차</td><td class="wrap-cell">미검출 (|t| = 0.8, p ≥ 0.05)</td><td class="wrap-cell">강력 검출 (|t| = 22.2, p &lt; 0.001)</td></tr>
-          <tr><td>7일 시차</td><td class="wrap-cell">역방향 유의 (|t| = 3.5, 순위 하락)</td><td class="wrap-cell">강력 검출 (|t| = 19.9, p &lt; 0.001)</td></tr>
+          <tr><td>1일 시차</td><td class="wrap-cell">미검출 (|t| = 1.0, p ≥ 0.05)</td><td class="wrap-cell">강력 검출 (|t| = 29.7, p &lt; 0.001)</td></tr>
+          <tr><td>3일 시차</td><td class="wrap-cell">미검출 (|t| = 1.9, p ≥ 0.05)</td><td class="wrap-cell">강력 검출 (|t| = 26.6, p &lt; 0.001)</td></tr>
+          <tr><td>7일 시차</td><td class="wrap-cell">역방향 유의 (|t| = 3.8, 순위 하락)</td><td class="wrap-cell">강력 검출 (|t| = 22.7, p &lt; 0.001)</td></tr>
         </tbody>
       </table>
     </div>
@@ -1177,7 +1179,7 @@
     </div>
     <div class="callout warn">
       <span class="c-tag">잠정 판정</span>
-      카테고리 랭킹의 완전 관측 구간이 26일로 제한되어 시차 분석의 장기 검정력을 감안해 본 결론을
+      카테고리 랭킹의 완전 관측 구간이 35일로 제한되어 시차 분석의 장기 검정력을 감안해 본 결론을
       <b>잠정 판정</b>으로 설정한다. 그러나 1일·3일·7일 어느 시차에서도 '리뷰가 순위를 끌어올리는' 선행 경로는
       관측되지 않았으며, 이는 가설 1을 기각하는 통계적 근거가 된다.
     </div>
@@ -1206,13 +1208,13 @@
     </div>
     <div class="callout">
       <span class="c-tag">분석 기간과 상품 필터</span>
-      수집 리뷰 70,979건의 작성일은 2017년까지 거슬러 올라가지만, 실제로는 <b>최근 3개월(2026-06-01 ~ 09-01)에 87.8%인 62,321건이 몰려</b> 있다. 이 3개월을 분석 창으로 삼았다. 또한 사이트 표시 평점이 3.0 이하인
-      상품 598개를 제외했는데, <b>그중 586개는 리뷰가 0건이라 평점이 0으로 표기된 신상품</b>이고 실제로 낮은 평점을 받은 상품은 12개(리뷰 합계 19건)뿐이다. 제외 전후 긍정 비중은 95.71% → 95.74%로 사실상 동일하다.
+      수집 리뷰 74,776건의 작성일은 2017년까지 거슬러 올라가지만, 실제로는 <b>최근 3개월(2026-06-01 ~ 09-10)에 88.4%인 66,070건이 몰려</b> 있다. 이 3개월을 분석 창으로 삼았다. 또한 사이트 표시 평점이 3.0 이하인
+      상품 749개를 제외했는데, <b>그중 735개는 리뷰가 0건이라 평점이 0으로 표기된 신상품</b>이고 실제로 낮은 평점을 받은 상품은 14개(리뷰 합계 25건)뿐이다. 제외 전후 긍정 비중은 95.69% → 95.72%로 사실상 동일하다.
     </div>
     <div class="hstep">
       <span class="lab r">분석 결과 및 가설 대조</span>
       <p class="prose">
-        표본 (A)의 긍정 비중은 <b>95.74%</b>, 표본 (B)의 리뷰수 가중 긍정 비중은 <b>95.70%</b>로 사실상 일치한다.
+        표본 (A)의 긍정 비중은 <b>95.72%</b>, 표본 (B)의 리뷰수 가중 긍정 비중은 <b>95.68%</b>로 사실상 일치한다.
         <b class="wine">도움순 상위로 치우친 (A) 표본의 편향이 긍정 비중에는 거의 영향을 주지 않는다</b>는 뜻이며,
         기간을 자른 값을 그대로 신뢰할 근거가 된다. 그리고 예상대로 <b>긍정 비중도 부정 비중도 순위를 설명하지
         못했다</b> — 평점을 어떻게 재구성해도 결론은 바뀌지 않는다.
@@ -1223,29 +1225,29 @@
       <table class="data">
         <thead><tr><th>지표</th><th class="num">수집 리뷰 본문 (A)</th><th class="num">사이트 전체 리뷰 (B)</th><th>비고</th></tr></thead>
         <tbody>
-          <tr class="hl"><td>긍정 (4점 이상)</td><td class="num">95.74%</td><td class="num">95.70%</td><td class="wrap-cell">두 표본이 0.04%p 차이로 일치</td></tr>
+          <tr class="hl"><td>긍정 (4점 이상)</td><td class="num">95.72%</td><td class="num">95.68%</td><td class="wrap-cell">두 표본이 0.04%p 차이로 일치</td></tr>
           <tr><td>3점</td><td class="num">2.44%</td><td class="num">3.23%</td><td class="wrap-cell">실질 부정에 가깝지만 비중이 작다</td></tr>
-          <tr><td>부정 (2점 이하)</td><td class="num">1.82%</td><td class="num">0.96%</td><td class="wrap-cell">도움순 표본에서 다소 많이 잡힌다</td></tr>
+          <tr><td>부정 (2점 이하)</td><td class="num">1.85%</td><td class="num">0.98%</td><td class="wrap-cell">도움순 표본에서 다소 많이 잡힌다</td></tr>
           <tr><td>평균 별점</td><td class="num">4.807점</td><td class="num">—</td><td class="wrap-cell">3개월 창 · 상품 평점 3.0 이하 제외 후</td></tr>
-          <tr><td>표본 규모</td><td class="num">61,784건</td><td class="num">3,710개 상품</td><td class="wrap-cell">(A) 3개월 창 · (B) 리뷰 100건 이상 상품</td></tr>
+          <tr><td>표본 규모</td><td class="num">65,557건</td><td class="num">4,245개 상품</td><td class="wrap-cell">(A) 3개월 창 · (B) 리뷰 100건 이상 상품</td></tr>
         </tbody>
       </table>
     </div>
-    <p class="tbl-cap">표 14. 두 표본으로 교차확인한 리뷰 평점 구성 (2026-06-01 ~ 09-01)</p>
+    <p class="tbl-cap">표 14. 두 표본으로 교차확인한 리뷰 평점 구성 (2026-06-01 ~ 09-10)</p>
 
     <p class="prose" style="margin-top:20px">
-      상품 단위로 내려가면 긍정 비중의 중앙값은 96%, 하위 10%도 91%다. <b>긍정 비중이 90%에 못 미치는 상품은 5.7%, 80%에 못 미치는 상품은 0.3%</b>에 불과하다. 다만 평균 별점의 표준편차가 0.111점에 그치는 데 비해 긍정 비중의 표준편차는 3.16%p로, <b class="wine">같은 정보를 비중으로 바꾸면 상품 간 차이가 훨씬 넓게 벌어진다</b>. 천장 효과가 완전히 사라지지는 않지만, 평균보다는 식별력이 있는 지표다.
+      상품 단위로 내려가면 긍정 비중의 중앙값은 96%, 하위 10%도 91%다. <b>긍정 비중이 90%에 못 미치는 상품은 5.6%, 80%에 못 미치는 상품은 0.3%</b>에 불과하다. 다만 평균 별점의 표준편차가 0.112점에 그치는 데 비해 긍정 비중의 표준편차는 3.18%p로, <b class="wine">같은 정보를 비중으로 바꾸면 상품 간 차이가 훨씬 넓게 벌어진다</b>. 천장 효과가 완전히 사라지지는 않지만, 평균보다는 식별력이 있는 지표다.
     </p>
 
     <div class="fig">
       <div class="fig-head">
         <div class="fig-title">그림 13. 카테고리별 비(非)긍정 리뷰 비중</div>
-        <div class="fig-sub">리뷰 100건 이상 상품 3,710개 · 상품 20개 이상 카테고리 20개</div>
+        <div class="fig-sub">리뷰 100건 이상 상품 4,245개 · 상품 20개 이상 카테고리 20개</div>
       </div>
       <div class="legend" id="lgRevCat"></div>
       <div class="chart-box chart-scroll" id="chRevCat"></div>
       <div class="fig-note">
-        긍정 비중은 <b>취미/팬시 89.3%</b>에서 <b>위생용품 96.3%</b>까지 7.0%p 범위로 갈린다. 부정 비중이 높은 쪽은 취미/팬시(4.52%) · 패션(2.87%) · 네일(2.65%)로, 모두 <b>사진과 실물의 차이가 크고 기대가 갈리는
+        긍정 비중은 <b>취미/팬시 89.6%</b>에서 <b>위생용품 96.2%</b>까지 6.6%p 범위로 갈린다. 부정 비중이 높은 쪽은 취미/팬시(4.32%) · 패션(2.99%) · 네일(2.69%)로, 모두 <b>사진과 실물의 차이가 크고 기대가 갈리는
         품목</b>이다. 반대로 위생용품 · 건강식품 · 맨즈에딧처럼 <b>기능이 규격화된 소모품</b>은 부정이 1%를 밑돈다.
       </div>
     </div>
@@ -1253,11 +1255,11 @@
     <div class="fig">
       <div class="fig-head">
         <div class="fig-title">그림 14. 브랜드별 긍정 비중과 브랜드 내 산포</div>
-        <div class="fig-sub">상품 5개 이상 브랜드 223개 · 원 크기 = 브랜드가 보유한 상품 수</div>
+        <div class="fig-sub">상품 5개 이상 브랜드 251개 · 원 크기 = 브랜드가 보유한 상품 수</div>
       </div>
       <div class="chart-box chart-scroll" id="chRevBrand"></div>
       <div class="fig-note">
-        브랜드 평균 긍정 비중이 높을수록 그 브랜드 <b>상품 간 편차도 함께 줄어든다</b>(ρ = −0.68, p &lt; 0.001).
+        브랜드 평균 긍정 비중이 높을수록 그 브랜드 <b>상품 간 편차도 함께 줄어든다</b>(ρ = −0.71, p &lt; 0.001).
         평가가 좋은 브랜드는 대표 상품 하나만 좋은 평가를 받은 것이 아니라 <b class="wine">라인업 전체가 고르게 높은 평가</b>를 받고 있고, 평가가 낮은 브랜드는 상품마다 편차가 크다.
       </div>
     </div>
@@ -1265,11 +1267,11 @@
     <div class="hstep">
       <span class="lab">브랜드가 설명하는 몫</span>
       <p class="prose">
-        긍정 비중의 총분산 가운데 <b>브랜드 간 차이가 설명하는 몫은 33.2%</b>이고, 나머지 66.8%는 같은 브랜드
-        안 상품 간 차이다. 브랜드 평균은 86.0%(웰릭스)에서 98.5%까지 벌어지는데,
-        <b>상위권은 정관장 · 시루콧토 · 오쏘몰 · 좋은느낌 · 크리넥스처럼 기능이 규격화된 생활·건강 브랜드</b>이고
+        긍정 비중의 총분산 가운데 <b>브랜드 간 차이가 설명하는 몫은 33.0%</b>이고, 나머지 67.0%는 같은 브랜드
+        안 상품 간 차이다. 브랜드 평균은 85.8%(웰릭스)에서 98.6%까지 벌어지는데,
+        <b>상위권은 옵티프리 · 커리쉴 · 폰즈 · 질레트 · 시루콧토처럼 기능이 규격화된 생활·위생 브랜드</b>이고
         하위권은 색조·스킨케어 신생 브랜드에 몰려 있다. <b class="wine">가격대는 긍정 비중을 전혀 가르지 못한다</b>
-        (ρ = +0.05, p = 0.48) — 비싸다고 평이 좋아지지 않는다.
+        (ρ = +0.06, p = 0.32) — 비싸다고 평이 좋아지지 않는다.
       </p>
     </div>
 
@@ -1318,7 +1320,7 @@
       <span class="lab m">분석 방법</span>
       <p class="prose">
         <span class="method-name">정규표현식 기반 텍스트 마이닝 및 캠페인 식별.</span>
-        수집된 67,030건의 리뷰 본문 데이터를 대상으로 법적 공시 문구를 탐지하는 정규표현식 규칙 체계를 설계했다.
+        수집된 79,006건의 리뷰 본문 데이터를 대상으로 법적 공시 문구를 탐지하는 정규표현식 규칙 체계를 설계했다.
         실제 후기 문장을 전수 검토하여 4단계 판정 규칙으로 정련하였으며, 무작위 표본 200건에 대한 수기 교차 검증을
         병행해 탐지 정확도를 확보했다.
       </p>
@@ -1327,7 +1329,7 @@
       <span class="lab r">분석 결과 및 가설 대조</span>
       <p class="prose">
         체험단 마케팅의 보편성을 고려할 때 전체 리뷰의 수 퍼센트 수준이 탐지될 것으로 예상했다. 그러나 실제 탐지된
-        대가성 리뷰는 전체의 <b>0.89%(668건)</b>에 불과했다. 탐지 키워드를 8개에서 37종으로 대폭 확장했음에도
+        대가성 리뷰는 전체의 <b>0.88%(697건)</b>에 불과했다. 탐지 키워드를 8개에서 37종으로 대폭 확장했음에도
         절대적인 탐지량은 미미한 수준에 머물렀다.
       </p>
     </div>
@@ -1336,26 +1338,26 @@
       <table class="data">
         <thead><tr><th>판정 규칙 범주</th><th>적용 패턴 및 예시 문맥</th><th class="num">추출 건수</th></tr></thead>
         <tbody>
-          <tr><td>명시적 공시 표현</td><td class="wrap-cell">체험단, 제공받아, 업체로부터, 광고주 등 37종</td><td class="num">604건</td></tr>
+          <tr><td>명시적 공시 표현</td><td class="wrap-cell">체험단, 제공받아, 업체로부터, 광고주 등 37종</td><td class="num">628건</td></tr>
           <tr><td>해시태그 및 특수문자</td><td class="wrap-cell">#제품제공, #협찬, #리뷰의무x, [제품제공사용리뷰]</td><td class="num">6건</td></tr>
-          <tr><td>조건부 인접 문맥</td><td class="wrap-cell">보상 표현과 주관적 후기 표현의 n-gram 인접 매칭</td><td class="num">53건</td></tr>
+          <tr><td>조건부 인접 문맥</td><td class="wrap-cell">보상 표현과 주관적 후기 표현의 n-gram 인접 매칭</td><td class="num">58건</td></tr>
           <tr><td>문두 제약 규칙</td><td class="wrap-cell">문장 첫머리 한정 할인 구매 공시 탐지</td><td class="num">5건</td></tr>
         </tbody>
       </table>
     </div>
-    <p class="tbl-cap">표 16. 대가성 리뷰 판정 규칙 체계 및 추출 건수 (총 668건 · 전체 리뷰의 0.89%)</p>
+    <p class="tbl-cap">표 16. 대가성 리뷰 판정 규칙 체계 및 추출 건수 (총 697건 · 전체 리뷰의 0.88%)</p>
 
     <p class="prose" style="margin-top:16px">
-      탐지 규칙 정련 과정에서 오탐을 방지하기 위한 배제 기준이 중요하게 작용했다. 예컨대 "광고"라는 단어는 410건
-      탐지되었으나 대부분 "광고 보고 구매했다"는 일반 구매 후기여서 제외했다. "솔직한 후기" 역시 215건으로
+      탐지 규칙 정련 과정에서 오탐을 방지하기 위한 배제 기준이 중요하게 작용했다. 예컨대 "광고"라는 단어는 551건
+      탐지되었으나 대부분 "광고 보고 구매했다"는 일반 구매 후기여서 제외했다. "솔직한 후기" 역시 347건으로
       빈번했으나 상투적 표현에 불과하므로 보상 단어가 인접한 경우에만 조건부 인정했다.
     </p>
     <p class="prose">
-      수집 대상 상품 2,169개 중 대가성 리뷰가 1건이라도 존재하는 상품은 <b>193개(8.9%)</b>에 그쳐 상품별 비중의
+      수집 대상 상품 2,240개 중 대가성 리뷰가 1건이라도 존재하는 상품은 <b>201개(9.0%)</b>에 그쳐 상품별 비중의
       중앙값이 0으로 수렴함에 따라 상품 단위 비교는 불가능했다. 이에 분석 단위를 브랜드로 전환하여 특정 시점의
       대가성 리뷰 집중도를 '캠페인'으로 정의하고 전후 성과를 비교하고자 했다. 그러나 탐지된 대가성 리뷰의 작성
-      시점은 2023년까지 넓게 분산되어 있는 반면 랭킹 관측 기간은 최근 1개월에 한정되어 시점 매칭이 성립하지 않았다.
-      식별된 28건의 캠페인 중 관측 기간과 중첩된 사례는 <b>6건</b>에 불과했으며, 브랜드 횡단면 비교에서도 대가성
+      시점은 2023년까지 넓게 분산되어 있는 반면 랭킹 관측 기간은 카테고리 수집이 시작된 8월 3일 이후로 한정되어
+      시점 매칭이 성립하지 않았다. 식별된 29건의 캠페인 중 관측 기간과 중첩된 사례는 <b>7건</b>에 불과했으며, 브랜드 횡단면 비교에서도 대가성
       비중과 순위 간 유의미한 차이는 발견되지 않았다.
     </p>
 
@@ -1388,7 +1390,7 @@
       <span class="lab m">분석 방법</span>
       <p class="prose">
         <span class="method-name">어휘 빈도 집계 및 소구 속성 사전 매칭.</span>
-        수집된 리뷰 본문 70,979건(일자별 수집분과 백필분을 리뷰 ID 기준으로 중복 제거)에서 조사·어미를 제거해 어간에 가까운 형태로 토큰화하고, 부사·용언 활용형 등
+        수집된 리뷰 본문 74,776건(일자별 수집분과 백필분을 리뷰 ID 기준으로 중복 제거)에서 조사·어미를 제거해 어간에 가까운 형태로 토큰화하고, 부사·용언 활용형 등
         내용어가 아닌 어휘를 불용어로 걸러냈다. 어휘 빈도는 한 리뷰에 같은 단어가 여러 번 나와도 1회로 세는
         문서빈도 기준이다. 이어 보습·자극·제형·향·가격 등 <b>10개 소구 속성</b>을 키워드 묶음으로 정의해
         리뷰별로 해당 속성의 언급 여부를 판정하고, 전체와 카테고리 단위로 언급률을 집계했다.
@@ -1398,7 +1400,7 @@
     <div class="fig">
       <div class="fig-head">
         <div class="fig-title">그림 15. 리뷰 본문에 나타난 소비자 어휘</div>
-        <div class="fig-sub">문서빈도 상위 48개 어휘 · 리뷰 70,979건</div>
+        <div class="fig-sub">문서빈도 상위 48개 어휘 · 리뷰 74,776건</div>
       </div>
       <div class="chart-box chart-scroll" id="chCloud"></div>
       <div class="fig-note">
@@ -1409,7 +1411,7 @@
     </div>
 
     <p class="prose" style="margin-top:20px">
-      전체 리뷰 기준으로 가장 많이 언급되는 속성은 <b>보습·수분(19.9%)</b>, <b>발림·제형(18.4%)</b>, <b>자극·순함(16.6%)</b> 순이다. 다만 이 평균값은 카테고리를 섞은 결과이며, 카테고리 단위로 내려가면
+      전체 리뷰 기준으로 가장 많이 언급되는 속성은 <b>보습·수분(20.2%)</b>, <b>발림·제형(18.5%)</b>, <b>자극·순함(16.5%)</b> 순이다. 다만 이 평균값은 카테고리를 섞은 결과이며, 카테고리 단위로 내려가면
       소구 축이 훨씬 뚜렷하게 갈린다.
     </p>
 
@@ -1426,10 +1428,10 @@
     </div>
 
     <p class="prose" style="margin-top:20px">
-      카테고리마다 소비자가 보는 축이 분명하게 다르다. <b>향수·디퓨저</b>는 리뷰 다섯 건 중 네 건(80.2%)이
-      향을 언급하고, <b>클렌징</b>은 자극·순함(47.8%), <b>선케어</b>는 끈적임·마무리(36.2%),
-      <b>메이크업</b>은 커버·발색(31.5%)과 지속력(26.9%)이 지배적이다. 스킨케어(44.9%)와 더모
-      코스메틱(48.0%)에서는 보습·수분이 절반에 가깝게 등장한다.
+      카테고리마다 소비자가 보는 축이 분명하게 다르다. <b>향수·디퓨저</b>는 리뷰 다섯 건 중 네 건(79.9%)이
+      향을 언급하고, <b>클렌징</b>은 자극·순함(47.4%), <b>선케어</b>는 끈적임·마무리(35.9%),
+      <b>메이크업</b>은 커버·발색(31.6%)과 지속력(25.5%)이 지배적이다. 스킨케어(46.7%)와 더모
+      코스메틱(48.3%)에서는 보습·수분이 절반에 가깝게 등장한다.
     </p>
     <p class="prose">
       반면 푸드·건강식품·패션·취미 등 비(非)화장품 카테고리에서는 어느 속성도 20%를 넘지 못하고
@@ -1443,12 +1445,12 @@
         <tbody>
           <tr><td>포토 첨부율</td><td class="num">73.3%</td><td class="wrap-cell">도움순 상위 리뷰 표본 기준. 사진이 붙은 리뷰가 상위 노출에서 우세하다</td></tr>
           <tr><td>재구매 표시율</td><td class="num">13.0%</td><td class="wrap-cell">작성자가 재구매 여부를 직접 체크한 비율</td></tr>
-          <tr><td>본문 길이 (중위)</td><td class="num">88자</td><td class="wrap-cell">평균 144자 · 상위 10%는 320자 이상 — 소수의 장문이 평균을 끌어올린다</td></tr>
-          <tr><td>별점 5점 비율</td><td class="num">87.6%</td><td class="wrap-cell">4점 이상이 95.6% — 5.2절에서 확인한 천장 효과가 본문 표본에서도 동일하게 관측된다</td></tr>
+          <tr><td>본문 길이 (중위)</td><td class="num">89자</td><td class="wrap-cell">평균 145자 · 상위 10%는 320자 이상 — 소수의 장문이 평균을 끌어올린다</td></tr>
+          <tr><td>별점 5점 비율</td><td class="num">87.7%</td><td class="wrap-cell">4점 이상이 95.6% — 5.2절에서 확인한 천장 효과가 본문 표본에서도 동일하게 관측된다</td></tr>
         </tbody>
       </table>
     </div>
-    <p class="tbl-cap">표 17. 리뷰 본문 표본의 구조적 특성 (70,979건)</p>
+    <p class="tbl-cap">표 17. 리뷰 본문 표본의 구조적 특성 (74,776건)</p>
 
     <div class="hstep">
       <span class="lab">정리</span>
@@ -1589,28 +1591,31 @@
     <div class="hstep">
       <span class="lab">검증 질문</span>
       <p class="prose">
-        올리브영은 약 3개월 주기로 전사 대형 세일을 진행한다. 수집 기간 말미인 <b>2026년 8월 30일</b>에 해당
-        세일이 개시되었다. 이 구간을 통해 <b class="wine">전사 프로모션이 랭킹의 결정 구조 자체를 바꾸는지</b>, 아니면 순위만
-        일시적으로 뒤섞고 결정 요인은 그대로인지 검증한다.
+        올리브영은 약 3개월 주기로 전사 대형 세일을 진행한다. 수집 기간 중 <b>2026년 8월 30일에 개시되어
+        9월 5일에 종료된</b> 세일이 여기에 해당하며, 종료 후 5일까지 관측이 이어졌다. 이 구간을 통해
+        <b class="wine">전사 프로모션이 랭킹의 결정 구조 자체를 바꾸는지</b>, 아니면 순위만 일시적으로 뒤섞고
+        결정 요인은 그대로인지, 그리고 <b class="wine">세일이 끝나면 구조가 원래대로 돌아오는지</b>까지 검증한다.
       </p>
     </div>
     <div class="hstep">
       <span class="lab m">분석 방법</span>
       <p class="prose">
         <span class="method-name">구간 분할 회귀(Split-sample Regression).</span>
-        일별 평균 할인율이 전일 대비 5%p 이상 상승한 날을 세일 개시일로 자동 탐지해 8월 30일을 식별했다.
-        세일은 같은 날 거의 모든 상품에 동시 적용되므로 <span data-gl="fe">카테고리×일 고정효과</span>에 그대로 흡수되어
-        효과가 소거된다. 따라서 세일 여부를 변수로 넣는 대신, <b>세일 전(8/5~8/29)과 세일 중(8/30~9/1) 구간에 동일한
-        회귀를 각각 적용</b>해 계수 자체가 어떻게 달라지는지 대조했다.
+        일별 평균 할인율이 전일 대비 5%p 이상 움직인 날을 경계로 삼아 개시일(8월 30일)과 종료일(9월 5일)을
+        각각 자동 탐지했다. 세일은 같은 날 거의 모든 상품에 동시 적용되므로 <span data-gl="fe">카테고리×일 고정효과</span>에
+        그대로 흡수되어 효과가 소거된다. 따라서 세일 여부를 변수로 넣는 대신, <b>세일 전(8/5~8/29) · 세일 중(8/30~9/5) ·
+        세일 후(9/6~9/10) 세 구간에 동일한 회귀를 각각 적용</b>해 계수 자체가 어떻게 달라지고 되돌아오는지 대조했다.
       </p>
     </div>
     <div class="hstep">
       <span class="lab r">분석 결과 및 가설 대조</span>
       <p class="prose">
-        세일 개시와 함께 평균 할인율은 18.8%에서 26.9%로, 쿠폰 부착률은 34%에서 90%로 하루 만에 계단식으로
-        이동했다. 주목할 결과는 계수의 변화다. <b class="wine">세일 전까지 미미하게나마 순위와 연동되던 할인율은 세일 구간에서
-        신호가 완전히 소멸(|t| 0.92 → 0.01)</b>했다. 거의 모든 상품이 동시에 할인에 들어가면 할인율은 더 이상 상품
-        간 순위를 가르는 변별 요인으로 기능하지 못한다. 반면 <b>리뷰 증가 속도의 설명력은 오히려 강화</b>되었다.
+        세일 개시와 함께 평균 할인율은 18.8%에서 27.0%로, 쿠폰 부착률은 34%에서 90%로 하루 만에 계단식으로
+        이동했고, 종료 다음 날 각각 17.6%와 23%로 원래 자리에 되돌아왔다. 주목할 결과는 계수의 변화다.
+        <b class="wine">세일 전까지 미미하게나마 순위와 연동되던 할인율은 세일 구간에서 신호가 사라졌다가
+        (|t| 0.92 → 1.06, 부호도 역전) 종료 후 오히려 또렷해진다(|t| 2.27)</b>. 거의 모든 상품이 동시에 할인에
+        들어가면 할인율은 상품 간 순위를 가르는 변별 요인으로 기능하지 못하고, 할인이 걷히면 다시 변별 요인으로
+        돌아온다는 뜻이다. 반면 <b>리뷰 증가 속도의 설명력은 세일 중 강화되었다가 종료 후 평시 수준으로 복귀</b>했다.
       </p>
     </div>
 
@@ -1623,60 +1628,71 @@
       <div class="chart-box chart-scroll" id="chSale"></div>
       <div class="fig-note">
         점진적 변화가 아니라 <b>하루 만의 계단식 이동</b>이다. 세일 전까지 완만히 하락하던 두 지표가 8월 30일을 기점으로
-        동시에 도약한다.
+        동시에 도약하고, 9월 6일에는 같은 폭으로 되돌아온다 — <b>세일 구간은 양쪽 모두 하루 만에 열리고 닫힌다</b>.
       </div>
     </div>
 
     <div class="tbl-scroll">
       <table class="data">
-        <thead><tr><th>지표</th><th class="num">세일 전</th><th class="num">세일 중</th><th class="num">변화</th><th>해석</th></tr></thead>
+        <thead><tr><th>지표</th><th class="num">세일 전</th><th class="num">세일 중</th><th class="num">세일 후</th><th>해석</th></tr></thead>
         <tbody>
-          <tr><td>평균 할인율</td><td class="num">18.8%</td><td class="num">26.9%</td><td class="num">+8.0%p</td><td class="wrap-cell">전 카테고리 동시 할인 확대</td></tr>
-          <tr class="hl"><td>쿠폰 부착률</td><td class="num">34%</td><td class="num">90%</td><td class="num">+56%p</td><td class="wrap-cell">사실상 전 상품 적용 — 변별력 상실</td></tr>
-          <tr><td>세일 배지</td><td class="num">0.70</td><td class="num">0.85</td><td class="num">+0.15</td><td class="wrap-cell">부착 범위 확대</td></tr>
-          <tr><td>증정 배지</td><td class="num">0.21</td><td class="num">0.00</td><td class="num">−0.21</td><td class="wrap-cell">배지 자체가 노출면에서 소멸 (아래 경고 참조)</td></tr>
-          <tr><td>리뷰 증가 속도 (중위)</td><td class="num">7.0건/일</td><td class="num">13.0건/일</td><td class="num">1.86배</td><td class="wrap-cell">판매 증가에 따른 리뷰 동반 급증</td></tr>
+          <tr><td>평균 할인율</td><td class="num">18.8%</td><td class="num">27.0%</td><td class="num">17.6%</td><td class="wrap-cell">개시·종료 모두 하루 만에 이동</td></tr>
+          <tr class="hl"><td>쿠폰 부착률</td><td class="num">34%</td><td class="num">90%</td><td class="num">23%</td><td class="wrap-cell">사실상 전 상품 적용 → 변별력 상실 후 복귀</td></tr>
+          <tr><td>세일 배지</td><td class="num">0.70</td><td class="num">0.85</td><td class="num">0.68</td><td class="wrap-cell">부착 범위 확대 후 원위치</td></tr>
+          <tr><td>증정 배지</td><td class="num">0.21</td><td class="num">0.00</td><td class="num">0.04</td><td class="wrap-cell">배지 자체가 노출면에서 소멸 (아래 경고 참조)</td></tr>
+          <tr><td>리뷰 증가 속도 (중위)</td><td class="num">7.0건/일</td><td class="num">14.0건/일</td><td class="num">8.0건/일</td><td class="wrap-cell">세일 중 2.0배 → 종료 후 평시 수준 복귀</td></tr>
         </tbody>
       </table>
     </div>
-    <p class="tbl-cap">표 18. 세일 전후 프로모션·리뷰 지표 비교 (세일 전 8/5~8/29, 세일 중 8/30~9/1)</p>
+    <p class="tbl-cap">표 18. 세일 전후 프로모션·리뷰 지표 비교 (세일 전 8/5~8/29 · 세일 중 8/30~9/5 · 세일 후 9/6~9/10)</p>
 
     <p class="prose">
       랭킹 지형은 세일 첫날 한 차례 크게 뒤집힌 뒤 곧바로 고착되는 특이한 궤적을 보였다. 개시일인 8월 30일에는
-      TOP100 신규 진입이 <b>61개</b>로 평시(37개)의 1.6배까지 치솟고 전일 대비 순위 상관은 0.42로 급락했다.
+      TOP100 신규 진입이 <b>61개</b>로 평시(37.2개)의 1.6배까지 치솟고 전일 대비 순위 상관은 0.42로 급락했다.
       그런데 <b class="wine">바로 다음 날에는 신규 진입이 6개에 그치고 순위 상관이 0.967까지 올라, 재편된 판이 그대로 굳었다</b>.
-      3일차인 9월 1일에는 다시 32개가 교체되었는데, 급상승 상품 대부분이 그날 지정된 '하루특가' 품목이었다.
+      이후 세일 기간 내내 일평균 교체는 28.4개로 평시보다 줄어든 채 유지된다. 반대로 <b class="wine">세일이 끝나자 판은
+      다시 크게 흔들려</b> 9월 6~7일에 42개·49개가 교체되고, 세일 후 구간의 일평균 교체는 40.2개로 평시를 웃돌았다.
+      세일은 랭킹을 한 번 뒤집어 고정했다가, 끝나면서 다시 한 번 뒤집는다.
     </p>
 
     <div class="tbl-scroll">
       <table class="data">
-        <thead><tr><th>변수</th><th class="num">세일 전 계수</th><th class="num">세일 전 |t|</th><th class="num">세일 중 계수</th><th class="num">세일 중 |t|</th><th>변화 해석</th></tr></thead>
+        <thead><tr><th>변수</th><th class="num">세일 전 |t|</th><th class="num">세일 중 |t|</th><th class="num">세일 후 |t|</th><th>변화 해석</th></tr></thead>
         <tbody>
-          <tr><td>리뷰 증가 속도</td><td class="num">−10.97</td><td class="num">26.3</td><td class="num">−14.24</td><td class="num">23.9</td><td class="wrap-cell">설명력 강화 — 세일 중에도 가장 강한 요인</td></tr>
-          <tr><td>실제 판매가격</td><td class="num">−4.49</td><td class="num">10.8</td><td class="num">−7.26</td><td class="num">12.9</td><td class="wrap-cell">고가 상품의 상위 집중 심화</td></tr>
-          <tr class="hl"><td>할인율</td><td class="num">−0.37</td><td class="num">0.92</td><td class="num">+0.01</td><td class="num">0.01</td><td class="wrap-cell">신호 완전 소멸 — 모두가 할인하면 변별력이 없다</td></tr>
-          <tr><td>쿠폰 배지</td><td class="num">−3.47</td><td class="num">10.5</td><td class="num">−2.00</td><td class="num">3.9</td><td class="wrap-cell">부착률 90% 도달로 효과 희석</td></tr>
-          <tr><td>리뷰 총량</td><td class="num">−1.95</td><td class="num">4.0</td><td class="num">−1.49</td><td class="num">2.3</td><td class="wrap-cell">두 구간 모두 기여도 미미</td></tr>
+          <tr><td>리뷰 증가 속도</td><td class="num">26.3 (−10.97)</td><td class="num">27.9 (−14.38)</td><td class="num">20.1 (−10.59)</td><td class="wrap-cell">세일 중 강화 → 종료 후 평시 수준 복귀. 어느 구간에서나 가장 강한 요인</td></tr>
+          <tr><td>실제 판매가격</td><td class="num">10.8 (−4.49)</td><td class="num">14.4 (−7.08)</td><td class="num">8.7 (−4.47)</td><td class="wrap-cell">세일 중 고가 상품의 상위 집중이 심화됐다가 원위치</td></tr>
+          <tr class="hl"><td>할인율</td><td class="num">0.92 (−0.37)</td><td class="num">1.06 (+0.51)</td><td class="num">2.27 (−1.05)</td><td class="wrap-cell">세일 중 신호 소멸·부호 역전 → 종료 후 오히려 또렷해진다</td></tr>
+          <tr><td>쿠폰 배지</td><td class="num">10.5 (−3.47)</td><td class="num">5.2 (−2.22)</td><td class="num">2.7 (−1.29)</td><td class="wrap-cell">부착률 90% 도달로 효과 희석 — 종료 후에도 회복이 더디다</td></tr>
+          <tr><td>리뷰 총량</td><td class="num">4.0 (−1.95)</td><td class="num">3.0 (−1.65)</td><td class="num">3.2 (−1.84)</td><td class="wrap-cell">세 구간 모두 기여도 미미</td></tr>
         </tbody>
       </table>
     </div>
-    <p class="tbl-cap">표 19. 구간별 동일 회귀 계수 비교 (카테고리×일 고정효과 · 상품 클러스터 보정 · 표준화 계수, 세일 전 N=38,054 / 세일 중 N=5,338)</p>
+    <p class="tbl-cap">표 19. 구간별 동일 회귀 계수 비교 (카테고리×일 고정효과 · 상품 클러스터 보정 · 괄호 안은 표준화 계수, 세일 전 N=38,054 / 세일 중 N=12,675 / 세일 후 N=8,288)</p>
 
     <div class="hstep">
       <span class="lab">시사점</span>
       <p class="prose">
-        대형 세일은 <b class="wine">랭킹의 결정 구조를 바꾸는 것이 아니라, 할인이라는 변수를 상수로 만들어 무력화한다</b>.
-        전 상품이 동시에 할인에 들어가는 순간 상시 할인율은 순위 경쟁에서 의미를 잃고, 순위를 가르는 것은
+        대형 세일은 <b class="wine">랭킹의 결정 구조를 바꾸는 것이 아니라, 할인이라는 변수를 한동안 상수로 만들어
+        무력화한다</b>. 전 상품이 동시에 할인에 들어가는 순간 상시 할인율은 순위 경쟁에서 의미를 잃고, 순위를 가르는 것은
         <b>'하루특가'처럼 특정 시점에 집중 배정되는 단기 딜</b>과 그로 인한 판매·리뷰 유입 속도로 좁혀진다.
         세일 기간 판촉 예산은 전 기간에 균등히 펴 바르는 방식보다, 하루 단위로 집중하는 편이 순위 관점에서 유리하다.
+      </p>
+      <p class="prose">
+        종료 구간까지 관측하자 <b class="wine">이 무력화가 한시적이라는 점이 분명해졌다</b>. 할인율·쿠폰·리뷰 유입 속도의
+        계수는 모두 세일 전 수준으로 되돌아갔고, 특히 할인율은 세일 중 사라졌던 신호가 종료 후 오히려 또렷해졌다.
+        세일로 올라간 자리도 그대로 남지는 않는다 — <b>세일 중 순위가 오른 25개 상품 가운데 21개(84%)는 TOP100에
+        잔류했으나 평균 7.9계단 되밀렸고, 세일 마지막 날 수준(±10계단)을 지킨 것은 그중 62%</b>다. 세일 개시 후
+        새로 진입한 58개 중 종료 후까지 남은 것은 35개(60%)에 그친다. 세일은 순위를 빌려주는 것에 가깝고,
+        빌린 자리의 3~4할은 종료와 함께 반납된다.
       </p>
     </div>
 
     <div class="callout warn">
-      <span class="c-tag">이 절의 결과는 잠정이다</span>
-      세일 구간 관측치가 <b>3일(8/30~9/1)</b>에 그치고 <b>세일 종료 후 반등 국면을 관측하지 못했다</b>. 따라서 위 계수 변화가
-      세일의 구조적 효과인지 개시 직후의 일시적 충격인지 아직 분리되지 않는다. 또한 <b>증정 배지는 8월 29일부터 노출면에서
-      완전히 사라져</b>(전 상품 0) 세일 구간에서는 관측 자체가 불가능하다. 배지 표기 영역을 쿠폰이 대체한 것으로 보이나
+      <span class="c-tag">이 절을 읽을 때의 단서</span>
+      세일 한 번(8/30~9/5)과 그 뒤 5일을 관측한 결과다. 개시·고착·종료·복귀의 궤적은 전 구간이 관측됐지만,
+      <b>다른 세일에서도 같은 패턴이 반복되는지는 이 데이터로 확인할 수 없다</b>. 세일 후 구간도 5일이라
+      완전한 정상화 여부는 다음 수집분에서 다시 봐야 한다. 또한 <b>증정 배지는 8월 29일부터 노출면에서
+      완전히 사라져</b>(전 상품 0) 세일 구간에서는 관측 자체가 불가능했다. 배지 표기 영역을 쿠폰이 대체한 것으로 보이나
       수집 시점에서 확인할 수 없어, 이 구간의 증정 변수는 분석에서 제외했다.
     </div>
 
@@ -1698,7 +1714,7 @@
         <thead><tr><th>구분</th><th>연구 가설</th><th>실증 검증 결과</th><th>핵심 검증 사유</th></tr></thead>
         <tbody>
           <tr><td>가설 1</td><td class="wrap-cell">리뷰 증가 속도의 판매 랭킹 견인 선행 관계</td><td><span class="verdict-pill reject">기각 〔잠정〕</span></td><td class="wrap-cell">순위 상승이 리뷰 증가를 견인하는 역방향 인과성 확인 (후행 지표 판정)</td></tr>
-          <tr><td>가설 2</td><td class="wrap-cell">대가성(체험단) 리뷰 비중의 랭킹 우위 관계</td><td><span class="verdict-pill na">검증 불가</span></td><td class="wrap-cell">본문 공시 탐지율 한계(0.89%) 및 캠페인-관측 시점 불일치</td></tr>
+          <tr><td>가설 2</td><td class="wrap-cell">대가성(체험단) 리뷰 비중의 랭킹 우위 관계</td><td><span class="verdict-pill na">검증 불가</span></td><td class="wrap-cell">본문 공시 탐지율 한계(0.88%) 및 캠페인-관측 시점 불일치</td></tr>
           <tr><td>가설 3</td><td class="wrap-cell">리뷰 누적 총량과 평균 별점의 순위 설명력</td><td><span class="verdict-pill partial">일부 지지</span></td><td class="wrap-cell">최근 리뷰 증가 속도 단독 우위, 별점은 천장 효과로 변별력 상실</td></tr>
           <tr><td>가설 4</td><td class="wrap-cell">썸네일 시각 구성 요소의 상위 랭킹 연관성</td><td><span class="verdict-pill partial">부분 지지</span></td><td class="wrap-cell">밝기·채도 신호 소멸, 구성 복잡도가 최강 신호로 잔존</td></tr>
         </tbody>
@@ -1716,16 +1732,16 @@
         형성되지 않았다.</li>
       <li><b>프로모션의 방향성 분화.</b> 할인율·쿠폰·증정 배지는 즉각적인 순위 상승을 견인했으나, 세일 배지는
         부진 상품에 방어 목적으로 사후 투입되는 역인과성을 보였다.</li>
-      <li><b>대형 세일은 할인율을 상수로 만든다.</b> 8월 30일 개시된 전사 세일 구간에서 쿠폰 부착률이 90%에 도달하자 할인율의 순위 변별 신호가 완전히 소멸(|t| 0.92 → 0.01)했다. 세일 기간에는 상시 할인이 아니라 '하루특가'와 같은 단기 집중 딜이 순위를 가른다 〔잠정〕.</li>
-      <li><b>브랜드 자산의 지배력.</b> 관측일의 80% 이상 상위권에 노출된 27개 핵심 브랜드가 전체 TOP 100 슬롯의 44%를 과점하고 있었다.</li>
+      <li><b>대형 세일은 할인율을 한동안 상수로 만든다.</b> 8월 30일 개시돼 9월 5일 종료된 전사 세일 구간에서 쿠폰 부착률이 90%에 도달하자 할인율의 순위 변별 신호가 소멸했고(|t| 0.92 → 1.06, 부호 역전), 세일이 끝나자 다시 또렷해졌다(|t| 2.27). 세일 기간에는 상시 할인이 아니라 '하루특가'와 같은 단기 집중 딜이 순위를 가르며, <b>세일로 올라간 자리의 3~4할은 종료와 함께 반납된다</b>.</li>
+      <li><b>브랜드 자산의 지배력.</b> 관측일의 80% 이상 상위권에 노출된 27개 핵심 브랜드가 전체 TOP 100 슬롯의 44.6%를 과점하고 있었다.</li>
       <li><b>상승 요인과 잔류 요인의 분리.</b> 누적 리뷰 총량은 순위 상승에는 직접 기여하지 못했으나 익일 100위 내
         잔류 확률을 유의미하게 높이는 안전장치로 기능했다.</li>
       <li><b>할인 반응은 네 갈래로 갈린다.</b> 할인율–판매 반응 곡선의 형태를 군집화하면 가속형 · 데스밸리형 ·
-        포화형 · 무반응/역행형 네 유형이 나온다. 유형을 가르는 것은 가격대(중앙값 15,170~20,900원으로 차이 없음)나 썸네일 색채가 아니라 <b>이미 쌓인 리뷰 규모</b>였다 — 리뷰수 중앙값이 가속형 623건에서 데스밸리형 3,300건까지 곡선 순서 그대로 커진다.</li>
-      <li><b>프로모션의 순수 증분 효과는 관행적 추정치의 3분의 1.</b> 프로모션은 판매 호조기가 아니라 판매가 꺾인 뒤에 투입된다(부착 직전 관측 −25.6%). 집행 전후를 단순 비교하면 그 이후 자연히 따라온
-        회복분까지 성과로 계산되어 +10.7%가 산출되지만, 프로모션이 없던 구간으로 학습한 모형으로 미집행 시 판매량을 예측해 빼면 순수 증분은 <b>+3.3%</b>에 그친다. 그마저 증정(+4.0%)과 쿠폰(+3.4%)에 집중되며, 세일은 회복분을 통제해도 (−)를 벗어나지 못한다.</li>
+        포화형 · 무반응/역행형 네 유형이 나온다. 유형을 가르는 것은 가격대나 썸네일 색채가 아니라 <b>이미 쌓인 리뷰 규모</b>였다 — 할인이 듣는 두 유형은 리뷰수 중앙값이 570~1,007건인 반면, 듣지 않는 두 유형은 2,912~3,330건으로 약 3배 크다.</li>
+      <li><b>프로모션의 순수 증분 효과는 관행적 추정치의 10분의 1.</b> 프로모션은 판매 호조기가 아니라 판매가 꺾인 뒤에 투입된다(부착 직전 관측 −21.4%). 집행 전후를 단순 비교하면 그 이후 자연히 따라온
+        회복분까지 성과로 계산되어 +43.7%가 산출되지만, 프로모션이 없던 구간으로 학습한 모형으로 미집행 시 판매량을 예측해 빼면 순수 증분은 <b>+3.9%</b>에 그친다. 대형 세일로 배지가 한꺼번에 붙은 구간이 포함되면서 두 값의 격차는 11배까지 벌어졌다. 그마저 <b>쿠폰(+5.6%)에 거의 전부 몰리고</b>, 증정(−0.2%)과 세일(+0.2%)은 회복분을 통제하면 0 근방으로 수렴한다.</li>
       <li><b>평점은 평균이든 비중이든 순위를 설명하지 못한다.</b> 최근 3개월 리뷰의 긍정(4점 이상) 비중은 95.7%,
-        부정(2점 이하)은 1.8%다. 평균 별점을 긍정·부정 비중으로 재구성해도 순위 설명력은 within R² 0.001 미만으로
+        부정(2점 이하)은 1.9%다. 평균 별점을 긍정·부정 비중으로 재구성해도 순위 설명력은 within R² 0.001 미만으로
         생기지 않았다. 다만 비중은 평균보다 상품 간 차이를 넓게 드러내 <b>품질 관리 지표로는 평균보다 낫다</b>.</li>
       <li><b>썸네일은 색이 아니라 정보량.</b> 상위권 썸네일의 공통점은 감성적 색상이나 밝기가 아닌, 화면 전면에
         다층적으로 배치된 텍스트·배지 중심의 실질 정보량(구성 복잡도)에 있었다.</li>
@@ -1753,13 +1769,13 @@
         <p>세일 배지는 순위 하락 이후에 방어적으로 부착되는 경향이 뚜렷하여 부양 수단으로 기능하기 어렵다. 다만 쿠폰
           배지의 상승 효과는 <b>부착 당일에 집중되고 이후 빠르게 감쇄</b>하므로, 특정 시점의 단기 집중 노출이
           필요한 경우에 한정하여 전략적으로 집행해야 한다. 반사실 모형으로 자연 반등을 걷어낸 뒤에도 (+)로 남는
-          수단은 <b>증정(+4.0%)과 쿠폰(+3.4%)뿐</b>이다.</p>
+          수단은 <b>쿠폰(+5.6%)뿐</b>이며, 증정(−0.2%)과 세일(+0.2%)은 0 근방으로 수렴한다.</p>
       </div>
       <div class="card rec">
         <div class="r-no">ACTION 04</div>
         <h3>진입 국면과 유지 국면의 차별화 운영</h3>
         <p>진입 국면에서는 단기 리뷰 증가 속도와 가격 프로모션이 핵심 동력으로 작용하는 반면, 유지 국면에서는 누적
-          리뷰 총량과 쿠폰·증정 혜택이 안전장치 역할을 수행한다. 특히 하위 25개 슬롯은 매일 49%가 교체되는 고회전 구간이므로, 이 구간의 상품은 순위 자체보다 <b>익일 잔류율을 핵심 성과 지표(KPI)</b>로 설정하는 것이
+          리뷰 총량과 쿠폰·증정 혜택이 안전장치 역할을 수행한다. 특히 하위 25개 슬롯은 매일 50%가 교체되는 고회전 구간이므로, 이 구간의 상품은 순위 자체보다 <b>익일 잔류율을 핵심 성과 지표(KPI)</b>로 설정하는 것이
           안정적이다.</p>
       </div>
       <div class="card rec">
@@ -1775,12 +1791,12 @@
         <p>프로모션 배지 부착과 썸네일 교체는 무작위로 집행되지 않고 상품의 판매 상태에 따라 기획 투입된다. 사후
           성과를 측정할 때는 집행 이전의 <b>사전 추세(Pre-trend)</b>를 반드시 확인하고 통제해야 한다. 이를 간과할
           경우 세일 배지 분석에서 나타난 것처럼 마케팅 수단의 기여도를 정반대로 해석하는 오류를 범하게 된다.
-          최소 교정은 같은 카테고리의 비집행 상품을 대조군으로 두는 것이며(+10.7% → +8.1%), 개체별 회복분까지 걷어내려면 <b>프로모션이 없던 구간으로 학습한 예측 모형</b>이 필요하다(→ +3.3%).</p>
+          최소 교정은 같은 카테고리의 비집행 상품을 대조군으로 두는 것이며(+43.7% → +2.0%), 개체별 회복분까지 반영하려면 <b>프로모션이 없던 구간으로 학습한 예측 모형</b>이 필요하다(→ +3.9%).</p>
       </div>
       <div class="card rec">
         <div class="r-no">ACTION 07</div>
         <h3>할인율은 반응 유형별로 배분한다</h3>
-        <p>할인율을 전 상품에 균일하게 얹는 편성은 낭비를 만든다. <b>가속형</b>은 할인율을 높일수록 수량과 금액이 함께 늘어 투입 대비 회수가 가장 확실하고, 리뷰가 이미 3,000건 이상 쌓인 <b>데스밸리형</b>은 1~20%가 가장 비효율적이므로 어중간한 상시 할인 대신 <b>30%를 넘기는 집중 편성</b>이 낫다. <b>포화형</b>은 30~40%가 상한이며 그 이상은 마진만 깎이고, <b>무반응·역행형</b>은 할인율 계수가 음수라 할인 예산을 빼는 편이 합리적이다.</p>
+        <p>할인율을 전 상품에 균일하게 얹는 편성은 낭비를 만든다. <b>가속형</b>은 할인율을 높일수록 수량과 금액이 함께 늘어 투입 대비 회수가 가장 확실하고, 리뷰가 이미 3,000건 가까이 쌓인 <b>데스밸리형</b>은 1~20%가 가장 비효율적이므로 어중간한 상시 할인 대신 <b>30%를 넘기는 집중 편성</b>이 낫다. <b>포화형</b>은 10~20%가 상한이며 그 이상은 마진만 깎이고, <b>무반응·역행형</b>은 어느 구간에서도 할인이 판매를 끌어올린다는 근거가 없어 할인 예산을 빼는 편이 합리적이다.</p>
       </div>
     </div>
 
@@ -1793,7 +1809,7 @@
         완전한 궤적과 하락폭을 추적하지 못했다.</li>
       <li>플랫폼이 제공하는 리뷰 목록이 <b>도움순으로 고정 정렬</b>되어 있어 확보된 본문 표본이 전체 리뷰 모집단을
         완벽히 대변하지 못하며, 이로 인해 대가성 리뷰가 과소 탐지되었을 가능성이 존재한다.</li>
-      <li>카테고리 비교가 가능한 관측 기간이 <b>26일</b>로 제한되어 시차 교차지연 패널 모형의 장기 검정력을
+      <li>카테고리 비교가 가능한 관측 기간이 <b>35일</b>로 제한되어 시차 교차지연 패널 모형의 장기 검정력을
         확정하기에 다소 제약이 따랐다.</li>
       <li>리뷰 본문 텍스트 공시에만 의존하는 탐지 방식의 한계로 인해 <b>이미지 내 공시나 미공시 체험단 리뷰</b>는
         식별하지 못했다.</li>
@@ -1817,7 +1833,7 @@
       <p>
         리뷰 증가 속도가 순위를 잘 설명했던 이유도 여기에 있다. 리뷰가 순위를 만든 것이 아니라,
         리뷰 증가가 <b>판매량을 비추는 관측 가능한 그림자</b>였기 때문이다. 실제로 전일 순위는 당일 리뷰를
-        강하게 예측했지만(|t| = 26.5) 그 반대 방향은 1일·3일·7일 어느 시차에서도 검출되지 않았다(|t| = 0.4).
+        강하게 예측했지만(|t| = 29.7) 그 반대 방향은 1일·3일·7일 어느 시차에서도 검출되지 않았다(|t| = 1.0).
       </p>
       <p>
         따라서 랭킹 전략의 출발점은 리뷰 수 확보가 아니라 <b>적정 가격선과 안정적 판매량의 조합</b>이며,
@@ -1832,13 +1848,13 @@
 <footer>
   <div class="wrap">
     <div class="refs">
-      <b>데이터 출처</b> — 올리브영 웹·모바일 공개 랭킹 및 리뷰 페이지 (자체 수집, 2026-07-21 ~ 09-01)<br>
+      <b>데이터 출처</b> — 올리브영 웹·모바일 공개 랭킹 및 리뷰 페이지 (자체 수집, 2026-07-21 ~ 09-10)<br>
       <b>분석 단위</b> — 카테고리 패널 (20개 카테고리 × 100위 × 일자) · 종속변수 ln(순위) 및 익일 잔류 여부<br>
       <b>검정 기준</b> — 카테고리 × 일자 이원 고정효과 · 상품 단위 클러스터 로버스트 표준오차 · 판정선 |t| = 2
     </div>
     <div class="src-links">
       <a href="./ranking.html">랭킹 조회 페이지</a>
-      <a href="./report_v7.docx" download="올리브영_랭킹_분석_보고서.docx">결과보고서 원문 (DOCX)</a>
+      <a href="./report_v8.docx" download="올리브영_랭킹_분석_보고서.docx">결과보고서 원문 (DOCX)</a>
       <a href="https://github.com/hdmzp/oliveyoung" target="_blank" rel="noopener">GitHub 저장소</a>
     </div>
     <div class="foot-note">
