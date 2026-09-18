@@ -391,8 +391,11 @@ def main() -> None:
         LE["_p_" + k] = v
     LE["gap"] = ya - cf[best]
     out(f"■ 4. 프로모션 유형별 증분 효과 ({best} 기준)")
+    out("    이벤트 = (상품, 온셋일) 한 쌍. 같은 상품이 배지를 여러 번 새로 달면")
+    out("    이벤트가 여러 건이 되므로 이벤트 수와 상품 수는 다르다.")
     for k, s in LE.groupby("kind"):
-        out(f"    {k:<6} 이벤트 {s['pid'].nunique():>4}개 · "
+        out(f"    {k:<6} 이벤트 {s.groupby(['pid', 't0']).ngroups:>5}건 · "
+            f"상품 {s['pid'].nunique():>4}개 · "
             f"Δln {s['gap'].mean():+.4f} → {pct(s['gap'].mean()):+.1f}%")
     out()
 
