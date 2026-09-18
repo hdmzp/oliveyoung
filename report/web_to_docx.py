@@ -11,6 +11,7 @@ DOCX 는 거기서 생성한다. 웹 리포트를 고치면 이 스크립트만 
 from __future__ import annotations
 
 import argparse
+import glob
 import html
 import os
 import re
@@ -60,13 +61,49 @@ def parse_table(frag: str) -> tuple[list[str], list[list[str]]]:
     return head, rows
 
 
+def expand_callouts(body: str) -> str:
+    """콜아웃 본문을 문단으로 펼친다.
+
+    콜아웃(<div class="callout">)의 본문은 <p> 로 감싸여 있지 않아, 블록
+    정규식이 c-tag 만 집어내고 정작 내용을 통째로 버렸다. 여는 태그부터
+    짝이 맞는 </div> 까지를 찾아 c-tag 는 그대로 두고 나머지를 <br> 기준으로
+    잘라 문단으로 바꾼다. 안에 든 <div class="formula"> 도 한 문단이 된다.
+    """
+    out: list[str] = []
+    i = 0
+    for m in re.finditer(r'<div class="callout[^"]*">', body):
+        if m.start() < i:
+            continue
+        depth, close = 1, None
+        for t in re.finditer(r"<(/?)div\b", body[m.end():]):
+            depth += -1 if t.group(1) else 1
+            if depth == 0:
+                close = m.end() + t.start()
+                break
+        if close is None:
+            continue
+        inner = body[m.end():close]
+        tag = ""
+        tm = re.search(r'<span class="c-tag"[^>]*>.*?</span>', inner, re.S)
+        if tm:
+            tag = tm.group(0)
+            inner = inner[:tm.start()] + inner[tm.end():]
+        inner = re.sub(r"</?div[^>]*>", "<br>", inner)
+        parts = [x for x in re.split(r"<br\s*/?>", inner) if text_of(x)]
+        out.append(body[i:m.start()])
+        out.append(tag + "".join(f'<p class="co">{x}</p>' for x in parts))
+        i = close + len("</div>")
+    out.append(body[i:])
+    return "".join(out)
+
+
 def read_blocks(raw: str) -> list[Block]:
     """본문을 문서 순서대로 훑어 블록 목록을 만든다.
 
     HTMLParser 로 상태를 들고 다니면 <b>·<span> 같은 인라인 태그에서 문단이
     잘린다. 블록 요소만 정규식으로 순서대로 집어내는 편이 안전하다.
     """
-    body = raw[raw.index("<main"):raw.index("</main>")]
+    body = expand_callouts(raw[raw.index("<main"):raw.index("</main>")])
     pat = re.compile(
         r"<h2\b[^>]*>(?P<h2>.*?)</h2>"
         r"|<h3\b(?P<h3a>[^>]*)>(?P<h3>.*?)</h3>"
@@ -122,6 +159,18 @@ def read_blocks(raw: str) -> list[Block]:
 
 # ---------------------------------------------------------------- 차트 캡처
 
+def chromium_exe() -> str | None:
+    """번들된 Chromium 실행 파일을 찾는다. 못 찾으면 None(=Playwright 기본)."""
+    cands = ["/opt/pw-browsers/chromium/chrome-linux/chrome"]
+    cands += sorted(glob.glob("/opt/pw-browsers/chromium-*/chrome-linux/chrome"),
+                    reverse=True)
+    cands.append("/opt/pw-browsers/chromium")
+    for c in cands:
+        if os.path.isfile(c) and os.access(c, os.X_OK):
+            return c
+    return None
+
+
 def capture_charts(out_dir: str) -> dict[str, str]:
     """로컬 서버를 띄우고 차트 박스를 PNG 로 찍는다. 실패하면 빈 dict."""
     try:
@@ -135,9 +184,9 @@ def capture_charts(out_dir: str) -> dict[str, str]:
     time.sleep(2)
     shots: dict[str, str] = {}
     try:
-        exe = "/opt/pw-browsers/chromium"
+        exe = chromium_exe()
         with sync_playwright() as p:
-            b = p.chromium.launch(executable_path=exe if os.path.exists(exe) else None)
+            b = p.chromium.launch(executable_path=exe)
             pg = b.new_page(viewport={"width": 1280, "height": 1000},
                             device_scale_factor=2)
             pg.goto(f"http://127.0.0.1:{PORT}/index.html", wait_until="networkidle")

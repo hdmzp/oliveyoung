@@ -136,6 +136,103 @@ def to_long(df: pd.DataFrame, pre: int, post: int) -> pd.DataFrame:
     return pd.concat(out, ignore_index=True)
 
 
+# ---------------------------------------------------------------- D-1 진단
+
+def dip_decomposition(d: pd.DataFrame, E: pd.DataFrame, C: pd.DataFrame,
+                      pre: int, post: int, out) -> None:
+    """온셋 직전(D-1) 하락이 어디서 오는지 분해한다.
+
+    후보 세 가지를 같은 창에서 나란히 잰다.
+      ① 선택 편의   판매가 꺾인 상품에 프로모션이 붙는다 (Ashenfelter dip)
+      ② 달력·시장   온셋이 특정 날짜(세일 개시일)에 몰려, D-1 이 시장 전체의
+                    저점일과 겹친다 — 상품 고유의 부진이 아니다
+      ③ 프로모션 공백  직전 프로모션이 내려가고 새 배지가 붙기까지의 빈 구간
+    """
+    PC = [f"pre{k}" for k in range(pre, 0, -1)]
+    PO = [f"post{h}" for h in range(post)]
+    MPC = [f"mpre{k}" for k in range(pre, 0, -1)]
+    MPO = [f"mpost{h}" for h in range(post)]
+    lab = [f"D-{k}" for k in range(pre, 0, -1)] + [f"D+{h}" for h in range(post)]
+
+    def geo(df: pd.DataFrame) -> list[float]:
+        """ln 평균의 지수 = 기하평균 경로 (사전 평균 = 100)."""
+        b = df[PC].mean().mean()
+        return [100 * float(np.exp(v - b))
+                for v in list(df[PC].mean()) + list(df[PO].mean())]
+
+    def resid(df: pd.DataFrame) -> list[float]:
+        """카테고리×일 평균(시장지수)을 뺀 잔차의 기하평균 경로."""
+        x = df[PC + PO].to_numpy(float) - df[MPC + MPO].to_numpy(float)
+        m = np.nanmean(x, axis=0)
+        return [100 * float(np.exp(v - m[:pre].mean())) for v in m]
+
+    out("■ 8. D-1 하락의 분해 (사전 평균 = 100, 기하평균 경로)")
+    out(f"    {'계열':<22}" + "".join(f"{c:>8}" for c in lab))
+    for name, row in (("처치군 원계열", geo(E)),
+                      ("처치군 시장잔차", resid(E)),
+                      ("통제군 원계열", geo(C)),
+                      ("통제군 시장잔차", resid(C))):
+        out(f"    {name:<22}" + "".join(f"{v:>8.1f}" for v in row))
+    gE, rE, gC = geo(E), resid(E), geo(C)
+    out(f"    처치군 D-1 하락 {gE[pre - 1] - 100:+.1f}p 중 "
+        f"통제군에도 똑같이 나타나는 몫 {gC[pre - 1] - 100:+.1f}p, "
+        f"시장을 걷어내고 남는 몫 {rE[pre - 1] - 100:+.1f}p")
+
+    top = E["t0"].value_counts()
+    days = sorted(d["수집일자"].unique())
+    t0, n0 = int(top.index[0]), int(top.iloc[0])
+    out(f"    온셋의 {n0 / len(E):.0%}({n0:,}건)가 {pd.Timestamp(days[t0]).date()} "
+        "하루에 몰려 있다 — 이 군의 D-1 은 시장 전체가 저점인 날이다.")
+    sub = E[E["t0"] != t0]
+    out(f"    그 하루를 빼도 D-1 은 {geo(sub)[pre - 1]:.1f} — 하락 자체는 남는다.")
+    out()
+
+    out("■ 9. 온셋 직전 구간의 프로모션 상태 (③ 프로모션 공백 검정)")
+    key = d.set_index(["상품번호", "ti"])
+    B = {b: key[b] for b in BADGES}
+    DR = key["할인율"]
+
+    def promo_pre(ev: pd.DataFrame) -> pd.DataFrame:
+        rows = []
+        for r in ev.itertuples():
+            rec = {}
+            for k in range(pre, 0, -1):
+                oth = [B[b].get((r.pid, r.t0 - k), np.nan)
+                       for b in BADGES if b != r.kind]
+                rec[f"oth{k}"] = (np.nanmean(oth)
+                                  if not all(pd.isna(oth)) else np.nan)
+                rec[f"dsc{k}"] = DR.get((r.pid, r.t0 - k), np.nan)
+            rec["oth0"] = np.nanmean([B[b].get((r.pid, r.t0), np.nan)
+                                      for b in BADGES if b != r.kind])
+            rec["dsc0"] = DR.get((r.pid, r.t0), np.nan)
+            rows.append(rec)
+        return pd.DataFrame(rows)
+
+    out("    온셋 배지는 정의상 D-1·D-2 에 0 이므로 제외하고, "
+        "나머지 배지와 할인율만 본다.")
+    for name, ev in (("전체", E), (f"{pd.Timestamp(days[t0]).date()} 제외", sub)):
+        P = promo_pre(ev)
+        out(f"    [{name}] n={len(P):,}")
+        out(f"    {'시점':>6}{'타배지 부착률':>14}{'할인율 평균':>12}{'할인율 중앙':>12}")
+        for k in list(range(pre, 0, -1)) + [0]:
+            o, dd = (f"oth{k}", f"dsc{k}")
+            out(f"    {('D-' + str(k)) if k else 'D+0':>6}"
+                f"{P[o].mean():>14.3f}{P[dd].mean():>12.2f}{P[dd].median():>12.1f}")
+        early = P[[f"dsc{k}" for k in range(pre, 2, -1)]].median(axis=1)
+        cut = (P["dsc1"] < early - DISC_JUMP)
+        raise_ = (P["dsc1"] > early + DISC_JUMP)
+        out(f"    D-1 에 할인율을 {DISC_JUMP}%p 이상 내린 이벤트 {cut.mean():.1%} · "
+            f"올린 이벤트 {raise_.mean():.1%}")
+    out("    → 타배지 부착률과 할인율이 D-1 에서 함께 내려간다. 즉 D-1 은 "
+        "'평상시'가 아니라")
+    out("      그 상품의 프로모션이 가장 얕아지는 시점이다. 세일 개시일 하루를 "
+        "빼도 같다.")
+    out("      다만 이것이 증분을 크게 보이게 하려는 인위적 제거인지, 직전 "
+        "프로모션 종료와")
+    out("      다음 편성 사이의 공백인지는 노출면 데이터만으로 가릴 수 없다 — "
+        "둘이 남기는 흔적이 같다.")
+    out()
+
 def arima_forecast(W: pd.DataFrame, pre: int, post: int) -> np.ndarray:
     PC = [f"pre{k}" for k in range(pre, 0, -1)]
     out = np.full((len(W), post), np.nan)
@@ -252,9 +349,11 @@ def main() -> None:
                                 for h, v in enumerate(post_path)))
     dip = pre_path.iloc[-1] - pre_path.iloc[:-1].mean()
     out(f"    온셋 직전 1관측이 그 앞 평균보다 {dip:+.3f} (≈{pct(dip):+.1f}%) — "
-        "프로모션은 판매가 꺼진 뒤에 붙는다")
+        "D-1 은 평상시가 아니다")
     out("    → 사전 평균을 그대로 반사실로 쓰면 이 '자연 반등'까지 "
         "프로모션 효과로 계상된다.")
+    out("    → 이 하락이 상품 부진인지·달력 효과인지·프로모션 공백인지는 "
+        "8·9절에서 분해한다.")
     out()
 
     out("■ 2. 반사실 모형 검증 (통제군 홀드아웃, 상품 단위 분할)")
@@ -347,13 +446,17 @@ def main() -> None:
             f"{pct(naive):>+10.1f}%{pct(model):>+10.1f}%")
     out()
 
-    out("■ 8. 해석의 한계")
+    dip_decomposition(d, E, C, PRE, POST, out)
+
+    out("■ 10. 해석의 한계")
     out("    · 반사실 모형은 '프로모션이 없던 관측'만으로 학습했다. 프로모션이 붙는")
     out("      상품이 애초에 다른 성격이라면 외삽 오차가 남는다.")
     out("    · 판매 대리지표는 리뷰 유입이다. 리뷰 작성 지연 때문에 즉시 효과는")
     out("      과소, 지연 효과는 D+5 이후로 밀려 잡힌다.")
     out("    · 배지 온셋은 관측 간격 기준이다. 수집 결측일이 낀 구간에서는 온셋")
     out("      시점이 실제보다 늦게 잡힐 수 있다.")
+    out("    · D-1 하락의 대부분은 시장 전체의 날짜 효과다(8절). 사전 구간을")
+    out("      비교 기준으로 쓰는 어떤 방법도 이 날짜 효과를 성과로 계상한다.")
 
     os.makedirs(OUT_DIR, exist_ok=True)
     last = d["수집일자"].max().date()
