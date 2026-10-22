@@ -273,7 +273,7 @@
     <p class="prose" style="margin-top:16px">
       결측일 때문에 값이 왜곡되지 않도록, 리뷰 증가 속도는 전일 대비 단순 증감이 아니라
       <b>직전 관측일 대비 증감을 경과일수로 나눈 값</b>으로 계산했다. 여러 날짜를 묶는 패널 분석에는
-      카테고리 수집이 자리 잡은 8월 5일 이후 데이터만 썼다.
+      카테고리 수집이 자리 잡은 8월 5일 이후 데이터만 사용했다.
     </p>
 
     <h3 class="sub-head"><span class="n">2.3</span>데이터 명세</h3>
@@ -312,14 +312,14 @@
   <div class="wrap">
     <div class="sec-head">
       <div class="sec-no">03 — 개발 환경</div>
-      <h2>수집 · 분석 · 문서 생성을 하나의 파이썬 파이프라인으로</h2>
-      <p class="sub">원천 데이터가 갱신되면 동일한 스크립트로 분석과 도표, 보고서가 함께 재현된다.</p>
+      <h2>수집 · 분석 파이프라인</h2>
+      <p class="sub">원천 데이터가 갱신되면 동일한 스크립트로 분석과 도표가 함께 재현된다.</p>
     </div>
 
     <h3 class="sub-head"><span class="n">3.1</span>개발 및 실행 환경</h3>
     <p class="prose">
-      수집기와 분석 모듈, 보고서 생성기는 모두 파이썬으로 구현했으며 단일 로컬 환경에서 실행된다. 수집은 매일 밤
-      22~00시 사이에 실행 스크립트를 수기로 1회 호출하는 방식으로 운영했으며, 분석과 문서 생성은 수집된 원본
+      수집기와 분석 모듈은 모두 파이썬으로 구현했으며 단일 로컬 환경에서 실행된다. 수집은 매일 밤
+      22~00시 사이에 실행 스크립트를 수기로 1회 호출하는 방식으로 운영했으며, 분석은 수집된 원본
       데이터로부터 언제든 재실행할 수 있도록 구성했다.
     </p>
     <div class="tbl-scroll">
@@ -329,7 +329,7 @@
           <tr><td>운영체제</td><td class="wrap-cell">Windows 11 (로컬 단일 노드)</td></tr>
           <tr><td>언어 · 런타임</td><td class="wrap-cell">Python 3.13</td></tr>
           <tr><td>수집 실행</td><td class="wrap-cell">PowerShell 스크립트(run_local.ps1)를 매일 밤 수기로 1회 호출</td></tr>
-          <tr><td>코드 구성</td><td class="wrap-cell">scraper(수집) · analysis(분석·시각화) · report(문서 생성) 3개 패키지</td></tr>
+          <tr><td>코드 구성</td><td class="wrap-cell">scraper(수집) · analysis(분석·시각화) 2개 패키지</td></tr>
           <tr><td>데이터 저장</td><td class="wrap-cell">일자별 CSV(랭킹·리뷰·오류) 및 이미지 파일. 중간 진행 상태는 JSON 커서로 보관해 중단 시 이어받기 지원</td></tr>
         </tbody>
       </table>
@@ -357,8 +357,8 @@
           <tr><td>pandas</td><td class="num">2.3</td><td class="wrap-cell">일자별 원본 병합, 패널 데이터 구성 및 전처리</td></tr>
           <tr><td>numpy</td><td class="num">2.3</td><td class="wrap-cell">고정효과 within 변환 및 회귀 행렬 연산</td></tr>
           <tr><td>scipy</td><td class="num">1.17</td><td class="wrap-cell">검정통계량 산출 및 분포 계산</td></tr>
-          <tr><td>matplotlib</td><td class="num">3.10</td><td class="wrap-cell">보고서 수록 그림 생성</td></tr>
-          <tr><td>Pillow</td><td class="num">12.2</td><td class="wrap-cell">썸네일 특성 추출 및 문서 내 이미지 삽입</td></tr>
+          <tr><td>matplotlib</td><td class="num">3.10</td><td class="wrap-cell">분석 결과 시각화</td></tr>
+          <tr><td>Pillow</td><td class="num">12.2</td><td class="wrap-cell">썸네일 특성 추출</td></tr>
         </tbody>
       </table>
     </div>
@@ -389,15 +389,15 @@
         </div>
         <div class="flow-step">
           <div class="f-no">4</div>
-          <div class="f-title">분석 · 문서 재현</div>
+          <div class="f-title">분석 · 재현</div>
           <div class="f-method">자동 동기화</div>
-          <div class="f-desc">회귀·이벤트 스터디·이미지 피처 분석을 모듈로 분리하고, 통계치와 도표를 보고서에 자동 반영해 신규 데이터 축적 시 즉시 갱신</div>
+          <div class="f-desc">회귀·이벤트 스터디·이미지 피처 분석을 모듈로 분리하고, 신규 데이터 축적 시 통계치와 도표를 즉시 갱신</div>
         </div>
       </div>
     </div>
     <p class="prose" style="margin-top:18px">
       저장 단계에서는 JSON 커서로 진행 상황을 기록해, 수집이 중간에 끊겨도 그 지점부터 이어 받고 같은 데이터를
-      두 번 모으지 않게 했다. 이 보고서의 통계치와 도표는 원본 데이터가 바뀌면 재현 스크립트를 다시 돌려 함께
+      두 번 모으지 않게 했다. 통계치와 도표는 원본 데이터가 바뀌면 재현 스크립트를 다시 돌려 함께
       갱신한다.
     </p>
   </div>
@@ -408,7 +408,7 @@
   <div class="wrap">
     <div class="sec-head">
       <div class="sec-no">04 — 분석 방법</div>
-      <h2>같은 카테고리, 같은 날 안에서만 비교한다</h2>
+      <h2>날짜와 카테고리 차이를 통제하고 분석한다</h2>
       <p class="sub">조건이 다른 상품끼리 단순 비교하지 않도록 고정효과로 환경 차이를 걷어 내고, 같은 상품을 여러 날
         반복 관측해 생기는 표준오차 과소추정은 군집 보정으로 바로잡았다.</p>
     </div>
@@ -702,7 +702,7 @@
       <span class="lab m">분석 방법</span>
       <p class="prose">
         <span class="method-name">개체 고정효과 및 이벤트 스터디(Event Study).</span>
-        동일 상품에서 배지가 붙은 날과 붙지 않은 날의 순위를 비교하는 <span data-gl="fe">개체 고정효과(Within-Product FE) 모형</span>을 썼다.
+        동일 상품에서 배지가 붙은 날과 붙지 않은 날의 순위를 비교하는 <span data-gl="fe">개체 고정효과(Within-Product FE) 모형</span>을 사용했다.
         이렇게 하면 브랜드 이름값이나 원래 인기처럼 기간 중 변하지 않는 요인이 상쇄되고 프로모션의 효과만 남는다.
         또 배지가 새로 붙은 날을 기준으로 전후 순위가 어떻게 움직였는지 따라가는 이벤트 스터디를 함께 했다.
       </p>
