@@ -960,7 +960,7 @@
       });
     });
 
-    txt(svg, L + (W - L - R) / 2, H - 10, "카테고리별 리뷰에서 각 속성을 언급한 비율 · 코랄 테두리는 그 카테고리에서 가장 많이 언급된 속성", {
+    txt(svg, L + (W - L - R) / 2, H - 10, "카테고리별 리뷰에서 각 속성을 언급한 비율 · 주황색 테두리는 그 카테고리에서 가장 많이 언급된 속성", {
       "text-anchor": "middle", "font-size": 11.5, fill: col.muted,
     });
   }
@@ -1135,7 +1135,7 @@
       hover(a, name, rows); hover(b, name, rows);
       txt(svg, x0 + wMid + wNeg + 10, y + 15, `긍정 ${pos.toFixed(1)}%`, { "font-size": 11.5, fill: col.ink2, "font-weight": 700 });
     });
-    txt(svg, (x0 + x1) / 2, H - 8, "긍정(4점 이상)이 아닌 리뷰의 비중(회색 3점 · 코랄 부정 2점 이하)", {
+    txt(svg, (x0 + x1) / 2, H - 8, "긍정(4점 이상)이 아닌 리뷰의 비중(회색 3점 · 주황색 부정 2점 이하)", {
       "text-anchor": "middle", "font-size": 11.5, fill: col.muted,
     });
   }
